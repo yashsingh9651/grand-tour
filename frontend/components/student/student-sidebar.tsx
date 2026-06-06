@@ -24,15 +24,16 @@ import { cn } from '@/lib/utils'
 
 const WORKFLOW_STEP_ORDER: Record<string, number> = {
   application: 0,
-  documents: 0,
-  interview: 0,
-  selection: 0,
-  payment1: 0,
-  contract: 0,
-  workpermit: 0,
-  visa: 0,
-  travel: 0,
-  hotel: 0,
+  documents: 1,
+  interview: 2,
+  payment1: 3,
+  hotel: 4,
+  payment2: 5,
+  contract: 6,
+  payment3: 7,
+  workpermit: 8,
+  visa: 9,
+  travel: 10,
 }
 
 const NAV_ITEMS = [
