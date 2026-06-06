@@ -1,0 +1,67 @@
+import { Request, Response } from 'express';
+import hotelService from '../services/hotel.service';
+import activityService from '../services/activity.service';
+import applicationService from '../services/application.service';
+
+export const getHotels = async (req: Request, res: Response) => {
+  const hotels = await hotelService.getAllHotels();
+  res.status(200).json({ success: true, data: hotels });
+};
+
+export const createHotel = async (req: Request, res: Response) => {
+  const { name, location, proposalPdf } = req.body;
+  const hotel = await hotelService.createHotel({ name, location, proposalPdf });
+  res.status(201).json({ success: true, data: hotel });
+};
+
+export const updateHotel = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const hotel = await hotelService.updateHotel(id, req.body);
+  res.status(200).json({ success: true, data: hotel });
+};
+
+export const deleteHotel = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  await hotelService.deleteHotel(id);
+  res.status(200).json({ success: true, message: 'Hotel deleted' });
+};
+
+export const getCandidatesAtHotelStep = async (req: Request, res: Response) => {
+  const candidates = await hotelService.getCandidatesAtHotelStep();
+  res.status(200).json({ success: true, data: candidates });
+};
+
+export const assignHotel = async (req: Request, res: Response) => {
+  const { hotelId, applicationId, checkIn, checkOut } = req.body;
+  const assignment = await hotelService.assignHotel({
+    hotelId,
+    applicationId,
+    checkIn: new Date(checkIn),
+    checkOut: new Date(checkOut)
+  });
+
+  // Log activity
+  await activityService.log(
+    `Hotel assigned: ${assignment.hotel.name} to ${assignment.application.user.firstName}`,
+    'HOTEL_ASSIGNED',
+    applicationId,
+    (req as any).user?.id
+  );
+
+  // Automatically move to next step?
+  // Let's check the workflow to see what the next step is.
+  // For now, let's just return the assignment.
+  
+  res.status(201).json({ success: true, data: assignment });
+};
+
+export const getMyAssignment = async (req: Request, res: Response) => {
+  const userId = (req as any).user?.id;
+  const application = await applicationService.getApplicationByUserId(userId);
+  if (!application) {
+    return res.status(404).json({ success: false, message: 'Application not found' });
+  }
+
+  const assignment = await hotelService.getAssignmentByApplicationId(application.id);
+  res.status(200).json({ success: true, data: assignment });
+};

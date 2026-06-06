@@ -1,0 +1,504 @@
+'use client'
+
+import { useEffect, useMemo, useState } from 'react'
+import { Card } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Loader2, User, Briefcase, GraduationCap } from 'lucide-react'
+
+const fallbackPageContent = {
+  title: 'Build Your Editorial Profile',
+  subtitle: 'Phase 2: Defining your academic and professional coordinates.',
+  blocks: [
+    {
+      id: 'section-personal-credentials',
+      type: 'section',
+      label: 'Personal Credentials',
+      section: 'Personal Credentials',
+      column: 'left',
+      order: 1,
+      enabled: true,
+    },
+    {
+      id: 'full-name',
+      type: 'user',
+      label: 'Full Legal Name',
+      fieldKey: 'fullName',
+      valueSource: 'user.fullName',
+      section: 'Personal Credentials',
+      column: 'left',
+      order: 2,
+      disabled: true,
+    },
+    {
+      id: 'primary-email',
+      type: 'user',
+      label: 'Primary Email',
+      fieldKey: 'email',
+      valueSource: 'user.email',
+      section: 'Personal Credentials',
+      column: 'left',
+      order: 3,
+      disabled: true,
+    },
+    {
+      id: 'passport-number',
+      type: 'text',
+      label: 'Passport Number',
+      fieldKey: 'passportNumber',
+      placeholder: 'E1234567',
+      section: 'Personal Credentials',
+      column: 'left',
+      order: 4,
+      required: false,
+    },
+    {
+      id: 'passport-confirmation',
+      type: 'checkbox',
+      label: 'I confirm I have a valid passport',
+      fieldKey: 'passportConfirmed',
+      defaultValue: true,
+      section: 'Personal Credentials',
+      column: 'left',
+      order: 5,
+      required: true,
+    },
+    {
+      id: 'section-academic-nexus',
+      type: 'section',
+      label: 'Academic Nexus',
+      section: 'Academic Nexus',
+      column: 'left',
+      order: 6,
+      enabled: true,
+    },
+    {
+      id: 'educational-institution',
+      type: 'text',
+      label: 'Educational Institution',
+      fieldKey: 'educationalInstitution',
+      placeholder: 'Metropolitan Institute of Technology',
+      section: 'Academic Nexus',
+      column: 'left',
+      order: 7,
+      required: false,
+    },
+    {
+      id: 'enrollment-status',
+      type: 'select',
+      label: 'B.Tech Enrollment Status',
+      fieldKey: 'enrollmentStatus',
+      options: ['Active Candidate', 'Alumni'],
+      defaultValue: 'Active Candidate',
+      section: 'Academic Nexus',
+      column: 'left',
+      order: 8,
+    },
+    {
+      id: 'cgpa',
+      type: 'number',
+      label: 'CGPA',
+      fieldKey: 'cgpa',
+      placeholder: '8.5',
+      section: 'Academic Nexus',
+      column: 'left',
+      order: 9,
+      required: false,
+    },
+    {
+      id: 'section-journey-intent',
+      type: 'section',
+      label: 'Journey Intent',
+      section: 'Journey Intent',
+      column: 'right',
+      order: 10,
+      enabled: true,
+    },
+    {
+      id: 'preferred-department',
+      type: 'select',
+      label: 'Preferred Department',
+      fieldKey: 'preferredDepartment',
+      options: ['Journalism', 'Digital Media', 'Publishing', 'Content Strategy'],
+      section: 'Journey Intent',
+      column: 'right',
+      order: 11,
+    },
+    {
+      id: 'statement-of-purpose',
+      type: 'textarea',
+      label: 'Statement of Purpose (250 Words)',
+      fieldKey: 'statementOfPurpose',
+      placeholder: 'Describe your vision for this editorial internship...',
+      description: 'Tell us why this program matters to your editorial journey.',
+      section: 'Journey Intent',
+      column: 'right',
+      order: 12,
+      maxWords: 250,
+    },
+    {
+      id: 'preferred-start-date',
+      type: 'date',
+      label: 'Preferred Start Date',
+      fieldKey: 'preferredStartDate',
+      section: 'Journey Intent',
+      column: 'right',
+      order: 13,
+      required: false,
+    },
+  ],
+}
+
+const normalizeFieldValue = (field: any, value: any) => {
+  if (field.type === 'checkbox') {
+    if (typeof value === 'boolean') return value
+    if (typeof value === 'string') return value === 'true' || value === 'on'
+    return Boolean(value)
+  }
+
+  if (field.type === 'number') {
+    if (value === '' || value === null || value === undefined) return ''
+    const numericValue = Number(value)
+    return Number.isNaN(numericValue) ? '' : numericValue
+  }
+
+  return value
+}
+
+const extractPersistedValue = (field: any, application: any) => {
+  if (field.type === 'user') {
+    return resolveUserValue(field, application)
+  }
+
+  const persistedData = application?.data || {}
+  if (persistedData[field.fieldKey] !== undefined && persistedData[field.fieldKey] !== null) {
+    return persistedData[field.fieldKey]
+  }
+
+  return application?.[field.fieldKey]
+}
+
+export function ProfileBuilderStep({ application, onSubmit, submitting, pageContent }: any) {
+  const resolvedPageContent = pageContent || fallbackPageContent
+  const [formData, setFormData] = useState<Record<string, any>>({})
+
+  const pageFields = useMemo(() => {
+    return (resolvedPageContent?.blocks || [])
+      .filter((field: any) => field.enabled !== false)
+      .sort((a: any, b: any) => Number(a.order || 0) - Number(b.order || 0))
+  }, [resolvedPageContent])
+
+  useEffect(() => {
+    const initialData: Record<string, any> = {}
+
+    pageFields.forEach((field: any) => {
+      if (!field.fieldKey) return
+
+      const persistedValue = extractPersistedValue(field, application)
+      const fallbackValue = persistedValue !== undefined && persistedValue !== null ? persistedValue : field.defaultValue ?? ''
+      initialData[field.fieldKey] = normalizeFieldValue(field, fallbackValue)
+    })
+
+    setFormData(initialData)
+  }, [application, pageFields])
+
+  const sections = useMemo(() => {
+    const groups: Array<{ section: string; column: string; fields: any[] }> = []
+    let activeGroup: { section: string; column: string; fields: any[] } | null = null
+
+    pageFields.forEach((field: any) => {
+      if (field.type === 'section') {
+        activeGroup = {
+          section: field.label || field.section || 'General',
+          column: field.column || 'left',
+          fields: [] as any[],
+        }
+        groups.push(activeGroup)
+        return
+      }
+
+      const fallbackGroup = {
+        section: field.section || 'General',
+        column: field.column || 'left',
+        fields: [] as any[],
+      }
+
+      const targetGroup = activeGroup || fallbackGroup
+
+      if (!targetGroup.fields) {
+        targetGroup.fields = [] as any[]
+      }
+
+      targetGroup.fields.push(field)
+    })
+
+    return groups
+  }, [pageFields])
+
+  const leftSections = sections.filter((section) => section.column === 'left')
+  const rightSections = sections.filter((section) => section.column === 'right')
+
+  const maxWords = pageFields.find((field: any) => field.fieldKey === 'statementOfPurpose')?.maxWords || 250
+
+  const handleFieldChange = (field: any, value: any) => {
+    setFormData((current: Record<string, any>) => ({
+      ...current,
+      [field.fieldKey]: normalizeFieldValue(field, value),
+    }))
+  }
+
+  const handleFormSubmit = () => {
+    const dynamicData = {
+      ...(application?.data || {}),
+    }
+
+    pageFields.forEach((field: any) => {
+      if (field.fieldKey && field.type !== 'user') {
+        dynamicData[field.fieldKey] = normalizeFieldValue(field, formData[field.fieldKey] ?? field.defaultValue ?? '')
+      }
+    })
+
+    const updatedApp = {
+      ...application,
+      data: dynamicData,
+    }
+
+    onSubmit({}, updatedApp)
+  }
+
+  const wordCount = (formData.statementOfPurpose || '').trim().split(/\s+/).filter((word: string) => word.length > 0).length
+
+  const requiredFields = pageFields.filter((field: any) => field.fieldKey && field.type !== 'section' && field.type !== 'user' && field.enabled !== false)
+  const completedFields = requiredFields.filter((field: any) => {
+    const value = formData[field.fieldKey]
+
+    if (field.type === 'checkbox') {
+      return Boolean(value)
+    }
+
+    if (typeof value === 'number') {
+      return value !== 0 && !Number.isNaN(value)
+    }
+
+    return value !== undefined && value !== null && String(value).trim() !== ''
+  })
+
+  const completion = Math.min(100, Math.round((completedFields.length / Math.max(1, requiredFields.length)) * 100))
+
+  return (
+    <div className="w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="space-y-2 mb-8">
+        <h1 className="text-4xl font-extrabold tracking-tight text-[#1A1A1A]">{resolvedPageContent?.title || fallbackPageContent.title}</h1>
+        <p className="text-[#666666] text-lg">{resolvedPageContent?.subtitle || fallbackPageContent.subtitle}</p>
+
+        <div className="flex items-center gap-2 mt-6">
+          <div className="h-1.5 w-16 bg-[#4D6B19] rounded-full"></div>
+          <div className="h-1.5 w-16 bg-[#C6F16D] rounded-full"></div>
+          <div className="h-1.5 w-16 bg-gray-200 rounded-full"></div>
+          <div className="h-1.5 w-16 bg-gray-200 rounded-full"></div>
+          <span className="ml-4 text-[10px] font-bold tracking-widest uppercase text-[#4D6B19]">
+            Step 2 of 4 Complete
+          </span>
+        </div>
+      </div>
+
+      <div className="grid lg:grid-cols-5 gap-6">
+        <div className="lg:col-span-3 space-y-6">
+          {leftSections.map((sectionGroup: any) => (
+            <SectionCard
+              key={sectionGroup.section}
+              title={sectionGroup.section}
+              icon={sectionGroup.section.includes('Academic') ? GraduationCap : User}
+              accentClass={sectionGroup.section.includes('Academic') ? 'bg-[#F9F9F9]' : 'bg-white'}
+              fields={sectionGroup.fields}
+              formData={formData}
+              onFieldChange={handleFieldChange}
+              resolveUserValue={resolveUserValue}
+              application={application}
+            />
+          ))}
+        </div>
+
+        <div className="lg:col-span-2">
+          {rightSections.map((sectionGroup: any) => (
+            <SectionCard
+              key={sectionGroup.section}
+              title={sectionGroup.section}
+              icon={Briefcase}
+              accentClass="bg-white"
+              fields={sectionGroup.fields}
+              formData={formData}
+              onFieldChange={handleFieldChange}
+              resolveUserValue={resolveUserValue}
+              application={application}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between pt-8 border-t border-gray-100">
+        <Button variant="ghost" className="text-[#666666] font-medium hover:bg-gray-100 rounded-xl" onClick={() => window.history.back()}>
+          ← Save & Exit Journey
+        </Button>
+
+        <div className="flex items-center">
+          <Button
+            type="button"
+            onClick={handleFormSubmit}
+            disabled={submitting || wordCount > maxWords}
+            className="bg-[#C6F16D] hover:bg-[#b5e359] text-[#1A1A1A] font-bold h-12 px-8 rounded-l-2xl rounded-r-none tracking-widest uppercase"
+          >
+            {submitting ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
+            Advance
+          </Button>
+          <div className="bg-[#1A1A1A] text-white h-12 px-6 rounded-r-2xl rounded-l-none flex items-center justify-center border-l border-white/20">
+            <div className="flex flex-col">
+              <span className="text-[8px] text-gray-400 font-bold uppercase tracking-widest leading-none mb-0.5">Overall Completion</span>
+              <span className="text-xs font-bold leading-none">{completion}% Completed</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function resolveUserValue(field: any, application: any) {
+  const source = field.valueSource || ''
+
+  if (source === 'user.fullName') {
+    return `${application?.user?.firstName || ''} ${application?.user?.lastName || ''}`.trim()
+  }
+
+  if (source === 'user.email') {
+    return application?.user?.email || ''
+  }
+
+  if (source === 'user.firstName') {
+    return application?.user?.firstName || ''
+  }
+
+  if (source === 'user.lastName') {
+    return application?.user?.lastName || ''
+  }
+
+  return field.defaultValue || ''
+}
+
+function SectionCard({ title, icon: Icon, accentClass, fields, formData, onFieldChange, resolveUserValue, application }: any) {
+  const wordCount = (formData.statementOfPurpose || '').trim().split(/\s+/).filter((word: string) => word.length > 0).length
+
+  return (
+    <Card className={`p-8 border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2rem] ${accentClass}`}>
+      <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
+        <Icon className={`w-5 h-5 ${title.includes('Academic') ? 'text-[#4D6B19]' : 'text-[#8B48F6]'}`} />
+        {title}
+      </h3>
+
+      <div className="space-y-6">
+        {fields.map((field: any) => (
+          <div key={field.id} className="space-y-2">
+            <label className="text-[10px] font-bold text-[#666666] tracking-widest uppercase">{field.label}</label>
+
+            {field.type === 'user' && (
+              <input
+                type="text"
+                value={resolveUserValue(field, application)}
+                disabled
+                className="w-full bg-[#F5F5F5] h-12 rounded-xl text-[#1A1A1A] font-medium px-4 border-none outline-none opacity-60 cursor-not-allowed"
+              />
+            )}
+
+            {field.type === 'text' && (
+              <input
+                type="text"
+                value={formData[field.fieldKey] ?? ''}
+                onChange={(e) => onFieldChange(field, e.target.value)}
+                placeholder={field.placeholder}
+                className="w-full bg-[#F5F5F5] h-12 rounded-xl text-[#1A1A1A] font-medium px-4 border-none outline-none focus:bg-white focus:ring-2 focus:ring-[#C6F16D]/50 transition-colors placeholder:text-gray-400"
+              />
+            )}
+
+            {field.type === 'number' && (
+              <input
+                type="number"
+                value={formData[field.fieldKey] ?? ''}
+                onChange={(e) => onFieldChange(field, e.target.value)}
+                placeholder={field.placeholder}
+                className="w-full bg-[#F5F5F5] h-12 rounded-xl text-[#1A1A1A] font-medium px-4 border-none outline-none focus:bg-white focus:ring-2 focus:ring-[#C6F16D]/50 transition-colors placeholder:text-gray-400"
+              />
+            )}
+
+            {field.type === 'date' && (
+              <input
+                type="date"
+                value={formData[field.fieldKey] ?? ''}
+                onChange={(e) => onFieldChange(field, e.target.value)}
+                className="w-full bg-[#F5F5F5] h-12 rounded-xl text-[#1A1A1A] font-medium px-4 border-none outline-none focus:bg-white focus:ring-2 focus:ring-[#C6F16D]/50 transition-colors"
+              />
+            )}
+
+            {field.type === 'checkbox' && (
+              <label className="flex w-full items-center gap-3 rounded-xl bg-[#F5F5F5] px-4 py-3 text-sm text-[#1A1A1A] font-medium">
+                <input
+                  type="checkbox"
+                  checked={Boolean(formData[field.fieldKey])}
+                  onChange={(e) => onFieldChange(field, e.target.checked)}
+                  className="h-4 w-4 rounded border-gray-300 text-[#4D6B19] focus:ring-[#C6F16D]"
+                />
+                <span>{field.label}</span>
+              </label>
+            )}
+
+            {field.type === 'radio' && (
+              <div className="space-y-2">
+                {(field.options || []).map((option: string) => (
+                  <label key={option} className="flex items-center gap-3 rounded-xl bg-[#F5F5F5] px-4 py-3 text-sm text-[#1A1A1A] font-medium">
+                    <input
+                      type="radio"
+                      name={field.fieldKey}
+                      value={option}
+                      checked={formData[field.fieldKey] === option}
+                      onChange={(e) => onFieldChange(field, e.target.value)}
+                      className="h-4 w-4 border-gray-300 text-[#4D6B19] focus:ring-[#C6F16D]"
+                    />
+                    <span>{option}</span>
+                  </label>
+                ))}
+              </div>
+            )}
+
+            {field.type === 'select' && (
+              <select
+                value={formData[field.fieldKey] ?? field.defaultValue ?? ''}
+                onChange={(e) => onFieldChange(field, e.target.value)}
+                className="w-full bg-[#F5F5F5] h-12 rounded-xl text-[#1A1A1A] font-medium px-4 border-none outline-none focus:ring-2 focus:ring-[#C6F16D]/50 transition-colors appearance-none cursor-pointer"
+              >
+                <option value="">Select {field.label}</option>
+                {(field.options || []).map((option: string) => (
+                  <option key={option} value={option}>{option}</option>
+                ))}
+              </select>
+            )}
+
+            {field.type === 'textarea' && (
+              <div className="space-y-2">
+                <textarea
+                  value={formData[field.fieldKey] ?? ''}
+                  onChange={(e) => onFieldChange(field, e.target.value)}
+                  placeholder={field.placeholder}
+                  className="w-full bg-[#F5F5F5] rounded-xl resize-none text-[#1A1A1A] font-medium p-4 border-none outline-none focus:ring-2 focus:ring-[#C6F16D]/50 focus:bg-white transition-colors min-h-[200px] placeholder:text-gray-400"
+                />
+                <div className="flex justify-between items-center mt-2">
+                  <span className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">{field.description || 'MINIMALISM PREFERRED'}</span>
+                  <span className={`text-[10px] font-bold tracking-widest uppercase ${wordCount > (field.maxWords || 250) ? 'text-red-500' : 'text-gray-400'}`}>
+                    {wordCount} / {field.maxWords || 250} WORDS
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </Card>
+  )
+}

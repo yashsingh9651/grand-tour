@@ -1,0 +1,259 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  TEAM
+  ADMIN
+  SUPER_ADMIN
+  TEAM_MEMBER
+  MARKETING
+  HR
+}
+
+enum ApplicationStatus {
+  DRAFT
+  PENDING
+  REVIEWING
+  INTERVIEW_SCHEDULED
+  ACCEPTED
+  REJECTED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+  UNPAID
+}
+
+enum DocumentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  NEEDS_REVISION
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String?
+  firstName String
+  lastName  String
+  profileImage String?
+  role      Role     @default(STUDENT)
+  isVerified Boolean @default(false)
+  otp       String?
+  otpExpiry DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Profile info (can be moved to a separate Profile model if preferred)
+  whatsapp    String?
+  dateOfBirth String?
+  address     String?
+  city        String?
+  state       String?
+  pincode     String?
+
+  applications Application[]
+  payments     Payment[]
+  interviews   Interview[]
+  notifications Notification[]
+}
+
+model Application {
+  id            String            @id @default(uuid())
+  userId        String            @unique
+  user          User              @relation(fields: [userId], references: [id])
+  status        ApplicationStatus @default(PENDING)
+  currentStepId String?
+
+  passportNumber         String?
+  educationalInstitution String?
+  enrollmentStatus       String?
+  preferredDepartment    String?
+  statementOfPurpose     String?
+
+  payment1Id String?  @unique
+  payment1   Payment? @relation("Payment1", fields: [payment1Id], references: [id])
+  payment2Id String?  @unique
+  payment2   Payment? @relation("Payment2", fields: [payment2Id], references: [id])
+
+  notes         String?
+  data          Json?
+  submittedAt   DateTime          @default(now())
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  interviews Interview[]
+  activities ActivityLog[]
+  documents  Document[]
+  payments   Payment[]
+  interviewSlot InterviewSlot?
+  hotelAssignment HotelAssignment?
+}
+
+model Workflow {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  steps       Json     // Stores the array of steps and their fields
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Payment {
+  id            String        @id @default(uuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id])
+  amount        Float
+  applicationId String
+  application   Application   @relation(fields: [applicationId], references: [id])
+  status        PaymentStatus @default(PENDING)
+  description   String?
+  utrNumber     String?
+  screenshotUrl String?
+  applicationAsPayment1 Application? @relation("Payment1")
+  applicationAsPayment2 Application? @relation("Payment2")
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Availability {
+  id            String   @id @default(uuid())
+  dayOfWeek     Int      // 0-6 (Sun-Sat)
+  startTime     String   // "09:00"
+  endTime       String   // "18:00"
+  slotDuration  Int      @default(30) // in minutes
+  lunchStart    String?  // "13:00"
+  lunchEnd      String?  // "14:00"
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model InterviewSlot {
+  id            String   @id @default(uuid())
+  startTime     DateTime
+  endTime       DateTime
+  isBooked      Boolean  @default(false)
+  applicationId String?  @unique
+  application   Application? @relation(fields: [applicationId], references: [id])
+  meetLink      String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Interview {
+  id            String      @id @default(uuid())
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id])
+  interviewerId String
+  interviewer   User        @relation(fields: [interviewerId], references: [id])
+  scheduledAt   DateTime
+  locationUrl   String?
+  status        String      @default("PENDING") // PENDING, COMPLETED, CANCELLED
+  notes         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+
+model ActivityLog {
+  id            String      @id @default(uuid())
+  description   String
+  type          String      // e.g., "APPLICATION_MOVE", "PAYMENT_RECEIVED"
+  applicationId String?
+  application   Application? @relation(fields: [applicationId], references: [id])
+  userId        String?     // The user who performed the action
+  createdAt     DateTime    @default(now())
+}
+
+model Notification {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  title       String
+  message     String
+  type        String   // e.g., "INFO", "SUCCESS", "WARNING", "ERROR"
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model RolePermission {
+  id        String   @id @default(uuid())
+  role      Role     @unique
+  features  String[] // Array of feature keys: e.g. ["candidates", "users", "reports"]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Document {
+  id            String         @id @default(uuid())
+  applicationId String
+  application   Application    @relation(fields: [applicationId], references: [id])
+  name          String
+  type          String         // e.g., "cv", "photo", "passport", "itar", "iti", "gst", "visa"
+  url           String
+  fileName      String
+  size          Float?         // in MB
+  status        DocumentStatus @default(PENDING)
+  remarks       String?
+  reviewedBy    String?
+  reviewedAt    DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model Hotel {
+  id          String   @id @default(uuid())
+  name        String
+  location    String
+  proposalPdf String   // URL to PDF
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  assignments HotelAssignment[]
+}
+
+model HotelAssignment {
+  id            String      @id @default(uuid())
+  hotelId       String
+  hotel         Hotel       @relation(fields: [hotelId], references: [id])
+  applicationId String      @unique
+  application   Application @relation(fields: [applicationId], references: [id])
+  checkIn       DateTime
+  checkOut      DateTime
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model EmailTemplate {
+  id          String   @id @default(uuid())
+  name        String   @unique // e.g., "HOSTEL_ASSIGNMENT", "PAYMENT_CONFIRMATION"
+  subject     String
+  body        String   @db.Text // HTML body with placeholders like {{name}}, {{applicationId}}
+  variables   String[] // List of supported variables for this template
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ApplicationPageContent {
+  id          String   @id @default(uuid())
+  pageKey     String   @unique
+  title       String
+  subtitle    String?
+  blocks      Json
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

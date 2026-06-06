@@ -1,0 +1,162 @@
+export type DocumentStatus = 'pending' | 'approved' | 'rejected' | 'needs_revision'
+export type DocumentType = 'resume' | 'contract' | 'nda' | 'certification' | 'id' | 'other'
+
+export interface Document {
+  id: string
+  candidateId: string
+  candidateName: string
+  type: DocumentType
+  name: string
+  fileName: string
+  size: number // in MB
+  status: DocumentStatus
+  uploadedDate: Date
+  reviewedBy?: string
+  reviewDate?: Date
+  remarks?: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export const dummyDocuments: Document[] = [
+  {
+    id: 'doc-001',
+    candidateId: 'cand-001',
+    candidateName: 'Sarah Johnson',
+    type: 'contract',
+    name: 'Service Agreement',
+    fileName: 'sarah_johnson_agreement.pdf',
+    size: 1.2,
+    status: 'pending',
+    uploadedDate: new Date('2024-03-15'),
+    remarks: 'Awaiting verification',
+    createdAt: new Date('2024-03-15'),
+    updatedAt: new Date('2024-03-15'),
+  },
+  {
+    id: 'doc-002',
+    candidateId: 'cand-001',
+    candidateName: 'Sarah Johnson',
+    type: 'nda',
+    name: 'Non-Disclosure Agreement',
+    fileName: 'sarah_johnson_nda.pdf',
+    size: 0.8,
+    status: 'approved',
+    uploadedDate: new Date('2024-03-10'),
+    reviewedBy: 'user-002',
+    reviewDate: new Date('2024-03-12'),
+    remarks: 'Document verified and approved',
+    createdAt: new Date('2024-03-10'),
+    updatedAt: new Date('2024-03-12'),
+  },
+  {
+    id: 'doc-003',
+    candidateId: 'cand-002',
+    candidateName: 'Michael Chen',
+    type: 'contract',
+    name: 'Service Agreement',
+    fileName: 'michael_chen_agreement.pdf',
+    size: 1.5,
+    status: 'approved',
+    uploadedDate: new Date('2024-03-12'),
+    reviewedBy: 'user-002',
+    reviewDate: new Date('2024-03-14'),
+    remarks: 'All terms accepted',
+    createdAt: new Date('2024-03-12'),
+    updatedAt: new Date('2024-03-14'),
+  },
+  {
+    id: 'doc-004',
+    candidateId: 'cand-003',
+    candidateName: 'Emily Rodriguez',
+    type: 'resume',
+    name: 'Resume',
+    fileName: 'emily_rodriguez_resume.pdf',
+    size: 0.6,
+    status: 'approved',
+    uploadedDate: new Date('2024-03-08'),
+    reviewedBy: 'user-005',
+    reviewDate: new Date('2024-03-09'),
+    remarks: 'Impressive background',
+    createdAt: new Date('2024-03-08'),
+    updatedAt: new Date('2024-03-09'),
+  },
+  {
+    id: 'doc-005',
+    candidateId: 'cand-004',
+    candidateName: 'David Williams',
+    type: 'contract',
+    name: 'Service Agreement',
+    fileName: 'david_williams_agreement.pdf',
+    size: 1.3,
+    status: 'approved',
+    uploadedDate: new Date('2024-02-25'),
+    reviewedBy: 'user-002',
+    reviewDate: new Date('2024-02-26'),
+    remarks: 'Signed and executed',
+    createdAt: new Date('2024-02-25'),
+    updatedAt: new Date('2024-02-26'),
+  },
+  {
+    id: 'doc-006',
+    candidateId: 'cand-004',
+    candidateName: 'David Williams',
+    type: 'nda',
+    name: 'Non-Disclosure Agreement',
+    fileName: 'david_williams_nda.pdf',
+    size: 0.7,
+    status: 'approved',
+    uploadedDate: new Date('2024-02-25'),
+    reviewedBy: 'user-002',
+    reviewDate: new Date('2024-02-26'),
+    remarks: 'Document verified',
+    createdAt: new Date('2024-02-25'),
+    updatedAt: new Date('2024-02-26'),
+  },
+  {
+    id: 'doc-007',
+    candidateId: 'cand-005',
+    candidateName: 'Jessica Lee',
+    type: 'resume',
+    name: 'Resume',
+    fileName: 'jessica_lee_resume.pdf',
+    size: 0.5,
+    status: 'pending',
+    uploadedDate: new Date('2024-03-16'),
+    remarks: 'Under review',
+    createdAt: new Date('2024-03-16'),
+    updatedAt: new Date('2024-03-16'),
+  },
+  {
+    id: 'doc-008',
+    candidateId: 'cand-007',
+    candidateName: 'Amanda Thompson',
+    type: 'resume',
+    name: 'Resume',
+    fileName: 'amanda_thompson_resume.pdf',
+    size: 0.4,
+    status: 'approved',
+    uploadedDate: new Date('2024-03-14'),
+    reviewedBy: 'user-005',
+    reviewDate: new Date('2024-03-14'),
+    remarks: 'Excellent credentials for entry level',
+    createdAt: new Date('2024-03-14'),
+    updatedAt: new Date('2024-03-14'),
+  },
+  {
+    id: 'doc-009',
+    candidateId: 'cand-008',
+    candidateName: 'Christopher Davis',
+    type: 'contract',
+    name: 'Service Agreement',
+    fileName: 'christopher_davis_agreement.pdf',
+    size: 2.1,
+    status: 'needs_revision',
+    uploadedDate: new Date('2024-03-18'),
+    reviewedBy: 'user-002',
+    reviewDate: new Date('2024-03-19'),
+    remarks: 'Terms need adjustment on payment schedule',
+    createdAt: new Date('2024-03-18'),
+    updatedAt: new Date('2024-03-19'),
+  },
+]
