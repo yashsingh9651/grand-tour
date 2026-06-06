@@ -147,6 +147,32 @@ class EmailService {
       throw error;
     }
   }
+
+  async sendPasswordResetEmail(to: string, otp: string) {
+    try {
+      const mailOptions = {
+        from: process.env.SMTP_FROM || process.env.SMTP_USER,
+        to,
+        subject: 'Reset Your Password',
+        html: `
+          <div style="font-family: Arial, sans-serif; text-align: center; padding: 20px;">
+            <h2>Password Reset Verification Code</h2>
+            <p>You requested to reset your password. Use the following verification code (OTP) to proceed:</p>
+            <h1 style="font-size: 36px; letter-spacing: 5px; color: #8B48F6;">${otp}</h1>
+            <p>This code will expire in 10 minutes.</p>
+            <p>If you did not request this, please ignore this email.</p>
+          </div>
+        `,
+      };
+
+      const info = await this.transporter.sendMail(mailOptions);
+      logger.info(`Password Reset Email sent: ${info.messageId}`);
+      return info;
+    } catch (error) {
+      logger.error('Error sending password reset email:', error);
+      throw error;
+    }
+  }
 }
 
 export default new EmailService();

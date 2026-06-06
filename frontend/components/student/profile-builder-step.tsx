@@ -284,19 +284,46 @@ export function ProfileBuilderStep({ application, onSubmit, submitting, pageCont
 
   const completion = Math.min(100, Math.round((completedFields.length / Math.max(1, requiredFields.length)) * 100))
 
+  const journeySteps = [
+    'application',
+    'documents',
+    'interview',
+    'selection',
+    'payment1',
+    'contract',
+    'workpermit',
+    'visa',
+    'travel',
+    'hotel'
+  ]
+  const currentStepId = application?.currentStepId || 'application'
+  const currentStepIndex = journeySteps.indexOf(currentStepId) !== -1 
+    ? journeySteps.indexOf(currentStepId) 
+    : 0
+
   return (
     <div className="w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="space-y-2 mb-8">
         <h1 className="text-4xl font-extrabold tracking-tight text-[#1A1A1A]">{resolvedPageContent?.title || fallbackPageContent.title}</h1>
         <p className="text-[#666666] text-lg">{resolvedPageContent?.subtitle || fallbackPageContent.subtitle}</p>
 
-        <div className="flex items-center gap-2 mt-6">
-          <div className="h-1.5 w-16 bg-[#4D6B19] rounded-full"></div>
-          <div className="h-1.5 w-16 bg-[#C6F16D] rounded-full"></div>
-          <div className="h-1.5 w-16 bg-gray-200 rounded-full"></div>
-          <div className="h-1.5 w-16 bg-gray-200 rounded-full"></div>
+        <div className="flex flex-wrap items-center gap-1.5 mt-6">
+          {journeySteps.map((step, idx) => {
+            let barColor = 'bg-gray-200'
+            if (idx < currentStepIndex) {
+              barColor = 'bg-[#4D6B19]' // Completed
+            } else if (idx === currentStepIndex) {
+              barColor = 'bg-[#C6F16D]' // Current
+            }
+            return (
+              <div
+                key={step}
+                className={`h-1.5 flex-1 max-w-[60px] min-w-[40px] ${barColor} rounded-full transition-all duration-300`}
+              />
+            )
+          })}
           <span className="ml-4 text-[10px] font-bold tracking-widest uppercase text-[#4D6B19]">
-            Step 2 of 4 Complete
+            Step {currentStepIndex + 1} of 10
           </span>
         </div>
       </div>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Loader2, Sparkles, Terminal, ShieldCheck, Megaphone, Settings, HelpCircle, GraduationCap, Globe2, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import Link from "next/link";
 
 const NavItem = ({ icon, label, active = false }: { icon: React.ReactNode; label: string; active?: boolean }) => {
   return (
@@ -322,7 +323,15 @@ export default function Home() {
                       </div>
                       
                       <div className="space-y-1.5">
-                        <label className="text-[10px] font-bold text-[#666666] tracking-widest ml-1">PASSWORD (OPTIONAL FOR OTP)</label>
+                        <div className="flex justify-between items-center px-1">
+                          <label className="text-[10px] font-bold text-[#666666] tracking-widest uppercase">PASSWORD (OPTIONAL FOR OTP)</label>
+                          <Link 
+                            href="/forgot-password" 
+                            className="text-[10px] font-bold text-[#8B48F6] hover:underline uppercase tracking-wider"
+                          >
+                            Forgot Password?
+                          </Link>
+                        </div>
                         <input
                           type="password"
                           placeholder="••••••••"

@@ -68,3 +68,19 @@ export const verifyOtp = async (req: Request, res: Response) => {
     data: user
   });
 };
+
+// @desc    Forgot Password
+// @route   POST /api/auth/forgot-password
+// @access  Public
+export const forgotPassword = async (req: Request, res: Response) => {
+  const result = await authService.forgotPassword(req.body.email);
+  res.status(200).json(result);
+};
+
+// @desc    Reset Password
+// @route   POST /api/auth/reset-password
+// @access  Public
+export const resetPassword = async (req: Request, res: Response) => {
+  const result = await authService.resetPassword(req.body);
+  res.status(200).json(result);
+};

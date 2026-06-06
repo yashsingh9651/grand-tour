@@ -215,6 +215,65 @@ class AuthService {
       token: generateToken(updatedUser.id)
     };
   }
+
+  async forgotPassword(email: string) {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      const error: any = new Error('User not found');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiry = new Date(Date.now() + 10 * 60000); // 10 minutes
+
+    await prisma.user.update({
+      where: { email },
+      data: { otp, otpExpiry }
+    });
+
+    await emailService.sendPasswordResetEmail(email, otp);
+    return { success: true, message: 'Password reset OTP sent successfully' };
+  }
+
+  async resetPassword(data: any) {
+    const { email, otp, newPassword } = data;
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user) {
+      const error: any = new Error('User not found');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (!user.otp || user.otp !== otp) {
+      const error: any = new Error('Invalid OTP');
+      error.statusCode = 401;
+      throw error;
+    }
+
+    if (user.otpExpiry && new Date() > user.otpExpiry) {
+      const error: any = new Error('OTP has expired');
+      error.statusCode = 401;
+      throw error;
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    await prisma.user.update({
+      where: { email },
+      data: {
+        password: hashedPassword,
+        otp: null,
+        otpExpiry: null,
+        isVerified: true
+      }
+    });
+
+    return { success: true, message: 'Password has been reset successfully' };
+  }
 }
 
 export default new AuthService();
