@@ -65,3 +65,41 @@ export const getMyAssignment = async (req: Request, res: Response) => {
   const assignment = await hotelService.getAssignmentByApplicationId(application.id);
   res.status(200).json({ success: true, data: assignment });
 };
+
+export const respondToAssignment = async (req: Request, res: Response) => {
+  const userId = (req as any).user?.id;
+  const { response, note } = req.body; // response: 'ACCEPTED' | 'DECLINED'
+
+  const application = await applicationService.getApplicationByUserId(userId);
+  if (!application) {
+    return res.status(404).json({ success: false, message: 'Application not found' });
+  }
+
+  const { prisma } = await import('../config/db');
+  const assignment = await prisma.hotelAssignment.findUnique({
+    where: { applicationId: application.id },
+  });
+
+  if (!assignment) {
+    return res.status(404).json({ success: false, message: 'No hotel assignment found' });
+  }
+
+  const updated = await prisma.hotelAssignment.update({
+    where: { id: assignment.id },
+    data: { studentResponse: response, responseNote: note || null },
+  });
+
+  // If accepted, move to payment2 step
+  if (response === 'ACCEPTED') {
+    await prisma.application.update({
+      where: { id: application.id },
+      data: { currentStepId: 'payment2' },
+    });
+    await activityService.log('Student accepted hotel allocation', 'HOTEL_ACCEPTED', application.id, userId);
+  } else {
+    await activityService.log('Student declined hotel allocation', 'HOTEL_DECLINED', application.id, userId);
+  }
+
+  res.status(200).json({ success: true, data: updated });
+};
+

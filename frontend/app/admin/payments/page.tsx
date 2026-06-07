@@ -143,6 +143,7 @@ export default function AdminPaymentsPage() {
                     <TableHead className="font-bold text-slate-700">Student</TableHead>
                     <TableHead className="font-bold text-slate-700">Amount</TableHead>
                     <TableHead className="font-bold text-slate-700">UTR Number</TableHead>
+                    <TableHead className="font-bold text-slate-700">Description</TableHead>
                     <TableHead className="font-bold text-slate-700">Submitted On</TableHead>
                     <TableHead className="font-bold text-slate-700 text-center">Receipt</TableHead>
                     <TableHead className="font-bold text-slate-700">Status</TableHead>
@@ -152,7 +153,7 @@ export default function AdminPaymentsPage() {
                 <TableBody>
                   {filteredPayments.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={7} className="h-40 text-center text-slate-400">
+                      <TableCell colSpan={8} className="h-40 text-center text-slate-400">
                         No payment records found
                       </TableCell>
                     </TableRow>
@@ -172,6 +173,9 @@ export default function AdminPaymentsPage() {
                           <code className="bg-slate-100 px-2 py-1 rounded text-xs font-bold text-slate-700">
                             {p.utrNumber}
                           </code>
+                        </TableCell>
+                        <TableCell className="text-sm font-semibold text-slate-600">
+                          {p.description || 'N/A'}
                         </TableCell>
                         <TableCell className="text-sm font-medium text-slate-500">
                           {new Date(p.createdAt).toLocaleDateString()}

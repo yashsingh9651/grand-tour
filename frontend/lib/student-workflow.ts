@@ -2,13 +2,12 @@ export type WorkflowStep =
   | 'application'
   | 'documents'
   | 'interview'
-  | 'selection'
   | 'payment1'
   | 'hotel'
-  | 'contract'
   | 'payment2'
+  | 'contract'
+  | 'payment3'
   | 'workpermit'
-  | 'finaldocs'
   | 'visa'
   | 'travel'
 
@@ -24,18 +23,17 @@ export interface WorkflowStepData {
 }
 
 export const WORKFLOW_STEPS: Record<WorkflowStep, Omit<WorkflowStepData, 'completed' | 'current' | 'locked'>> = {
-  application: { id: 'application', title: 'Application Form', description: 'Submit your details', icon: '✓', order: 2 },
-  documents: { id: 'documents', title: 'Documents Upload', description: 'Upload required docs', icon: '✓', order: 3 },
-  interview: { id: 'interview', title: 'Interview Booking', description: 'Schedule interview', icon: '🔓', order: 4 },
-  selection: { id: 'selection', title: 'Selection Status', description: 'Await selection', icon: '🔒', order: 5 },
-  payment1: { id: 'payment1', title: 'First Payment', description: 'Payment confirmation', icon: '🔒', order: 6 },
-  hotel: { id: 'hotel', title: 'Hotel Allocation', description: 'Accommodation details', icon: '🔒', order: 7 },
-  contract: { id: 'contract', title: 'Contract', description: 'Sign agreement', icon: '🔒', order: 8 },
-  payment2: { id: 'payment2', title: 'Second Installment', description: 'Final payment', icon: '🔒', order: 9 },
-  workpermit: { id: 'workpermit', title: 'Work Permit', description: 'Permit processing', icon: '🔒', order: 10 },
-  finaldocs: { id: 'finaldocs', title: 'Final Documents', description: 'Submit final docs', icon: '🔒', order: 11 },
-  visa: { id: 'visa', title: 'Visa Stage', description: 'Visa application', icon: '🔒', order: 12 },
-  travel: { id: 'travel', title: 'Travel Details', description: 'Travel information', icon: '🔒', order: 13 },
+  application: { id: 'application', title: 'Application Form', description: 'Submit your details', icon: '✓', order: 1 },
+  documents: { id: 'documents', title: 'Documents Upload', description: 'Upload required docs', icon: '✓', order: 2 },
+  interview: { id: 'interview', title: 'Interview Booking', description: 'Schedule interview', icon: '🔓', order: 3 },
+  payment1: { id: 'payment1', title: 'First Payment', description: 'Payment confirmation', icon: '🔒', order: 4 },
+  hotel: { id: 'hotel', title: 'Hotel Allocation', description: 'Accommodation details', icon: '🔒', order: 5 },
+  payment2: { id: 'payment2', title: 'Second Payment', description: 'Payment installment 2', icon: '🔒', order: 6 },
+  contract: { id: 'contract', title: 'Contract', description: 'Sign agreement', icon: '🔒', order: 7 },
+  payment3: { id: 'payment3', title: 'Third Payment', description: 'Payment installment 3', icon: '🔒', order: 8 },
+  workpermit: { id: 'workpermit', title: 'Work Permit', description: 'Permit processing', icon: '🔒', order: 9 },
+  visa: { id: 'visa', title: 'Visa Stage', description: 'Visa application', icon: '🔒', order: 10 },
+  travel: { id: 'travel', title: 'Travel Details', description: 'Travel information', icon: '🔒', order: 11 },
 }
 
 export const getWorkflowSteps = (currentStepId: WorkflowStep): WorkflowStepData[] => {

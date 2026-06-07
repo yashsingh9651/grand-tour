@@ -40,13 +40,14 @@ const NAV_ITEMS = [
   { icon: Sparkles, label: 'Application', href: '/dashboard/application', stepKey: 'application' },
   { icon: FileText, label: 'Documents', href: '/dashboard/documents', stepKey: 'documents' },
   { icon: Calendar, label: 'Interview Hub', href: '/dashboard/interview', stepKey: 'interview' },
-  { icon: ShieldCheck, label: 'Offers & Selection', href: '/dashboard/selection', stepKey: 'selection' },
   { icon: Banknote, label: 'Financial Center', href: '/dashboard/payment1', stepKey: 'payment1', badge: 'New' },
-  { icon: ClipboardCheck, label: 'Contract', href: '/dashboard/contract', stepKey: 'contract' },
-  { icon: Stamp, label: 'Visa', href: '/dashboard/visa', stepKey: 'visa' },
-  { icon: Briefcase, label: 'Work Permit', href: '/dashboard/workpermit', stepKey: 'workpermit' },
-  { icon: Plane, label: 'Travel', href: '/dashboard/travel', stepKey: 'travel' },
   { icon: Building2, label: 'Hotel', href: '/dashboard/hotel', stepKey: 'hotel' },
+  { icon: Banknote, label: 'Payment 2', href: '/dashboard/payment2', stepKey: 'payment2' },
+  { icon: ClipboardCheck, label: 'Contract', href: '/dashboard/contract', stepKey: 'contract' },
+  { icon: Banknote, label: 'Payment 3', href: '/dashboard/payment3', stepKey: 'payment3' },
+  { icon: Briefcase, label: 'Work Permit', href: '/dashboard/workpermit', stepKey: 'workpermit' },
+  { icon: Stamp, label: 'Visa', href: '/dashboard/visa', stepKey: 'visa' },
+  { icon: Plane, label: 'Travel', href: '/dashboard/travel', stepKey: 'travel' },
 ]
 
 export function StudentSidebar({ currentStep }: { currentStep?: string }) {

@@ -253,4 +253,80 @@ export const hotelService = {
     const response = await apiClient.get('/api/hotels/my-assignment');
     return response.data.data;
   },
+  respondToAssignment: async (response: 'ACCEPTED' | 'DECLINED', note?: string) => {
+    const res = await apiClient.post('/api/hotels/respond', { response, note });
+    return res.data.data;
+  },
 };
+
+export const workPermitService = {
+  getMyWorkPermit: async () => {
+    const response = await apiClient.get('/api/workpermit/my');
+    return response.data.data;
+  },
+  getAllWorkPermits: async () => {
+    const response = await apiClient.get('/api/workpermit');
+    return response.data.data;
+  },
+  uploadWorkPermit: async (data: { applicationId: string; documentUrl: string; notes?: string }) => {
+    const response = await apiClient.post('/api/workpermit/upload', data);
+    return response.data.data;
+  },
+};
+
+export const visaService = {
+  getAvailableSlots: async () => {
+    const response = await apiClient.get('/api/visa/available');
+    return response.data.data;
+  },
+  bookSlot: async (slotId: string) => {
+    const response = await apiClient.post('/api/visa/book', { slotId });
+    return response.data.data;
+  },
+  getMySlot: async () => {
+    const response = await apiClient.get('/api/visa/my');
+    return response.data.data;
+  },
+  // Admin
+  getAllSlots: async () => {
+    const response = await apiClient.get('/api/visa');
+    return response.data.data;
+  },
+  createSlot: async (data: { startTime: string; endTime: string; capacity?: number; documentUrl?: string; notes?: string }) => {
+    const response = await apiClient.post('/api/visa', data);
+    return response.data.data;
+  },
+  uploadDocument: async (data: { documentUrl: string; slotId?: string }) => {
+    const response = await apiClient.post('/api/visa/document', data);
+    return response.data.data;
+  },
+  deleteSlot: async (id: string) => {
+    const response = await apiClient.delete(`/api/visa/${id}`);
+    return response.data;
+  },
+};
+
+export const travelService = {
+  getMyDocuments: async () => {
+    const response = await apiClient.get('/api/travel/my');
+    return response.data.data;
+  },
+  // Admin
+  getAllDocuments: async () => {
+    const response = await apiClient.get('/api/travel');
+    return response.data.data;
+  },
+  uploadDocument: async (data: { applicationId: string; name: string; url: string }) => {
+    const response = await apiClient.post('/api/travel/upload', data);
+    return response.data.data;
+  },
+  publishDocuments: async (applicationId: string) => {
+    const response = await apiClient.post('/api/travel/publish', { applicationId });
+    return response.data;
+  },
+  deleteDocument: async (id: string) => {
+    const response = await apiClient.delete(`/api/travel/${id}`);
+    return response.data;
+  },
+};
+

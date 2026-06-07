@@ -3,61 +3,277 @@
 import { useState, useEffect } from 'react'
 import { StudentLayout } from '@/components/student/student-layout'
 import { Card } from '@/components/ui/card'
-import { Lock, Loader2 } from 'lucide-react'
-import { applicationService } from '@/lib/services/api.service'
+import { Button } from '@/components/ui/button'
+import { applicationService, visaService } from '@/lib/services/api.service'
+import { toast } from 'sonner'
+import { format } from 'date-fns'
+import {
+  Loader2, Lock, Stamp, Calendar, Clock, Video, Download,
+  ChevronRight, CheckCircle2, FileDown, AlertCircle, Globe, ExternalLink
+} from 'lucide-react'
+import Link from 'next/link'
 
 export default function VisaPage() {
   const [application, setApplication] = useState<any>(null)
+  const [availableSlots, setAvailableSlots] = useState<any[]>([])
+  const [mySlot, setMySlot] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [booking, setBooking] = useState(false)
+  const [selectedSlot, setSelectedSlot] = useState<string | null>(null)
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true)
-        const data = await applicationService.getMy()
-        setApplication(data)
-      } catch (error: any) {
-        console.error('Error fetching Visa application data:', error)
-      } finally {
-        setLoading(false)
+  useEffect(() => { fetchData() }, [])
+
+  const fetchData = async () => {
+    try {
+      const appData = await applicationService.getMy()
+      setApplication(appData)
+
+      const isUnlocked = ['visa', 'travel'].includes(appData?.currentStepId)
+      if (isUnlocked) {
+        const [slots, myBooking] = await Promise.all([
+          visaService.getAvailableSlots().catch(() => []),
+          visaService.getMySlot().catch(() => null),
+        ])
+        setAvailableSlots(slots || [])
+        setMySlot(myBooking)
       }
+    } catch {
+      toast.error('Failed to load visa data')
+    } finally {
+      setLoading(false)
     }
-    fetchData()
-  }, [])
+  }
+
+  const handleBookSlot = async () => {
+    if (!selectedSlot) { toast.error('Please select a time slot'); return }
+    setBooking(true)
+    try {
+      const result = await visaService.bookSlot(selectedSlot)
+      setMySlot(result)
+      toast.success('Visa appointment booked successfully!')
+      fetchData()
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || 'Failed to book slot')
+    } finally {
+      setBooking(false)
+    }
+  }
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 text-primary animate-spin" />
-      </div>
+      <StudentLayout currentStep="visa">
+        <div className="flex items-center justify-center h-[60vh]">
+          <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        </div>
+      </StudentLayout>
     )
   }
 
-  return (
-    <StudentLayout currentStep={application?.currentStepId}>
-      <div className="max-w-4xl space-y-6">
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold">Visa Stage</h1>
-          <p className="text-muted-foreground">Visa application and processing</p>
-        </div>
+  const isUnlocked = ['visa', 'travel'].includes(application?.currentStepId)
 
-        <Card className="p-8 border-2 border-gray-200 bg-gray-50">
+  if (!isUnlocked) {
+    return (
+      <StudentLayout currentStep="visa">
+        <div className="max-w-3xl rounded-3xl border-2 border-dashed border-gray-200 p-12 flex flex-col items-center text-center">
+          <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mb-6">
+            <Lock className="w-10 h-10 text-gray-400" />
+          </div>
+          <h2 className="text-2xl font-bold">Visa Appointment — Locked</h2>
+          <p className="text-muted-foreground mt-2 max-w-md">
+            Visa scheduling unlocks after your <strong>Work Permit</strong> is issued.
+          </p>
+          <Button className="mt-8" onClick={() => window.location.href = `/dashboard/${application?.currentStepId || 'application'}`}>
+            Return to Current Step <ChevronRight className="w-4 h-4 ml-2" />
+          </Button>
+        </div>
+      </StudentLayout>
+    )
+  }
+
+  const hasBooked = !!mySlot
+
+  return (
+    <StudentLayout currentStep="visa">
+      <div className="max-w-5xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        {/* Header */}
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
-              <Lock className="w-8 h-8 text-gray-600" />
+            <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
+              <Stamp className="w-7 h-7 text-primary" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900">This Step is Locked</h2>
-              <p className="text-gray-700 mt-1">Visa stage will begin after work permit approval</p>
+              <h1 className="text-3xl font-bold">Visa Appointment</h1>
+              <p className="text-muted-foreground">Schedule your visa processing appointment</p>
             </div>
+          </div>
+          {hasBooked && (
+            <span className="flex items-center gap-2 px-4 py-2 bg-green-50 border border-green-200 text-green-700 text-sm font-bold rounded-full">
+              <CheckCircle2 className="w-4 h-4" /> Appointment Booked
+            </span>
+          )}
+        </div>
+
+        {/* Booked Appointment Card */}
+        {hasBooked && (
+          <Card className="p-0 overflow-hidden border-none shadow-xl">
+            <div className="h-2 bg-gradient-to-r from-blue-500 to-violet-600" />
+            <div className="p-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Date & Time */}
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Appointment Date</p>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-5 h-5 text-primary" />
+                    <p className="text-xl font-bold">{format(new Date(mySlot.startTime), 'PPP')}</p>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Time Slot</p>
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-5 h-5 text-primary" />
+                    <p className="text-xl font-bold">
+                      {format(new Date(mySlot.startTime), 'p')} – {format(new Date(mySlot.endTime), 'p')}
+                    </p>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Format</p>
+                  <div className="flex items-center gap-2">
+                    <Video className="w-5 h-5 text-primary" />
+                    <p className="text-xl font-bold">Google Meet</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Meet Link */}
+              {mySlot.meetLink && (
+                <div className="mt-6 p-4 bg-blue-50 border border-blue-100 rounded-2xl flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-sm flex-shrink-0">
+                    <Video className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-bold text-blue-900">Join Meeting Link</p>
+                    <p className="text-sm text-blue-700 truncate">{mySlot.meetLink}</p>
+                  </div>
+                  <a href={mySlot.meetLink} target="_blank" rel="noopener noreferrer">
+                    <Button className="bg-blue-600 hover:bg-blue-700 text-white gap-2">
+                      <ExternalLink className="w-4 h-4" /> Join
+                    </Button>
+                  </a>
+                </div>
+              )}
+
+              {/* Document download if available */}
+              {mySlot.documentUrl && (
+                <div className="mt-4 p-4 bg-secondary/10 rounded-2xl flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm flex-shrink-0">
+                    <FileDown className="w-5 h-5 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-bold">Official Documents</p>
+                    <p className="text-sm text-muted-foreground">Download your visa appointment documents.</p>
+                  </div>
+                  <a href={mySlot.documentUrl} target="_blank" rel="noopener noreferrer">
+                    <Button variant="outline" className="gap-2">
+                      <Download className="w-4 h-4" /> Download
+                    </Button>
+                  </a>
+                </div>
+              )}
+            </div>
+          </Card>
+        )}
+
+        {/* Slot Picker (if not booked) */}
+        {!hasBooked && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold">Available Appointment Slots</h2>
+              <span className="text-sm text-muted-foreground">{availableSlots.length} slots available</span>
+            </div>
+
+            {availableSlots.length === 0 ? (
+              <Card className="p-12 text-center border-2 border-dashed">
+                <Globe className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-30" />
+                <h3 className="font-bold text-lg">No Slots Available</h3>
+                <p className="text-muted-foreground mt-1">Our team is scheduling new appointment slots. Please check back shortly.</p>
+              </Card>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {availableSlots.map((slot) => (
+                  <Card
+                    key={slot.id}
+                    onClick={() => setSelectedSlot(slot.id)}
+                    className={`p-5 cursor-pointer transition-all duration-200 hover:shadow-lg border-2 ${selectedSlot === slot.id ? 'border-primary bg-primary/5 shadow-lg' : 'border-transparent hover:border-primary/30'}`}
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${selectedSlot === slot.id ? 'bg-primary' : 'bg-secondary'}`}>
+                        <Calendar className={`w-5 h-5 ${selectedSlot === slot.id ? 'text-white' : 'text-muted-foreground'}`} />
+                      </div>
+                      {selectedSlot === slot.id && (
+                        <CheckCircle2 className="w-5 h-5 text-primary" />
+                      )}
+                    </div>
+                    <p className="font-bold text-foreground">{format(new Date(slot.startTime), 'EEEE, PPP')}</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {format(new Date(slot.startTime), 'p')} – {format(new Date(slot.endTime), 'p')}
+                    </p>
+                    <div className="mt-3 flex items-center gap-1.5 text-xs font-medium text-green-600">
+                      <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                      Available
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+
+            {availableSlots.length > 0 && (
+              <div className="flex justify-end">
+                <Button
+                  size="lg"
+                  onClick={handleBookSlot}
+                  disabled={!selectedSlot || booking}
+                  className="gap-3 shadow-lg"
+                >
+                  {booking ? <Loader2 className="w-5 h-5 animate-spin" /> : <Calendar className="w-5 h-5" />}
+                  Confirm Appointment
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Instructions */}
+        <Card className="p-6 bg-secondary/10 border-none rounded-2xl">
+          <h3 className="font-bold mb-4 flex items-center gap-2">
+            <AlertCircle className="w-5 h-5 text-primary" /> Before Your Appointment
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {[
+              'Ensure you have a stable internet connection for the video call.',
+              'Keep all original documents ready (passport, photos, form copies).',
+              'Join the meeting 5 minutes before the scheduled time.',
+              'Dress professionally as you would for an in-person interview.',
+              'Have your work permit document ready to share on screen if requested.',
+              'Test your camera and microphone before the appointment.',
+            ].map((tip, i) => (
+              <div key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0" />
+                {tip}
+              </div>
+            ))}
           </div>
         </Card>
 
-        <Card className="p-6">
-          <p className="text-sm text-muted-foreground">
-            Once work permit is approved, we will assist you with visa application procedures, documentation, and support throughout the process.
-          </p>
-        </Card>
+        {hasBooked && (
+          <div className="flex justify-end">
+            <Link href="/dashboard/travel">
+              <Button variant="outline" className="gap-2">
+                Next: Travel Arrangements <ChevronRight className="w-4 h-4" />
+              </Button>
+            </Link>
+          </div>
+        )}
       </div>
     </StudentLayout>
   )

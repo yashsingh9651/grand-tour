@@ -4,10 +4,11 @@ import { useEffect, useMemo, useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Loader2, User, Briefcase, GraduationCap } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 
 const fallbackPageContent = {
   title: 'Build Your Editorial Profile',
-  subtitle: 'Phase 2: Defining your academic and professional coordinates.',
+  subtitle: 'Phase 1: Defining your academic and professional coordinates.',
   blocks: [
     {
       id: 'section-personal-credentials',
@@ -20,14 +21,13 @@ const fallbackPageContent = {
     },
     {
       id: 'full-name',
-      type: 'user',
+      type: 'text',
       label: 'Full Legal Name',
       fieldKey: 'fullName',
-      valueSource: 'user.fullName',
+      placeholder: 'e.g. John Doe',
       section: 'Personal Credentials',
       column: 'left',
       order: 2,
-      disabled: true,
     },
     {
       id: 'primary-email',
@@ -164,9 +164,9 @@ const normalizeFieldValue = (field: any, value: any) => {
   return value
 }
 
-const extractPersistedValue = (field: any, application: any) => {
+const extractPersistedValue = (field: any, application: any, sessionUser?: any) => {
   if (field.type === 'user') {
-    return resolveUserValue(field, application)
+    return resolveUserValue(field, application, sessionUser)
   }
 
   const persistedData = application?.data || {}
@@ -174,10 +174,16 @@ const extractPersistedValue = (field: any, application: any) => {
     return persistedData[field.fieldKey]
   }
 
+  if (field.fieldKey === 'fullName') {
+    return resolveUserValue(field, application, sessionUser)
+  }
+
   return application?.[field.fieldKey]
 }
 
 export function ProfileBuilderStep({ application, onSubmit, submitting, pageContent }: any) {
+  const { data: session } = useSession()
+  const sessionUser = session?.user
   const resolvedPageContent = pageContent || fallbackPageContent
   const [formData, setFormData] = useState<Record<string, any>>({})
 
@@ -193,13 +199,13 @@ export function ProfileBuilderStep({ application, onSubmit, submitting, pageCont
     pageFields.forEach((field: any) => {
       if (!field.fieldKey) return
 
-      const persistedValue = extractPersistedValue(field, application)
+      const persistedValue = extractPersistedValue(field, application, sessionUser)
       const fallbackValue = persistedValue !== undefined && persistedValue !== null ? persistedValue : field.defaultValue ?? ''
       initialData[field.fieldKey] = normalizeFieldValue(field, fallbackValue)
     })
 
     setFormData(initialData)
-  }, [application, pageFields])
+  }, [application, pageFields, sessionUser])
 
   const sections = useMemo(() => {
     const groups: Array<{ section: string; column: string; fields: any[] }> = []
@@ -341,6 +347,7 @@ export function ProfileBuilderStep({ application, onSubmit, submitting, pageCont
               onFieldChange={handleFieldChange}
               resolveUserValue={resolveUserValue}
               application={application}
+              sessionUser={sessionUser}
             />
           ))}
         </div>
@@ -357,6 +364,7 @@ export function ProfileBuilderStep({ application, onSubmit, submitting, pageCont
               onFieldChange={handleFieldChange}
               resolveUserValue={resolveUserValue}
               application={application}
+              sessionUser={sessionUser}
             />
           ))}
         </div>
@@ -389,29 +397,34 @@ export function ProfileBuilderStep({ application, onSubmit, submitting, pageCont
   )
 }
 
-function resolveUserValue(field: any, application: any) {
+function resolveUserValue(field: any, application: any, sessionUser?: any) {
   const source = field.valueSource || ''
 
+  const user = application?.user || sessionUser
+
   if (source === 'user.fullName') {
-    return `${application?.user?.firstName || ''} ${application?.user?.lastName || ''}`.trim()
+    if (user?.firstName || user?.lastName) {
+      return `${user.firstName || ''} ${user.lastName || ''}`.trim()
+    }
+    return user?.name || ''
   }
 
   if (source === 'user.email') {
-    return application?.user?.email || ''
+    return user?.email || ''
   }
 
   if (source === 'user.firstName') {
-    return application?.user?.firstName || ''
+    return user?.firstName || user?.name?.split(' ')[0] || ''
   }
 
   if (source === 'user.lastName') {
-    return application?.user?.lastName || ''
+    return user?.lastName || user?.name?.split(' ').slice(1).join(' ') || ''
   }
 
   return field.defaultValue || ''
 }
 
-function SectionCard({ title, icon: Icon, accentClass, fields, formData, onFieldChange, resolveUserValue, application }: any) {
+function SectionCard({ title, icon: Icon, accentClass, fields, formData, onFieldChange, resolveUserValue, application, sessionUser }: any) {
   const wordCount = (formData.statementOfPurpose || '').trim().split(/\s+/).filter((word: string) => word.length > 0).length
 
   return (
@@ -429,7 +442,7 @@ function SectionCard({ title, icon: Icon, accentClass, fields, formData, onField
             {field.type === 'user' && (
               <input
                 type="text"
-                value={resolveUserValue(field, application)}
+                value={resolveUserValue(field, application, sessionUser)}
                 disabled
                 className="w-full bg-[#F5F5F5] h-12 rounded-xl text-[#1A1A1A] font-medium px-4 border-none outline-none opacity-60 cursor-not-allowed"
               />

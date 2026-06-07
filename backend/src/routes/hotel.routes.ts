@@ -6,7 +6,8 @@ import {
   deleteHotel, 
   getCandidatesAtHotelStep, 
   assignHotel, 
-  getMyAssignment 
+  getMyAssignment,
+  respondToAssignment,
 } from '../controllers/hotel.controller';
 import { requireAuth, restrictTo } from '../middlewares/auth.middleware';
 
@@ -14,6 +15,7 @@ const router = Router();
 
 // Student routes
 router.get('/my-assignment', requireAuth, getMyAssignment);
+router.post('/respond', requireAuth, respondToAssignment);
 
 // Admin routes
 router.get('/', requireAuth, restrictTo('ADMIN', 'SUPER_ADMIN'), getHotels);

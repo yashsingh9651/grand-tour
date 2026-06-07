@@ -62,20 +62,29 @@ export const approvePayment = async (req: Request, res: Response) => {
     (req as any).user?.id
   );
 
-  // If payment is completed, move application to hotel step
+  // If payment is completed, move application to the correct next step
   if (status === 'COMPLETED') {
     const application = await prisma.application.findFirst({
       where: { userId: payment.userId }
     });
     
     if (application) {
+      // Determine next step based on payment description
+      const desc = (payment.description || '').toLowerCase();
+      let nextStep = 'hotel'; // default (payment1)
+      if (desc.includes('payment2') || desc.includes('2nd installment') || desc.includes('hotel')) {
+        nextStep = 'contract';
+      } else if (desc.includes('payment3') || desc.includes('3rd installment') || desc.includes('contract')) {
+        nextStep = 'workpermit';
+      }
+
       await prisma.application.update({
         where: { id: application.id },
-        data: { currentStepId: 'hotel' }
+        data: { currentStepId: nextStep }
       });
       
       await activityService.log(
-        'Application moved to Hotel Allocation step',
+        `Application moved to ${nextStep} step`,
         'APPLICATION_MOVE',
         application.id,
         (req as any).user?.id
@@ -88,3 +97,4 @@ export const approvePayment = async (req: Request, res: Response) => {
     data: payment,
   });
 };
+

@@ -1,6 +1,5 @@
 "use client";
-
-import { signIn, useSession } from "next-auth/react";
+import { signIn, useSession, getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Loader2, Sparkles, Terminal, ShieldCheck, Megaphone, Settings, HelpCircle, GraduationCap, Globe2, ArrowLeft } from "lucide-react";
@@ -12,7 +11,7 @@ const NavItem = ({ icon, label, active = false }: { icon: React.ReactNode; label
     <button
       className={`w-full flex items-center text-black gap-3 px-4 py-3 rounded-xl transition-colors ${
         active 
-          ? "bg-[#D0FB3B] " 
+          ? "bg-[#D0FB3B]" 
           : " cursor-not-allowed"
       }`}
     >
@@ -93,7 +92,13 @@ export default function Home() {
         toast.error("Invalid credentials");
       } else {
         toast.success("Welcome back!");
-        router.push("/dashboard");
+        const session = await getSession();
+        const user = session?.user as any;
+        if (user?.role === "SUPER_ADMIN" || user?.role === "ADMIN") {
+          router.push("/admin");
+        } else {
+          router.push("/dashboard");
+        }
       }
     } catch (error) {
       toast.error("Authentication error");
@@ -149,7 +154,13 @@ export default function Home() {
         toast.error("Invalid OTP");
       } else {
         toast.success("Verification successful!");
-        router.push("/dashboard");
+        const session = await getSession();
+        const user = session?.user as any;
+        if (user?.role === "SUPER_ADMIN" || user?.role === "ADMIN") {
+          router.push("/admin");
+        } else {
+          router.push("/dashboard");
+        }
       }
     } catch (error) {
       toast.error("Verification error");

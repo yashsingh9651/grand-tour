@@ -4,7 +4,7 @@ const defaultPageContentByPageKey: Record<string, any> = {
   application: {
     pageKey: 'application',
     title: 'Build Your Editorial Profile',
-    subtitle: 'Phase 2: Defining your academic and professional coordinates.',
+    subtitle: 'Phase 1: Defining your academic and professional coordinates.',
     blocks: [
       {
         id: 'section-personal-credentials',
@@ -17,14 +17,13 @@ const defaultPageContentByPageKey: Record<string, any> = {
       },
       {
         id: 'full-name',
-        type: 'user',
+        type: 'text',
         label: 'Full Legal Name',
         fieldKey: 'fullName',
-        valueSource: 'user.fullName',
+        placeholder: 'e.g. John Doe',
         section: 'Personal Credentials',
         column: 'left',
         order: 2,
-        disabled: true,
       },
       {
         id: 'primary-email',

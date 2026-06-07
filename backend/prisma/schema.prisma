@@ -86,6 +86,8 @@ model Application {
   payment1   Payment? @relation("Payment1", fields: [payment1Id], references: [id])
   payment2Id String?  @unique
   payment2   Payment? @relation("Payment2", fields: [payment2Id], references: [id])
+  payment3Id String?  @unique
+  payment3   Payment? @relation("Payment3", fields: [payment3Id], references: [id])
 
   notes         String?
   data          Json?
@@ -99,6 +101,9 @@ model Application {
   payments   Payment[]
   interviewSlot InterviewSlot?
   hotelAssignment HotelAssignment?
+  workPermit    WorkPermit?
+  visaSlot      VisaSlot?
+  travelDocuments TravelDocument[]
 }
 
 model Workflow {
@@ -124,6 +129,7 @@ model Payment {
   screenshotUrl String?
   applicationAsPayment1 Application? @relation("Payment1")
   applicationAsPayment2 Application? @relation("Payment2")
+  applicationAsPayment3 Application? @relation("Payment3")
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 }
@@ -226,13 +232,52 @@ model Hotel {
 }
 
 model HotelAssignment {
+  id              String      @id @default(uuid())
+  hotelId         String
+  hotel           Hotel       @relation(fields: [hotelId], references: [id])
+  applicationId   String      @unique
+  application     Application @relation(fields: [applicationId], references: [id])
+  checkIn         DateTime
+  checkOut        DateTime
+  studentResponse String?     // ACCEPTED | DECLINED | null
+  responseNote    String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model WorkPermit {
   id            String      @id @default(uuid())
-  hotelId       String
-  hotel         Hotel       @relation(fields: [hotelId], references: [id])
   applicationId String      @unique
   application   Application @relation(fields: [applicationId], references: [id])
-  checkIn       DateTime
-  checkOut      DateTime
+  documentUrl   String?
+  status        String      @default("PENDING") // PENDING | ISSUED
+  notes         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model VisaSlot {
+  id            String      @id @default(uuid())
+  startTime     DateTime
+  endTime       DateTime
+  capacity      Int         @default(1)
+  isBooked      Boolean     @default(false)
+  applicationId String?     @unique
+  application   Application? @relation(fields: [applicationId], references: [id])
+  meetLink      String?
+  documentUrl   String?     // Admin-uploaded document for this slot
+  notes         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model TravelDocument {
+  id            String      @id @default(uuid())
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id])
+  name          String
+  url           String
+  isPublished   Boolean     @default(false)
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 }

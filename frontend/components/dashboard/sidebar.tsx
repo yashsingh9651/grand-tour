@@ -21,6 +21,9 @@ import {
   HelpCircle,
   Workflow,
   ClipboardList,
+  Briefcase,
+  Stamp,
+  Plane,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useState, useEffect } from "react"
@@ -58,6 +61,9 @@ const ALL_MENU_ITEMS: MenuItem[] = [
   { icon: Calendar, label: "Interviews", href: "/admin/interviews", feature: "interviews" },
   { icon: FileText, label: "Documents", href: "/admin/documents", feature: "documents" },
   { icon: CreditCard, label: "Payments", href: "/admin/payments", feature: "payments", badge: "New" },
+  { icon: Briefcase, label: "Work Permits", href: "/admin/workpermit", feature: "workpermit" },
+  { icon: Stamp, label: "Visa", href: "/admin/visa", feature: "visa" },
+  { icon: Plane, label: "Travel", href: "/admin/travel", feature: "travel" },
   { icon: Users, label: "Users", href: "/admin/users", feature: "users" },
   { icon: BarChart3, label: "Reports", href: "/admin/reports", feature: "reports" },
   { icon: Bell, label: "Notifications", href: "/admin/notifications", feature: "notifications" },
