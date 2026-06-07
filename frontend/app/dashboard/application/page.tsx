@@ -39,15 +39,15 @@ export default function ApplicationPage() {
     fetchData()
   }, [])
 
-  const handleSubmit = async (formData: any, overrideApp?: any) => {
+  const handleSubmit = async (formData: any, overrideApp?: any, shouldAdvance = true) => {
     toast.info('Saving your progress...')
     try {
       setSubmitting(true)
 
       const appPayload = overrideApp || application || {}
 
-      let nextStepId = 'application'
-      if (workflow?.steps && workflow.steps.length > 0) {
+      let nextStepId = application?.currentStepId || 'application'
+      if (shouldAdvance && workflow?.steps && workflow.steps.length > 0) {
         const currentStepIdx = workflow.steps.findIndex((s: any) =>
           s.id === 'application' || s.name?.toLowerCase().includes('application')
         )
@@ -68,7 +68,7 @@ export default function ApplicationPage() {
       setApplication(newApp)
       toast.success('Information saved!')
 
-      if (nextStepId !== 'application') {
+      if (shouldAdvance && nextStepId !== 'application') {
         router.push(`/dashboard/${nextStepId}`)
       }
     } catch (error: any) {

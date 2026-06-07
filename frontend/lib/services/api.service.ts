@@ -19,14 +19,27 @@ export const userService = {
   },
 };
 
+let getMyPromise: Promise<any> | null = null;
+
 export const applicationService = {
   getAll: async () => {
     const response = await apiClient.get('/api/applications');
     return response.data.data;
   },
   getMy: async () => {
-    const response = await apiClient.get('/api/applications/my');
-    return response.data.data;
+    if (getMyPromise) return getMyPromise;
+
+    getMyPromise = apiClient.get('/api/applications/my')
+      .then(response => {
+        getMyPromise = null;
+        return response.data.data;
+      })
+      .catch(error => {
+        getMyPromise = null;
+        throw error;
+      });
+
+    return getMyPromise;
   },
   create: async (data: any) => {
     const response = await apiClient.post('/api/applications', data);
@@ -65,14 +78,28 @@ export const applicationPageContentService = {
   },
 };
 
+let getMyInterviewPromise: Promise<any> | null = null;
+let getAvailableSlotsPromise: Promise<any> | null = null;
+
 export const interviewService = {
   getAll: async () => {
     const response = await apiClient.get('/api/interviews');
     return response.data.data || response.data;
   },
   getMy: async () => {
-    const response = await apiClient.get('/api/interviews/my');
-    return response.data.data || response.data;
+    if (getMyInterviewPromise) return getMyInterviewPromise;
+
+    getMyInterviewPromise = apiClient.get('/api/interviews/my')
+      .then(response => {
+        getMyInterviewPromise = null;
+        return response.data.data || response.data;
+      })
+      .catch(error => {
+        getMyInterviewPromise = null;
+        throw error;
+      });
+
+    return getMyInterviewPromise;
   },
   schedule: async (data: any) => {
     const response = await apiClient.post('/api/interviews', data);
@@ -92,8 +119,19 @@ export const interviewService = {
     return response.data;
   },
   getAvailableSlots: async () => {
-    const response = await apiClient.get('/api/interviews/slots/available');
-    return response.data;
+    if (getAvailableSlotsPromise) return getAvailableSlotsPromise;
+
+    getAvailableSlotsPromise = apiClient.get('/api/interviews/slots/available')
+      .then(response => {
+        getAvailableSlotsPromise = null;
+        return response.data;
+      })
+      .catch(error => {
+        getAvailableSlotsPromise = null;
+        throw error;
+      });
+
+    return getAvailableSlotsPromise;
   },
   generateSlots: async (startDate: string, endDate: string, bufferTime: number = 0) => {
     const response = await apiClient.post('/api/interviews/slots/generate', { startDate, endDate, bufferTime });
@@ -124,10 +162,23 @@ export const interviewService = {
 
 
 
+let getWorkflowPromise: Promise<any> | null = null;
+
 export const workflowService = {
   get: async () => {
-    const response = await apiClient.get('/api/workflow');
-    return response.data.data;
+    if (getWorkflowPromise) return getWorkflowPromise;
+
+    getWorkflowPromise = apiClient.get('/api/workflow')
+      .then(response => {
+        getWorkflowPromise = null;
+        return response.data.data;
+      })
+      .catch(error => {
+        getWorkflowPromise = null;
+        throw error;
+      });
+
+    return getWorkflowPromise;
   },
   update: async (data: any) => {
     const response = await apiClient.put('/api/workflow', data);

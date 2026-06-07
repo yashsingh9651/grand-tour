@@ -3,6 +3,21 @@ import { getSession } from 'next-auth/react';
 
 const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
+let cachedSessionPromise: Promise<any> | null = null;
+
+const getCachedSession = () => {
+  if (cachedSessionPromise) return cachedSessionPromise;
+
+  cachedSessionPromise = getSession();
+
+  // Clear cache after 5 seconds to get fresh session, but deduplicate concurrent calls
+  setTimeout(() => {
+    cachedSessionPromise = null;
+  }, 5000);
+
+  return cachedSessionPromise;
+};
+
 const apiClient = axios.create({
   baseURL,
   headers: {
@@ -13,7 +28,7 @@ const apiClient = axios.create({
 // Request Interceptor to add Auth Token
 apiClient.interceptors.request.use(
   async (config) => {
-    const session = await getSession();
+    const session = await getCachedSession();
     let token = (session as any)?.backendToken || (session as any)?.user?.token;
     if (!token && typeof window !== 'undefined') {
       token = localStorage.getItem('token');

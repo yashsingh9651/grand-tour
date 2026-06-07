@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Loader2, User, Briefcase, GraduationCap } from 'lucide-react'
 import { useSession } from 'next-auth/react'
+import { toast } from 'sonner'
 
 const fallbackPageContent = {
   title: 'Build Your Editorial Profile',
@@ -268,7 +269,26 @@ export function ProfileBuilderStep({ application, onSubmit, submitting, pageCont
       data: dynamicData,
     }
 
-    onSubmit({}, updatedApp)
+    const missingRequiredFields = pageFields.filter((field: any) => {
+      if (!field.fieldKey || field.type === 'section' || field.type === 'user' || field.enabled === false || field.required === false) {
+        return false
+      }
+      const value = formData[field.fieldKey]
+      if (field.type === 'checkbox') {
+        return !value
+      }
+      if (typeof value === 'number') {
+        return value === undefined || value === null || value === 0 || Number.isNaN(value)
+      }
+      return value === undefined || value === null || String(value).trim() === ''
+    })
+
+    if (missingRequiredFields.length > 0) {
+      const missingLabels = missingRequiredFields.map((f: any) => f.label).join(', ')
+      toast.warning(`Progress saved as draft, but please fill in all required fields to advance: ${missingLabels}`)
+    }
+
+    onSubmit({}, updatedApp, missingRequiredFields.length === 0)
   }
 
   const wordCount = (formData.statementOfPurpose || '').trim().split(/\s+/).filter((word: string) => word.length > 0).length

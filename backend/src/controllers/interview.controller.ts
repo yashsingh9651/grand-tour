@@ -1,9 +1,7 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../config/db';
 import { google } from 'googleapis';
 import logger from '../utils/logger';
-
-const prisma = new PrismaClient();
 
 const normalizePrivateKey = (value?: string) => (value || '').replace(/\\n/g, '\n').trim();
 

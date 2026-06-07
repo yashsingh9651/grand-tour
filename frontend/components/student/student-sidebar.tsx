@@ -1,8 +1,10 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
+import { applicationService } from '@/lib/services/api.service'
 import {
   Sparkles,
   Calendar,
@@ -40,11 +42,11 @@ const NAV_ITEMS = [
   { icon: Sparkles, label: 'Application', href: '/dashboard/application', stepKey: 'application' },
   { icon: FileText, label: 'Documents', href: '/dashboard/documents', stepKey: 'documents' },
   { icon: Calendar, label: 'Interview Hub', href: '/dashboard/interview', stepKey: 'interview' },
-  { icon: Banknote, label: 'Financial Center', href: '/dashboard/payment1', stepKey: 'payment1', badge: 'New' },
+  { icon: Banknote, label: 'Payment 1', href: '/dashboard/payment1', stepKey: 'payment1', badge: 'New' },
   { icon: Building2, label: 'Hotel', href: '/dashboard/hotel', stepKey: 'hotel' },
   { icon: Banknote, label: 'Payment 2', href: '/dashboard/payment2', stepKey: 'payment2' },
   { icon: ClipboardCheck, label: 'Contract', href: '/dashboard/contract', stepKey: 'contract' },
-  { icon: Banknote, label: 'Payment 3', href: '/dashboard/payment3', stepKey: 'payment3' },
+  { icon: Banknote, label: 'Final Payment', href: '/dashboard/payment3', stepKey: 'payment3' },
   { icon: Briefcase, label: 'Work Permit', href: '/dashboard/workpermit', stepKey: 'workpermit' },
   { icon: Stamp, label: 'Visa', href: '/dashboard/visa', stepKey: 'visa' },
   { icon: Plane, label: 'Travel', href: '/dashboard/travel', stepKey: 'travel' },
@@ -52,7 +54,26 @@ const NAV_ITEMS = [
 
 export function StudentSidebar({ currentStep }: { currentStep?: string }) {
   const pathname = usePathname()
-  const currentStepOrder = WORKFLOW_STEP_ORDER[currentStep || 'application'] ?? 0
+  const { data: session } = useSession()
+  const [dbCurrentStepId, setDbCurrentStepId] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!session?.user?.email) return
+    const fetchApp = async () => {
+      try {
+        const app = await applicationService.getMy()
+        if (app && app.currentStepId) {
+          setDbCurrentStepId(app.currentStepId)
+        }
+      } catch (err) {
+        console.error('Failed to fetch application current step', err)
+      }
+    }
+    fetchApp()
+  }, [session?.user?.email, pathname])
+
+  const activeStepId = dbCurrentStepId || currentStep || 'application'
+  const currentStepOrder = WORKFLOW_STEP_ORDER[activeStepId] ?? 0
 
   return (
     <aside
