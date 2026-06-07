@@ -3,12 +3,13 @@
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
-import { ShieldCheck, UploadCloud, Building2, Landmark, WalletCards, Plus, Trash2, Save, CircleDollarSign, CalendarDays, ReceiptText } from 'lucide-react'
+import { ShieldCheck, UploadCloud, Building2, Landmark, WalletCards, Plus, Trash2, Save, CircleDollarSign, CalendarDays, ReceiptText, FileText } from 'lucide-react'
 import { workflowService } from '@/lib/services/api.service'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { Label } from '@/components/ui/label'
 import UploadPopup from '@/components/UploadPopup'
 
 const defaultPaymentConfig = {
@@ -20,6 +21,8 @@ const defaultPaymentConfig = {
   merchant: '',
   reference: '',
   qrCodeUrl: '',
+  instructions: '',
+  documents: [] as Array<{ name: string; url: string }>,
   installments: [] as Array<{ label: string; amount: number; dueDate: string }>,
 }
 
@@ -30,6 +33,7 @@ export function PaymentStepEditor() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [isQrUploadOpen, setIsQrUploadOpen] = useState(false)
+  const [isDocUploadOpen, setIsDocUploadOpen] = useState(false)
 
   useEffect(() => {
     const loadWorkflow = async () => {
@@ -99,6 +103,19 @@ export function PaymentStepEditor() {
     toast.success('QR image uploaded successfully')
   }
 
+  const handleDocUploadComplete = (doc: any) => {
+    const uploadedUrl = doc.url || doc.data?.url || ''
+    if (!uploadedUrl) return
+    syncPaymentConfig((current) => ({
+      ...current,
+      documents: [
+        ...(current.documents || []),
+        { name: doc.name || doc.fileName || 'Attachment.pdf', url: uploadedUrl }
+      ]
+    }))
+    toast.success('Document attached successfully')
+  }
+
   const handleAddInstallment = () => {
     syncPaymentConfig((current) => ({
       ...current,
@@ -133,6 +150,8 @@ export function PaymentStepEditor() {
         isPaymentStep: true,
         paymentConfig: {
           ...(paymentStep.paymentConfig || defaultPaymentConfig),
+          instructions: paymentStep.paymentConfig?.instructions || '',
+          documents: paymentStep.paymentConfig?.documents || [],
           installments: (paymentStep.paymentConfig?.installments || []).map((item: any) => ({
             label: item.label || '',
             amount: Number(item.amount || 0),
@@ -418,6 +437,72 @@ export function PaymentStepEditor() {
         </Card>
       </div>
 
+      {/* Student Resources & Instructions Card */}
+      <Card className="p-6 border border-border/60 bg-white">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Student Guide & resources</p>
+          <h3 className="mt-1 text-lg font-semibold text-slate-900">Instructions & Attachments</h3>
+          <p className="mt-1 text-xs text-slate-500">
+            Provide additional payment guidelines and downloadable reference files for the student's dashboard.
+          </p>
+        </div>
+
+        <div className="mt-6 space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="instructions" className="text-sm font-medium text-slate-700">Payment Instructions</Label>
+            <textarea
+              id="instructions"
+              rows={4}
+              value={paymentConfig.instructions || ''}
+              onChange={(e) => syncPaymentConfig((current) => ({ ...current, instructions: e.target.value }))}
+              placeholder="e.g., Transfer the installment amount and upload the screenshot. Make sure to input the correct UTR."
+              className="w-full rounded-xl border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            />
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-semibold text-slate-900">Downloadable Resources</span>
+              <Button type="button" variant="outline" size="sm" className="gap-2" onClick={() => setIsDocUploadOpen(true)}>
+                <UploadCloud className="w-4 h-4" />
+                Upload Document
+              </Button>
+            </div>
+
+            {(!paymentConfig.documents || paymentConfig.documents.length === 0) ? (
+              <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-4 text-xs text-slate-500">
+                No supplementary files uploaded. Add reference documents (e.g. invoice template, fee structure PDF) for the student.
+              </div>
+            ) : (
+              <div className="grid gap-2 sm:grid-cols-2">
+                {paymentConfig.documents.map((doc: any, index: number) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <FileText className="w-4 h-4 text-primary shrink-0" />
+                      <span className="text-xs font-medium text-slate-700 truncate">{doc.name}</span>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-slate-400 hover:text-red-600 shrink-0"
+                      onClick={() => {
+                        syncPaymentConfig((current) => ({
+                          ...current,
+                          documents: current.documents.filter((_: any, idx: number) => idx !== index)
+                        }))
+                      }}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </Card>
+
       <Card className="p-5 border border-border/60 bg-slate-50/70">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
@@ -426,7 +511,7 @@ export function PaymentStepEditor() {
           </div>
           <Button onClick={handleSave} disabled={saving} className="gap-2">
             {saving ? <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" /> : <Save className="w-4 h-4" />}
-            {saving ? 'Saving...' : 'Save Payment Step'}
+            {saving ? 'Saving...' : 'Save Payment & Guide Step'}
           </Button>
         </div>
       </Card>
@@ -438,6 +523,15 @@ export function PaymentStepEditor() {
         token={(session as any)?.backendToken || ''}
         documentType="payment_qr"
         documentName="Payment QR Image"
+      />
+
+      <UploadPopup
+        isOpen={isDocUploadOpen}
+        onClose={() => setIsDocUploadOpen(false)}
+        onUploadComplete={handleDocUploadComplete}
+        token={(session as any)?.backendToken || ''}
+        documentType="payment_document"
+        documentName="Payment Instruction Document"
       />
     </div>
   )

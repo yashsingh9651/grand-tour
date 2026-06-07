@@ -123,6 +123,16 @@ class EmailService {
     });
   }
 
+  async sendWorkPermitIssuedEmail(to: string, data: {
+    studentName: string,
+    applicationId: string
+  }) {
+    return this.sendEmail(to, 'WORK_PERMIT_ISSUED', {
+      studentName: data.studentName,
+      applicationId: data.applicationId
+    });
+  }
+
   async sendOtpEmail(to: string, otp: string) {
     try {
       const mailOptions = {

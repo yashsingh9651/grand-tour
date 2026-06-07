@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { prisma } from '../config/db';
 import activityService from '../services/activity.service';
 import applicationService from '../services/application.service';
+import emailService from '../services/email.service';
 
 // Admin: Upload work permit for a student
 export const uploadWorkPermit = async (req: Request, res: Response) => {
@@ -23,10 +24,23 @@ export const uploadWorkPermit = async (req: Request, res: Response) => {
   }
 
   // Move application to visa step
-  await prisma.application.update({
+  const application = await prisma.application.update({
     where: { id: applicationId },
     data: { currentStepId: 'visa' },
+    include: { user: true }
   });
+
+  // Notify student via email
+  if (application && application.user) {
+    try {
+      await emailService.sendWorkPermitIssuedEmail(application.user.email, {
+        studentName: `${application.user.firstName} ${application.user.lastName}`,
+        applicationId: application.id,
+      });
+    } catch (error) {
+      console.error('Failed to send work permit email notification:', error);
+    }
+  }
 
   await activityService.log('Work permit uploaded and issued', 'WORK_PERMIT_ISSUED', applicationId, adminId);
 
@@ -37,7 +51,12 @@ export const uploadWorkPermit = async (req: Request, res: Response) => {
 export const getAllWorkPermits = async (req: Request, res: Response) => {
   // Fetch all applications at workpermit step or with work permit records
   const applications = await prisma.application.findMany({
-    where: { currentStepId: 'workpermit' },
+    where: {
+      OR: [
+        { currentStepId: 'workpermit' },
+        { workPermit: { isNot: null } }
+      ]
+    },
     include: {
       user: { select: { firstName: true, lastName: true, email: true } },
       workPermit: true,

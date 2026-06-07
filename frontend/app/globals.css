@@ -324,3 +324,12 @@ body {
   --font-HelveticaNowText: 'Helvetica Now Text', serif;
   --font-Inter: 'Inter', sans-serif;
 }
+
+/* Hide scrollbar track and handle while keeping scroll functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}

@@ -11,7 +11,7 @@ import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import {
   Loader2, Check, Lock, UploadCloud, Eye, X, Copy,
-  ShieldCheck, Landmark, Clock, IndianRupee, CheckCircle2, Info
+  ShieldCheck, Landmark, Clock, IndianRupee, CheckCircle2, Info, FileText
 } from 'lucide-react'
 
 export default function Payment1Page() {
@@ -386,6 +386,65 @@ export default function Payment1Page() {
             </div>
           </Card>
         )}
+        {/* Third Column: Instructions & Attachments */}
+        <Card className="p-8 border-2 border-primary/20 bg-gradient-to-br from-background to-primary/5 rounded-[2.5rem] shadow-xl">
+          <div className="space-y-6">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center">
+                <FileText className="w-6 h-6 text-primary" />
+              </div>
+              <div>
+                <h2 className="text-xl font-black">Guidelines</h2>
+                <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">Resources & Info</p>
+              </div>
+            </div>
+
+            {/* Instructions Text */}
+            <div className="space-y-3">
+              <h3 className="text-sm font-bold text-slate-800">Instructions</h3>
+              {paymentConfig.instructions ? (
+                <div className="p-4 bg-white/60 backdrop-blur-sm border border-primary/10 rounded-2xl text-xs text-slate-700 leading-relaxed whitespace-pre-wrap font-medium">
+                  {paymentConfig.instructions}
+                </div>
+              ) : (
+                <div className="p-4 bg-white/40 border border-slate-100 rounded-2xl text-xs text-slate-400 italic font-medium">
+                  No custom instructions provided by the admin.
+                </div>
+              )}
+            </div>
+
+            {/* Documents List */}
+            <div className="space-y-3">
+              <h3 className="text-sm font-bold text-slate-800">Downloadable Reference Files</h3>
+              {paymentConfig.documents && paymentConfig.documents.length > 0 ? (
+                <div className="space-y-2">
+                  {paymentConfig.documents.map((doc: any, index: number) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-white border border-primary/10 rounded-2xl hover:border-primary/20 transition-all group">
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <FileText className="w-4 h-4 text-primary shrink-0" />
+                        <span className="text-xs font-bold text-slate-700 truncate">{doc.name}</span>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 text-primary font-bold text-xs gap-1 hover:bg-primary rounded-xl shrink-0"
+                        asChild
+                      >
+                        <a href={doc.url} target="_blank" rel="noopener noreferrer" download>
+                          Download
+                        </a>
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-4 bg-white/40 border border-slate-100 rounded-2xl text-xs text-slate-400 italic font-medium">
+                  No reference files available.
+                </div>
+              )}
+            </div>
+          </div>
+        </Card>
       </div>
 
       {/* Lightbox Modal */}

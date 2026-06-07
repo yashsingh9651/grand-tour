@@ -71,6 +71,12 @@ class EmailTemplateService {
         subject: 'Application Status Update',
         body: '<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #1f2937;"> <h1 style="color: #8B48F6;">Status Updated</h1> <p>Hi {{studentName}},</p> <p>Your application status has been updated to: <strong>{{status}}</strong>.</p> <p><strong>Application ID:</strong> {{applicationId}}</p> <p><strong>Notes:</strong> {{notes}}</p> </div>',
         variables: ['studentName', 'status', 'notes', 'applicationId']
+      },
+      {
+        name: 'WORK_PERMIT_ISSUED',
+        subject: 'Work Permit Issued Successfully',
+        body: '<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #1f2937;"> <h1 style="color: #8B48F6;">Work Permit Issued</h1> <p>Hi {{studentName}},</p> <p>Your work permit has been successfully issued by the admin.</p> <p><strong>Application ID:</strong> {{applicationId}}</p> <p>Please log in to your dashboard to download it and proceed to the Visa scheduling step.</p> </div>',
+        variables: ['studentName', 'applicationId']
       }
     ];
 

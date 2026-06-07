@@ -125,7 +125,7 @@ export function Sidebar() {
 
   return (
     <aside
-      className="fixed top-0 left-0 w-56 h-screen flex flex-col lg:block"
+      className="fixed top-0 left-0 w-56 h-screen flex flex-col"
       style={{ backgroundColor: "#141414", borderRight: "1px solid #222" }}
     >
       {/* Brand */}
@@ -147,7 +147,7 @@ export function Sidebar() {
       </div>
 
       {/* Nav */}
-      <div className="flex-1 overflow-y-auto px-3 pb-4">
+      <div className="flex-1 overflow-y-auto no-scrollbar px-3 pb-4">
         {loading ? (
           <div className="flex items-center justify-center py-10">
             <Loader2 className="w-5 h-5 animate-spin" style={{ color: "#CCFF00" }} />
