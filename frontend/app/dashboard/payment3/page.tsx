@@ -182,7 +182,7 @@ export default function Payment3Page() {
       <div className="grid lg:grid-cols-3 gap-6 items-start mb-8">
 
         {/* Left Column: Payment details */}
-        <Card className="lg:col-span-2 p-8 border-2 border-primary/20 bg-gradient-to-br from-background to-primary/5 rounded-[2.5rem] shadow-xl">
+        <Card className="p-8 border-2 border-primary/20 bg-gradient-to-br from-background to-primary/5 rounded-[2.5rem] shadow-xl">
           <div className="space-y-6">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center">

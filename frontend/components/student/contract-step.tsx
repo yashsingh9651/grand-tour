@@ -26,8 +26,24 @@ export function ContractStep({ application, currentStepConfig, onSubmit, submitt
   )
 
   const config = currentStepConfig?.contractConfig || {}
+  const unsignedContractDoc = application?.documents?.find(
+    (d: any) => d.type === 'UNSIGNED_CONTRACT'
+  )
 
   const handleDownload = async () => {
+    if (unsignedContractDoc?.url) {
+      // Direct download of the student-specific unsigned contract uploaded by the admin
+      const a = document.createElement('a')
+      a.href = unsignedContractDoc.url
+      a.download = unsignedContractDoc.fileName || `${application.user?.firstName || 'Student'}_Contract`
+      a.target = '_blank'
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      toast.success('Custom contract downloaded! Please sign every page and upload below.')
+      return
+    }
+
     if (!config.templateUrl) {
       toast.error('No contract template has been uploaded by the admin yet. Please check back later.')
       return
@@ -151,7 +167,24 @@ export function ContractStep({ application, currentStepConfig, onSubmit, submitt
           </p>
 
           {/* Template URL info — shown if admin has set one */}
-          {config.templateUrl ? (
+          {unsignedContractDoc?.url ? (
+            <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 flex items-center gap-3 text-left">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-bold text-emerald-800 uppercase tracking-wider">Custom Contract Ready</p>
+                <p className="text-xs text-emerald-700 truncate mt-0.5">{unsignedContractDoc.fileName || 'Your custom contract'}</p>
+              </div>
+              <a
+                href={unsignedContractDoc.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-emerald-600 hover:text-emerald-800 flex-shrink-0"
+                title="Open in new tab"
+              >
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            </div>
+          ) : config.templateUrl ? (
             <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 flex items-center gap-3 text-left">
               <FileText className="w-5 h-5 text-amber-600 flex-shrink-0" />
               <div className="flex-1 min-w-0">
@@ -184,11 +217,15 @@ export function ContractStep({ application, currentStepConfig, onSubmit, submitt
               <p className="text-sm text-muted-foreground">Get your contract document, print and sign every page.</p>
               <Button
                 onClick={handleDownload}
-                disabled={isGenerating || !config.templateUrl}
+                disabled={isGenerating || (!config.templateUrl && !unsignedContractDoc?.url)}
                 className="w-full gap-2 rounded-xl"
               >
                 {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-                {config.templateUrl ? 'Download Contract' : 'Not Available Yet'}
+                {unsignedContractDoc?.url 
+                  ? 'Download Custom Contract' 
+                  : config.templateUrl 
+                  ? 'Download Contract' 
+                  : 'Not Available Yet'}
               </Button>
             </Card>
 

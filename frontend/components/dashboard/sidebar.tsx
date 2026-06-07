@@ -60,6 +60,7 @@ const ALL_MENU_ITEMS: MenuItem[] = [
   },
   { icon: Calendar, label: "Interviews", href: "/admin/interviews", feature: "interviews" },
   { icon: FileText, label: "Documents", href: "/admin/documents", feature: "documents" },
+  { icon: ClipboardList, label: "Contracts", href: "/admin/contracts", feature: "documents" },
   { icon: CreditCard, label: "Payments", href: "/admin/payments", feature: "payments", badge: "New" },
   { icon: Briefcase, label: "Work Permits", href: "/admin/workpermit", feature: "workpermit" },
   { icon: Stamp, label: "Visa", href: "/admin/visa", feature: "visa" },
