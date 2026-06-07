@@ -126,6 +126,25 @@ export default function InterviewPage() {
     : 'Awaiting assignment'
   const meetingLink = bookedInterview?.locationUrl || selectedSlot?.meetLink || 'Link will be shared after booking'
 
+  const DEFAULT_JOURNEY_STEPS = [
+    'application',
+    'documents',
+    'interview',
+    'payment1',
+    'hotel',
+    'payment2',
+    'contract',
+    'payment3',
+    'workpermit',
+    'visa',
+    'travel'
+  ]
+  const currentStepId = application?.currentStepId || 'interview'
+  const isPastInterview = DEFAULT_JOURNEY_STEPS.indexOf(currentStepId) > DEFAULT_JOURNEY_STEPS.indexOf('interview')
+  const resolvedStatus = (isPastInterview || bookedInterview?.status === 'COMPLETED' || bookedInterview?.status === 'APPROVED')
+    ? 'COMPLETED'
+    : (bookedInterview?.status || 'PENDING')
+
   const handleBook = async () => {
     if (!selectedSlotId || !application?.id) {
       toast.error('Select an available slot first')
@@ -184,100 +203,102 @@ export default function InterviewPage() {
       <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="grid lg:grid-cols-12 gap-8">
           <div className="lg:col-span-7 space-y-8">
-            <Card className="p-8 border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2rem] bg-white">
-              <div className="flex items-center justify-between mb-8">
-                <div>
-                  <h3 className="text-xl font-bold text-[#1A1A1A]">Schedule Your Slot</h3>
-                  <p className="text-sm text-[#666666] mt-1">Available interview times are synced directly from the backend.</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    className="w-8 h-8 flex items-center justify-center text-[#1A1A1A] hover:bg-gray-100 rounded-full transition-colors"
-                    onClick={() => setCurrentMonth((current) => new Date(current.getFullYear(), current.getMonth() - 1, 1))}
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                  </button>
-                  <div className="bg-[#F5F5F5] px-4 py-2 rounded-xl text-sm font-bold text-[#1A1A1A]">
-                    {format(currentMonth, 'MMMM yyyy')}
+            {!bookedInterview && (
+              <Card className="p-8 border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2rem] bg-white">
+                <div className="flex items-center justify-between mb-8">
+                  <div>
+                    <h3 className="text-xl font-bold text-[#1A1A1A]">Schedule Your Slot</h3>
+                    <p className="text-sm text-[#666666] mt-1">Available interview times are synced directly from the backend.</p>
                   </div>
-                  <button
-                    className="w-8 h-8 flex items-center justify-center text-[#1A1A1A] hover:bg-gray-100 rounded-full transition-colors"
-                    onClick={() => setCurrentMonth((current) => new Date(current.getFullYear(), current.getMonth() + 1, 1))}
-                  >
-                    <ChevronRight className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                <div className="grid grid-cols-7 text-center">
-                  {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map((day) => (
-                    <div key={day} className="text-[10px] font-bold tracking-widest uppercase text-gray-400">
-                      {day}
+                  <div className="flex items-center gap-2">
+                    <button
+                      className="w-8 h-8 flex items-center justify-center text-[#1A1A1A] hover:bg-gray-100 rounded-full transition-colors"
+                      onClick={() => setCurrentMonth((current) => new Date(current.getFullYear(), current.getMonth() - 1, 1))}
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                    </button>
+                    <div className="bg-[#F5F5F5] px-4 py-2 rounded-xl text-sm font-bold text-[#1A1A1A]">
+                      {format(currentMonth, 'MMMM yyyy')}
                     </div>
-                  ))}
+                    <button
+                      className="w-8 h-8 flex items-center justify-center text-[#1A1A1A] hover:bg-gray-100 rounded-full transition-colors"
+                      onClick={() => setCurrentMonth((current) => new Date(current.getFullYear(), current.getMonth() + 1, 1))}
+                    >
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-7 gap-y-6 text-center text-sm font-bold text-[#1A1A1A]">
-                  {calendarDays.map((day) => {
-                    const dayKey = format(day, 'yyyy-MM-dd')
-                    const availableCount = slotCountByDate.get(dayKey) || 0
-                    const isSelected = selectedDate ? isSameDay(day, selectedDate) : false
-                    const hasAvailableSlots = availableCount > 0
-
-                    return (
-                      <button
-                        key={dayKey}
-                        type="button"
-                        onClick={() => setSelectedDate(day)}
-                        className={`relative mx-auto flex h-12 w-12 items-center justify-center rounded-xl text-sm font-bold transition-all ${
-                          isSelected
-                            ? 'bg-[#C6F16D] text-[#1A1A1A] shadow-lg shadow-[#C6F16D]/30'
-                            : isSameMonth(day, currentMonth)
-                              ? 'text-[#1A1A1A] hover:bg-[#F5F5F5]'
-                              : 'text-gray-300'
-                        }`}
-                      >
-                        <span>{format(day, 'd')}</span>
-                        {hasAvailableSlots && (
-                          <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-1.5 w-1.5 rounded-full bg-[#C6F16D]" />
-                        )}
-                        {isToday(day) && !isSelected && <span className="absolute -top-1 right-1 h-2 w-2 rounded-full bg-[#8B5CF6]" />}
-                      </button>
-                    )
-                  })}
-                </div>
-              </div>
-
-              <div className="mt-10 pt-8 border-t border-gray-100">
-                <p className="text-[10px] font-bold tracking-widest uppercase text-gray-400 mb-4">
-                  AVAILABLE TIMES FOR {selectedDate ? format(selectedDate, 'MMM d') : 'SELECTED DATE'}
-                </p>
-
-                {slotsForSelectedDate.length > 0 ? (
-                  <div className="flex flex-wrap gap-4">
-                    {slotsForSelectedDate.map((slot) => (
-                      <button
-                        key={slot.id}
-                        type="button"
-                        onClick={() => setSelectedSlotId(slot.id)}
-                        className={`px-6 py-2.5 rounded-full border text-sm font-bold transition-colors ${
-                          selectedSlotId === slot.id
-                            ? 'bg-[#C6F16D] border-[#C6F16D] text-[#1A1A1A] shadow-md shadow-[#C6F16D]/20'
-                            : 'border-gray-200 text-[#1A1A1A] hover:border-[#C6F16D]'
-                        }`}
-                      >
-                        {format(new Date(slot.startTime), 'h:mm a')}
-                      </button>
+                <div className="space-y-6">
+                  <div className="grid grid-cols-7 text-center">
+                    {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map((day) => (
+                      <div key={day} className="text-[10px] font-bold tracking-widest uppercase text-gray-400">
+                        {day}
+                      </div>
                     ))}
                   </div>
-                ) : (
-                  <div className="rounded-2xl border border-dashed border-gray-200 px-4 py-6 text-sm text-gray-500">
-                    No interview slots are available for this date.
+
+                  <div className="grid grid-cols-7 gap-y-6 text-center text-sm font-bold text-[#1A1A1A]">
+                    {calendarDays.map((day) => {
+                      const dayKey = format(day, 'yyyy-MM-dd')
+                      const availableCount = slotCountByDate.get(dayKey) || 0
+                      const isSelected = selectedDate ? isSameDay(day, selectedDate) : false
+                      const hasAvailableSlots = availableCount > 0
+
+                      return (
+                        <button
+                          key={dayKey}
+                          type="button"
+                          onClick={() => setSelectedDate(day)}
+                          className={`relative mx-auto flex h-12 w-12 items-center justify-center rounded-xl text-sm font-bold transition-all ${
+                            isSelected
+                              ? 'bg-[#C6F16D] text-[#1A1A1A] shadow-lg shadow-[#C6F16D]/30'
+                              : isSameMonth(day, currentMonth)
+                                ? 'text-[#1A1A1A] hover:bg-[#F5F5F5]'
+                                : 'text-gray-300'
+                          }`}
+                        >
+                          <span>{format(day, 'd')}</span>
+                          {hasAvailableSlots && (
+                            <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-1.5 w-1.5 rounded-full bg-[#C6F16D]" />
+                          )}
+                          {isToday(day) && !isSelected && <span className="absolute -top-1 right-1 h-2 w-2 rounded-full bg-[#8B5CF6]" />}
+                        </button>
+                      )
+                    })}
                   </div>
-                )}
-              </div>
-            </Card>
+                </div>
+
+                <div className="mt-10 pt-8 border-t border-gray-100">
+                  <p className="text-[10px] font-bold tracking-widest uppercase text-gray-400 mb-4">
+                    AVAILABLE TIMES FOR {selectedDate ? format(selectedDate, 'MMM d') : 'SELECTED DATE'}
+                  </p>
+
+                  {slotsForSelectedDate.length > 0 ? (
+                    <div className="flex flex-wrap gap-4">
+                      {slotsForSelectedDate.map((slot) => (
+                        <button
+                          key={slot.id}
+                          type="button"
+                          onClick={() => setSelectedSlotId(slot.id)}
+                          className={`px-6 py-2.5 rounded-full border text-sm font-bold transition-colors ${
+                            selectedSlotId === slot.id
+                              ? 'bg-[#C6F16D] border-[#C6F16D] text-[#1A1A1A] shadow-md shadow-[#C6F16D]/20'
+                              : 'border-gray-200 text-[#1A1A1A] hover:border-[#C6F16D]'
+                          }`}
+                        >
+                          {format(new Date(slot.startTime), 'h:mm a')}
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="rounded-2xl border border-dashed border-gray-200 px-4 py-6 text-sm text-gray-500">
+                      No interview slots are available for this date.
+                    </div>
+                  )}
+                </div>
+              </Card>
+            )}
 
             <div className="space-y-4">
               <h3 className="text-xl font-bold text-[#1A1A1A] flex items-center gap-2">
@@ -296,12 +317,12 @@ export default function InterviewPage() {
                     <div>
                       <p className="text-sm font-bold text-[#1A1A1A]">Interview Booked</p>
                       <p className="text-[11px] text-[#666666] font-medium mt-0.5">
-                        {bookedInterview.status || 'PENDING'} • {format(new Date(bookedInterview.scheduledAt), 'MMM d, yyyy h:mm a')}
+                        {resolvedStatus} • {format(new Date(bookedInterview.scheduledAt), 'MMM d, yyyy h:mm a')}
                       </p>
                     </div>
                   </div>
                   <span className="bg-white px-3 py-1 rounded-full text-[9px] font-bold tracking-widest uppercase text-gray-500 shadow-sm border border-gray-100">
-                    {bookedInterview.status || 'SCHEDULED'}
+                    {resolvedStatus}
                   </span>
                 </div>
               ) : (
@@ -316,15 +337,21 @@ export default function InterviewPage() {
             <Card className="p-8 border-none shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-[2rem] bg-[#1A1A1A] text-white">
               <div className="flex items-center justify-between mb-8">
                 <span className="bg-[#C6F16D] text-[#1A1A1A] px-3 py-1 rounded-full text-[9px] font-bold tracking-widest uppercase">
-                  {bookedInterview ? 'BOOKED' : 'UPCOMING'}
+                  {bookedInterview ? (resolvedStatus === 'COMPLETED' ? 'COMPLETED' : 'BOOKED') : 'UPCOMING'}
                 </span>
                 <Video className="w-5 h-5 text-[#C6F16D]" />
               </div>
 
-              <h2 className="text-2xl font-bold mb-3 text-white">{bookedInterview ? 'Booked Interview' : 'Interview Session'}</h2>
+              <h2 className="text-2xl font-bold mb-3 text-white">
+                {bookedInterview 
+                  ? (resolvedStatus === 'COMPLETED' ? 'Completed Interview' : 'Booked Interview') 
+                  : 'Interview Session'}
+              </h2>
               <p className="text-sm text-gray-400 leading-relaxed mb-8">
                 {bookedInterview
-                  ? 'Your interview is onboarded. Review the booking details below and join the session when ready.'
+                  ? (resolvedStatus === 'COMPLETED'
+                      ? 'Your interview is completed and verified. You have advanced to the next step of your journey.'
+                      : 'Your interview is onboarded. Review the booking details below and join the session when ready.')
                   : 'Choose an available slot and reserve it to move your application into the interview stage.'}
               </p>
 
@@ -362,15 +389,17 @@ export default function InterviewPage() {
 
               <Button
                 onClick={bookedInterview ? handleJoinMeeting : handleBook}
-                disabled={(bookedInterview ? false : !selectedSlotId || bookingInProgress)}
+                disabled={bookedInterview ? (resolvedStatus === 'COMPLETED') : (!selectedSlotId || bookingInProgress)}
                 className="w-full bg-[#C6F16D] hover:bg-[#b5e359] text-[#1A1A1A] font-bold h-12 rounded-xl"
               >
                 {bookingInProgress ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
-                {bookedInterview ? 'Join Meeting' : bookingInProgress ? 'Booking...' : 'Book Selected Slot'}
+                {bookedInterview 
+                  ? (resolvedStatus === 'COMPLETED' ? 'Interview Completed' : 'Join Meeting') 
+                  : bookingInProgress ? 'Booking...' : 'Book Selected Slot'}
               </Button>
             </Card>
 
-            <Card className="p-8 border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2rem] bg-[#EADDFF]">
+            {/* <Card className="p-8 border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2rem] bg-[#EADDFF]">
               <h3 className="text-xl font-bold text-[#4F378B] mb-6">Prep Resources</h3>
 
               <div className="space-y-6 mb-8">
@@ -394,7 +423,7 @@ export default function InterviewPage() {
               <Button className="w-full bg-white/50 hover:bg-white text-[#4F378B] font-bold h-12 rounded-xl border-none">
                 View All Resources
               </Button>
-            </Card>
+            </Card> */}
 
             <div className="bg-[#F9F9F9] rounded-2xl p-6 border-l-4 border-[#8B5CF6]">
               <div className="flex gap-4">
