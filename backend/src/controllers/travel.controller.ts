@@ -26,10 +26,13 @@ export const publishTravelDocuments = async (req: Request, res: Response) => {
     data: { isPublished: true },
   });
 
-  // Move application to travel step
+  // Move application to travel step and set status to ACCEPTED (Approved)
   await prisma.application.update({
     where: { id: applicationId },
-    data: { currentStepId: 'travel' },
+    data: { 
+      currentStepId: 'travel',
+      status: 'ACCEPTED'
+    },
   });
 
   await activityService.log('Travel documents published', 'TRAVEL_PUBLISHED', applicationId, adminId);

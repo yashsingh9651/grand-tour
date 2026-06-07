@@ -96,6 +96,27 @@ export default function AdminVisaPage() {
     }
   }
 
+  const handleApproveBooking = async (slotId: string) => {
+    try {
+      await visaService.approveSlot(slotId)
+      toast.success('Visa appointment approved!')
+      fetchData()
+    } catch {
+      toast.error('Failed to approve visa appointment')
+    }
+  }
+
+  const handleRejectBooking = async (slotId: string) => {
+    if (!confirm('Are you sure you want to reject this visa booking? The slot will be released.')) return
+    try {
+      await visaService.rejectSlot(slotId)
+      toast.success('Visa booking rejected!')
+      fetchData()
+    } catch {
+      toast.error('Failed to reject visa booking')
+    }
+  }
+
   const bookedSlots = slots.filter(s => s.isBooked)
   const availableSlots = slots.filter(s => !s.isBooked)
 
@@ -153,9 +174,14 @@ export default function AdminVisaPage() {
                       <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary text-sm flex-shrink-0">
                         {slot.application?.user?.firstName?.[0] || '?'}
                       </div>
-                      <div className="flex-1">
-                        <p className="font-bold">{slot.application?.user?.firstName} {slot.application?.user?.lastName}</p>
-                        <p className="text-sm text-muted-foreground">{slot.application?.user?.email}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold truncate">{slot.application?.user?.firstName} {slot.application?.user?.lastName}</p>
+                        <p className="text-sm text-muted-foreground truncate">{slot.application?.user?.email}</p>
+                        {slot.meetLink && (
+                          <p className="text-xs text-blue-600 font-medium mt-1 truncate">
+                            Meet Link: <a href={slot.meetLink} target="_blank" rel="noopener noreferrer" className="underline hover:text-blue-800">{slot.meetLink}</a>
+                          </p>
+                        )}
                       </div>
                       <div className="text-center hidden md:block">
                         <p className="text-xs text-muted-foreground">Date</p>
@@ -167,7 +193,7 @@ export default function AdminVisaPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         {slot.meetLink && (
-                          <a href={slot.meetLink} target="_blank" rel="noopener noreferrer">
+                          <a href={slot.meetLink} target="_blank" rel="noopener noreferrer" className="hidden sm:inline-block">
                             <Button size="sm" variant="outline" className="gap-2 text-blue-600 border-blue-200 hover:bg-blue-50">
                               <Video className="w-4 h-4" /> Meet
                             </Button>
@@ -176,9 +202,30 @@ export default function AdminVisaPage() {
                         <Button size="sm" variant="ghost" className="text-primary" onClick={() => { setDocSlotId(slot.id); setShowDocModal(true) }}>
                           <FileText className="w-4 h-4" />
                         </Button>
-                        <span className="px-3 py-1 bg-green-50 text-green-700 text-xs font-bold rounded-full border border-green-200">
-                          Booked
-                        </span>
+                        
+                        {slot.application?.currentStepId === 'travel' ? (
+                          <span className="px-3 py-1.5 bg-green-50 text-green-700 text-xs font-bold rounded-full border border-green-200">
+                            Approved
+                          </span>
+                        ) : (
+                          <div className="flex gap-1.5">
+                            <Button
+                              size="sm"
+                              onClick={() => handleApproveBooking(slot.id)}
+                              className="bg-green-600 hover:bg-green-700 text-white font-bold text-xs"
+                            >
+                              Approve
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleRejectBooking(slot.id)}
+                              className="text-red-600 border-red-200 hover:bg-red-50 font-bold text-xs"
+                            >
+                              Reject
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     </Card>
                   ))}

@@ -351,6 +351,14 @@ export const visaService = {
     const response = await apiClient.post('/api/visa/document', data);
     return response.data.data;
   },
+  approveSlot: async (id: string) => {
+    const response = await apiClient.post(`/api/visa/${id}/approve`);
+    return response.data;
+  },
+  rejectSlot: async (id: string) => {
+    const response = await apiClient.post(`/api/visa/${id}/reject`);
+    return response.data;
+  },
   deleteSlot: async (id: string) => {
     const response = await apiClient.delete(`/api/visa/${id}`);
     return response.data;

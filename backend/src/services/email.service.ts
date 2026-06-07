@@ -133,6 +133,18 @@ class EmailService {
     });
   }
 
+  async sendVisaSlotBookedEmail(to: string, data: {
+    studentName: string,
+    dateTime: string,
+    meetLink: string
+  }) {
+    return this.sendEmail(to, 'VISA_SLOT_BOOKED', {
+      studentName: data.studentName,
+      dateTime: data.dateTime,
+      meetLink: data.meetLink
+    });
+  }
+
   async sendOtpEmail(to: string, otp: string) {
     try {
       const mailOptions = {

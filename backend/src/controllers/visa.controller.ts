@@ -4,6 +4,7 @@ import { google } from 'googleapis';
 import logger from '../utils/logger';
 import activityService from '../services/activity.service';
 import applicationService from '../services/application.service';
+import emailService from '../services/email.service';
 
 const normalizePrivateKey = (value?: string) => (value || '').replace(/\\n/g, '\n').trim();
 
@@ -136,6 +137,20 @@ export const bookVisaSlot = async (req: Request, res: Response) => {
 
   await activityService.log('Visa appointment booked', 'VISA_BOOKED', application.id, userId);
 
+  // Notify student via email
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (user) {
+    try {
+      await emailService.sendVisaSlotBookedEmail(user.email, {
+        studentName: `${user.firstName} ${user.lastName}`,
+        dateTime: updated.startTime.toLocaleString(),
+        meetLink: meetLink || 'Link will be provided soon'
+      });
+    } catch (error) {
+      logger.error('Failed to send visa booking email notification:', error);
+    }
+  }
+
   res.status(200).json({ success: true, data: { ...updated, meetLink } });
 };
 
@@ -147,4 +162,92 @@ export const getMyVisaSlot = async (req: Request, res: Response) => {
 
   const slot = await prisma.visaSlot.findUnique({ where: { applicationId: application.id } });
   res.status(200).json({ success: true, data: slot });
+};
+
+// Admin: Approve a visa booking (moves candidate to travel step)
+export const approveVisaSlot = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const adminId = (req as any).user?.id;
+
+  const slot = await prisma.visaSlot.findUnique({
+    where: { id },
+    include: { application: { include: { user: true } } }
+  });
+
+  if (!slot || !slot.applicationId) {
+    return res.status(404).json({ success: false, message: 'Booked slot not found' });
+  }
+
+  // Move application to travel step
+  await prisma.application.update({
+    where: { id: slot.applicationId },
+    data: { currentStepId: 'travel' },
+  });
+
+  // Log activity
+  await activityService.log('Visa slot approved', 'VISA_APPROVED', slot.applicationId, adminId);
+
+  // Send confirmation email
+  if (slot.application && slot.application.user) {
+    try {
+      await emailService.sendEmail(slot.application.user.email, 'APPLICATION_UPDATE', {
+        studentName: `${slot.application.user.firstName} ${slot.application.user.lastName}`,
+        status: 'VISA APPROVED',
+        notes: 'Your visa appointment has been approved by the admin. You have been advanced to the travel documents stage.',
+        applicationId: slot.applicationId
+      });
+    } catch (error) {
+      logger.error('Failed to send visa approval email:', error);
+    }
+  }
+
+  res.status(200).json({ success: true, message: 'Visa slot approved successfully' });
+};
+
+// Admin: Reject a visa booking (resets slot so student can book again)
+export const rejectVisaSlot = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const adminId = (req as any).user?.id;
+
+  const slot = await prisma.visaSlot.findUnique({
+    where: { id },
+    include: { application: { include: { user: true } } }
+  });
+
+  if (!slot || !slot.applicationId) {
+    return res.status(404).json({ success: false, message: 'Booked slot not found' });
+  }
+
+  const studentEmail = slot.application?.user?.email;
+  const studentName = slot.application?.user ? `${slot.application.user.firstName} ${slot.application.user.lastName}` : 'Student';
+  const appId = slot.applicationId;
+
+  // Release the slot booking
+  await prisma.visaSlot.update({
+    where: { id },
+    data: {
+      isBooked: false,
+      applicationId: null,
+      meetLink: null // reset meet link so a new one generates for next booking
+    }
+  });
+
+  // Log activity
+  await activityService.log('Visa slot rejected', 'VISA_REJECTED', appId, adminId);
+
+  // Send rejection email
+  if (studentEmail) {
+    try {
+      await emailService.sendEmail(studentEmail, 'APPLICATION_UPDATE', {
+        studentName,
+        status: 'VISA REJECTED',
+        notes: 'Your visa appointment slot has been rejected/cancelled. Please log in to your dashboard to choose another available time slot.',
+        applicationId: appId
+      });
+    } catch (error) {
+      logger.error('Failed to send visa rejection email:', error);
+    }
+  }
+
+  res.status(200).json({ success: true, message: 'Visa slot rejected successfully' });
 };
