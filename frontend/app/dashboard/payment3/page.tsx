@@ -137,9 +137,9 @@ export default function Payment3Page() {
     ...payment1Config,
   }
 
-  const baseAmount = Number(currentStepConfig?.amount || 0)
-  const discountPercentage = Number(currentStepConfig?.discountPercentage || 0)
-  const gstPercentage = Number(currentStepConfig?.gstPercentage || 0)
+  const baseAmount = Number(payment1StepConfig?.amount || 0)
+  const discountPercentage = Number(payment1StepConfig?.discountPercentage || 0)
+  const gstPercentage = Number(payment1StepConfig?.gstPercentage || 0)
   const discountAmount = baseAmount * (discountPercentage / 100)
   const gstAmount = (baseAmount - discountAmount) * (gstPercentage / 100)
   const totalPayable = baseAmount - discountAmount + gstAmount
@@ -180,7 +180,7 @@ export default function Payment3Page() {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6 items-start mb-8">
-        
+
         {/* Left Column: Payment details */}
         <Card className="lg:col-span-2 p-8 border-2 border-primary/20 bg-gradient-to-br from-background to-primary/5 rounded-[2.5rem] shadow-xl">
           <div className="space-y-6">
@@ -342,10 +342,10 @@ export default function Payment3Page() {
                 <h3 className="text-lg font-bold">Scan & Pay</h3>
                 <p className="text-sm text-muted-foreground">Scan this QR code using any UPI app</p>
               </div>
-              
+
               <div className="p-4 bg-slate-50 rounded-3xl border-2 border-slate-100">
-                <img 
-                  src={qrCodeUrl} 
+                <img
+                  src={qrCodeUrl}
                   alt="Payment QR Code"
                   className="w-48 h-48 mix-blend-multiply"
                 />
@@ -354,8 +354,8 @@ export default function Payment3Page() {
               <div className="w-full space-y-4">
                 <div className="space-y-2 text-left">
                   <label className="text-xs font-bold text-slate-700 ml-1">UTR / Transaction Number</label>
-                  <Input 
-                    placeholder="Enter 12-digit UTR number" 
+                  <Input
+                    placeholder="Enter 12-digit UTR number"
                     value={utrNumber}
                     onChange={(e) => setUtrNumber(e.target.value)}
                     className="h-12 rounded-xl border-slate-200 focus:ring-primary font-mono text-sm"
@@ -373,8 +373,8 @@ export default function Payment3Page() {
                       </Button>
                     </div>
                   ) : (
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       onClick={() => setIsUploadOpen(true)}
                       className="w-full h-12 rounded-xl border-dashed border-2 border-slate-300 text-slate-500 hover:border-primary hover:text-primary transition-all gap-2"
                     >
@@ -384,7 +384,7 @@ export default function Payment3Page() {
                   )}
                 </div>
 
-                <Button 
+                <Button
                   onClick={handlePaymentSubmit}
                   disabled={submittingPayment || !utrNumber || !screenshotUrl}
                   className="w-full h-14 rounded-2xl font-black uppercase tracking-widest bg-primary text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all mt-4"

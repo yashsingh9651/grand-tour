@@ -2,16 +2,16 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  X, 
-  Upload, 
-  File, 
-  Image as ImageIcon, 
-  Video, 
-  FileText, 
-  CheckCircle2, 
-  AlertCircle, 
-  Loader2 
+import {
+  X,
+  Upload,
+  File,
+  Image as ImageIcon,
+  Video,
+  FileText,
+  CheckCircle2,
+  AlertCircle,
+  Loader2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { uploadFile, UploadResponse } from "@/lib/services/upload.service";
@@ -28,10 +28,10 @@ interface UploadPopupProps {
   documentName?: string;
 }
 
-export default function UploadPopup({ 
-  isOpen, 
-  onClose, 
-  onUploadComplete, 
+export default function UploadPopup({
+  isOpen,
+  onClose,
+  onUploadComplete,
   token,
   applicationId,
   documentType,
@@ -58,7 +58,7 @@ export default function UploadPopup({
 
   const handleFileSelect = (selectedFile: File) => {
     const validTypes = ["image/jpeg", "image/png", "application/pdf", "video/mp4", "video/quicktime", "video/x-msvideo"];
-    
+
     if (!validTypes.includes(selectedFile.type)) {
       setError("Invalid file type. Please upload an image, video, or PDF.");
       return;
@@ -115,7 +115,7 @@ export default function UploadPopup({
 
       // 1. Upload to Cloudinary
       const response = await uploadFile(file, authToken, (p) => setProgress(p));
-      
+
       let finalData = response.data;
 
       // 2. If applicationId is provided, save to backend Document model
@@ -135,7 +135,7 @@ export default function UploadPopup({
 
       setStatus("success");
       onUploadComplete?.(finalData);
-      
+
       // Auto close after success
       setTimeout(onClose, 2000);
     } catch (err: any) {
@@ -179,7 +179,7 @@ export default function UploadPopup({
                   <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Select your documents</p>
                 </div>
                 {status !== "uploading" && (
-                  <button 
+                  <button
                     onClick={onClose}
                     className="p-2 rounded-2xl hover:bg-primary/5 text-muted-foreground hover:text-primary transition-all active:scale-90"
                   >
@@ -199,8 +199,8 @@ export default function UploadPopup({
                       onDrop={handleDrop}
                       className={cn(
                         "relative group cursor-pointer flex flex-col items-center justify-center gap-5 py-14 px-8 border-2 border-dashed rounded-[2rem] transition-all duration-500",
-                        file 
-                          ? "border-primary bg-primary/5 shadow-inner" 
+                        file
+                          ? "border-primary bg-primary/5 shadow-inner"
                           : "border-primary/10 hover:border-primary/30 bg-secondary/5 hover:bg-primary/5"
                       )}
                     >
@@ -214,10 +214,10 @@ export default function UploadPopup({
 
                       {preview ? (
                         <div className="relative w-36 h-36 rounded-2xl overflow-hidden shadow-2xl border-2 border-primary/20 animate-in zoom-in duration-500">
-                          <Image 
-                            src={preview} 
-                            alt="Preview" 
-                            fill 
+                          <Image
+                            src={preview}
+                            alt="Preview"
+                            fill
                             className="object-cover"
                           />
                         </div>
@@ -239,7 +239,7 @@ export default function UploadPopup({
 
                     {/* Error Message */}
                     {error && (
-                      <motion.div 
+                      <motion.div
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="flex items-center gap-3 p-4 rounded-2xl bg-red-500/5 border border-red-500/10 text-red-600 text-xs font-bold"
@@ -294,7 +294,7 @@ export default function UploadPopup({
                     </div>
                   </div>
                 ) : (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     className="py-12 flex flex-col items-center justify-center gap-6"
