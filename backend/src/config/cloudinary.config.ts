@@ -13,9 +13,12 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req: any, file: any) => {
-    const fileType = file.mimetype.split('/')[0];
-    const resourceType = fileType === 'image' ? 'image' : 
-                         fileType === 'video' ? 'video' : 'raw';
+    const isPDF = file.mimetype === 'application/pdf' || file.originalname.endsWith('.pdf');
+    const isImage = file.mimetype.startsWith('image/');
+    const isVideo = file.mimetype.startsWith('video/');
+    
+    const resourceType = (isPDF || isImage) ? 'image' : 
+                         isVideo ? 'video' : 'raw';
     
     const hasDot = file.originalname.includes('.');
     const ext = hasDot ? file.originalname.split('.').pop() : '';
