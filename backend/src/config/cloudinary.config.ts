@@ -14,14 +14,25 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req: any, file: any) => {
     const fileType = file.mimetype.split('/')[0];
-    const resourceType = file.mimetype === 'application/pdf' ? 'raw' : 
-                         fileType === 'video' ? 'video' : 'image';
+    const resourceType = fileType === 'image' ? 'image' : 
+                         fileType === 'video' ? 'video' : 'raw';
+    
+    const hasDot = file.originalname.includes('.');
+    const ext = hasDot ? file.originalname.split('.').pop() : '';
+    const nameWithoutExt = hasDot 
+      ? file.originalname.substring(0, file.originalname.lastIndexOf('.'))
+      : file.originalname;
+    const safeName = nameWithoutExt.replace(/[^a-zA-Z0-9-_]/g, '_');
+    
+    const publicId = resourceType === 'raw' && ext 
+      ? `${Date.now()}-${safeName}.${ext}` 
+      : `${Date.now()}-${safeName}`;
     
     return {
       folder: 'grand-tour/uploads',
       resource_type: resourceType,
       allowed_formats: ['jpg', 'png', 'jpeg', 'pdf', 'mp4', 'mov', 'avi'],
-      public_id: `${Date.now()}-${file.originalname.split('.')[0]}`,
+      public_id: publicId,
     };
   },
 });

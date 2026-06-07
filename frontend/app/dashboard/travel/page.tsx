@@ -169,7 +169,12 @@ export default function TravelPage() {
                       <p className="font-bold text-foreground truncate">{doc.name}</p>
                       <p className="text-xs text-muted-foreground mt-0.5">Ready to download</p>
                     </div>
-                    <a href={doc.url} target="_blank" rel="noopener noreferrer" download>
+                    <a 
+                      href={doc.url?.includes('cloudinary.com') ? doc.url.replace('/upload/', '/upload/fl_attachment/') : doc.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      download
+                    >
                       <Button size="sm" className="gap-2 shrink-0">
                         <Download className="w-4 h-4" />
                         Download

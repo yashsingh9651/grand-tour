@@ -112,7 +112,11 @@ export default function WorkPermitPage() {
                     </div>
                   )}
                   <div className="flex items-center gap-4">
-                    <a href={workPermit.documentUrl} target="_blank" rel="noopener noreferrer">
+                    <a 
+                      href={workPermit.documentUrl?.includes('cloudinary.com') ? workPermit.documentUrl.replace('/upload/', '/upload/fl_attachment/') : workPermit.documentUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                    >
                       <Button size="lg" className="gap-3 bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/20">
                         <FileDown className="w-5 h-5" />
                         Download Work Permit

@@ -34,7 +34,9 @@ export function ContractStep({ application, currentStepConfig, onSubmit, submitt
     if (unsignedContractDoc?.url) {
       // Direct download of the student-specific unsigned contract uploaded by the admin
       const a = document.createElement('a')
-      a.href = unsignedContractDoc.url
+      a.href = unsignedContractDoc.url.includes('cloudinary.com')
+        ? unsignedContractDoc.url.replace('/upload/', '/upload/fl_attachment/')
+        : unsignedContractDoc.url
       a.download = unsignedContractDoc.fileName || `${application.user?.firstName || 'Student'}_Contract`
       a.target = '_blank'
       document.body.appendChild(a)
@@ -107,7 +109,9 @@ export function ContractStep({ application, currentStepConfig, onSubmit, submitt
 
       // Fallback: Direct download of the template file
       const a = document.createElement('a')
-      a.href = config.templateUrl
+      a.href = config.templateUrl.includes('cloudinary.com')
+        ? config.templateUrl.replace('/upload/', '/upload/fl_attachment/')
+        : config.templateUrl
       a.download = `${config.contractTitle || 'Contract'}.docx`
       a.target = '_blank'
       document.body.appendChild(a)

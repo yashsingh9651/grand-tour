@@ -196,7 +196,12 @@ export function DocumentsTable() {
                         </a>
                       </Button>
                       <Button variant="outline" size="sm" className="rounded-xl h-9 px-3 gap-1.5 border-border/50 flex-1 md:flex-initial" asChild>
-                        <a href={doc.url} target="_blank" rel="noopener noreferrer" download>
+                        <a 
+                          href={doc.url?.includes('cloudinary.com') ? doc.url.replace('/upload/', '/upload/fl_attachment/') : doc.url} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          download
+                        >
                           <Download className="w-4 h-4" />
                           Download
                         </a>
