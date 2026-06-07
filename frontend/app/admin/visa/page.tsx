@@ -9,8 +9,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
-  Stamp, Plus, Trash2, Clock, CheckCircle2, Loader2,
-  Video, X, Calendar, Upload, FileText, ExternalLink
+   Plus, Trash2, Clock, CheckCircle2, Loader2,
+  Video, X, Calendar, Upload, FileText
 } from 'lucide-react'
 import { visaService, uploadService } from '@/lib/services/api.service'
 import { toast } from 'sonner'
@@ -108,9 +108,6 @@ export default function AdminVisaPage() {
           description="Create slots and manage student visa appointments"
           actions={
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setShowDocModal(true)} className="gap-2">
-                <FileText className="w-4 h-4" /> Upload Document
-              </Button>
               <Button onClick={() => setShowCreateModal(true)} className="gap-2">
                 <Plus className="w-4 h-4" /> Create Slot
               </Button>

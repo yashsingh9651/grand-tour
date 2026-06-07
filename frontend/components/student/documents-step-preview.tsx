@@ -102,7 +102,19 @@ const statusClasses: Record<string, string> = {
   default: 'bg-red-100 text-red-600 border-red-200',
 }
 
-export function DocumentsStepPreview({ pageContent, uploadedDocs = {}, onUpload }: { pageContent?: any; uploadedDocs?: Record<string, any>; onUpload?: (docType: string, docName: string) => void }) {
+export function DocumentsStepPreview({ 
+  pageContent, 
+  uploadedDocs = {}, 
+  onUpload,
+  application,
+  workflow
+}: { 
+  pageContent?: any; 
+  uploadedDocs?: Record<string, any>; 
+  onUpload?: (docType: string, docName: string) => void;
+  application?: any;
+  workflow?: any;
+}) {
   const resolvedPageContent = pageContent || fallbackPageContent
   const orderedBlocks = (resolvedPageContent?.blocks || [])
     .filter((block: any) => block.enabled !== false)
@@ -124,13 +136,32 @@ export function DocumentsStepPreview({ pageContent, uploadedDocs = {}, onUpload 
     return statusClasses[status] || statusClasses.default
   }
 
+  // Get active required upload blocks from dynamic blocks
+  const uploadBlocks = leftBlocks.filter((block: any) => block.type === 'upload')
+  const docSteps = uploadBlocks.map((block: any) => {
+    const status = getDocStatus(block.fieldKey)
+    const isCompleted = status !== 'NOT UPLOADED' && status !== 'REJECTED'
+    return {
+      id: block.fieldKey,
+      label: block.label,
+      isCompleted
+    }
+  })
+
+  let activeDocIndex = docSteps.findIndex((d: any) => !d.isCompleted)
+  if (activeDocIndex === -1) {
+    activeDocIndex = Math.max(0, docSteps.length - 1)
+  }
+
+  const progressPercent = Math.round((docSteps.filter((d: any) => d.isCompleted).length / Math.max(1, docSteps.length)) * 100)
+
   return (
     <div className="w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex items-start justify-between">
         <div className="space-y-2">
           <div className="flex items-center gap-3 mb-4">
             <span className="text-[10px] font-bold tracking-widest uppercase bg-[#C6F16D] text-[#1A1A1A] px-3 py-1.5 rounded-full">
-              Step 3 of 5
+              Step {activeDocIndex + 1} of {docSteps.length}
             </span>
             <span className="text-sm font-bold text-[#1A1A1A]">Document Repository</span>
           </div>
@@ -144,22 +175,29 @@ export function DocumentsStepPreview({ pageContent, uploadedDocs = {}, onUpload 
 
         <div className="hidden lg:flex items-center gap-4">
           <div className="flex items-center gap-2 bg-[#F5F5F5] rounded-full px-5 py-3">
-            <span className="text-[9px] font-bold tracking-widest uppercase text-[#666666]">Journey Progress</span>
-            <span className="text-sm font-bold text-[#1A1A1A]">60% Complete</span>
+            <span className="text-[9px] font-bold tracking-widest uppercase text-[#666666]">Upload Progress</span>
+            <span className="text-sm font-bold text-[#1A1A1A]">{progressPercent}% Complete</span>
           </div>
           <div className="flex items-center gap-1">
-            {[1, 2, 3, 4].map((step) => (
-              <div
-                key={step}
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 ${
-                  step < 3 ? 'bg-[#C6F16D] border-[#C6F16D] text-[#1A1A1A]' :
-                  step === 3 ? 'bg-white border-[#C6F16D] text-[#1A1A1A]' :
-                  'bg-white border-gray-200 text-gray-400'
-                }`}
-              >
-                {step}
-              </div>
-            ))}
+            {docSteps.map((step: any, idx: number) => {
+              const stepNum = idx + 1
+              const isCompleted = idx < activeDocIndex || step.isCompleted
+              const isCurrent = idx === activeDocIndex
+
+              return (
+                <div
+                  key={step.id}
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 ${
+                    isCompleted ? 'bg-[#C6F16D] border-[#C6F16D] text-[#1A1A1A]' :
+                    isCurrent ? 'bg-white border-[#C6F16D] text-[#1A1A1A]' :
+                    'bg-white border-gray-200 text-gray-400'
+                  }`}
+                  title={step.label}
+                >
+                  {stepNum}
+                </div>
+              )
+            })}
           </div>
         </div>
       </div>

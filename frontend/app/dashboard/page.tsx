@@ -67,7 +67,13 @@ export default function StudentDashboard() {
   const currentIndex = allSteps.findIndex(s => s.id === (application.currentStepId))
   const completedSteps = allSteps.slice(0, currentIndex)
   const currentStep = allSteps[currentIndex] || allSteps[allSteps.length - 1]
-  const progressPercent = Math.round((currentIndex / allSteps.length) * 100)
+  const progressPercent = currentIndex === allSteps.length - 1
+    ? 100
+    : Math.round((currentIndex / allSteps.length) * 100)
+
+  const completedStepsCount = currentIndex === allSteps.length - 1
+    ? allSteps.length
+    : completedSteps.length
 
   // Map backend activities to timeline
   const timeline = application.activities?.map((activity: any) => ({
@@ -113,7 +119,7 @@ export default function StudentDashboard() {
                   <div className="bg-gradient-to-r from-primary to-accent h-full transition-all" style={{ width: `${progressPercent}%` }} />
                 </div>
               </div>
-              <p className="text-xs text-muted-foreground">{completedSteps.length} of {allSteps.length} steps completed</p>
+              <p className="text-xs text-muted-foreground">{completedStepsCount} of {allSteps.length} steps completed</p>
             </div>
           </Card>
 
@@ -210,23 +216,20 @@ export default function StudentDashboard() {
             {timeline.map((item: any, index: number) => (
               <div key={index} className="flex gap-4">
                 <div className="flex flex-col items-center">
-                  <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 ${
-                    item.status === 'completed' 
-                      ? 'bg-success border-success shadow-sm shadow-success/30' 
+                  <div className={`w-4 h-4 rounded-full border-2 flex-shrink-0 ${item.status === 'completed'
+                      ? 'bg-success border-success shadow-sm shadow-success/30'
                       : item.status === 'pending'
-                      ? 'bg-primary border-primary'
-                      : 'bg-muted border-muted'
-                  }`} />
-                  {index < timeline.length - 1 && (
-                    <div className={`w-0.5 h-14 my-2 ${
-                      item.status === 'completed' ? 'bg-success/30' : 'bg-border'
+                        ? 'bg-primary border-primary'
+                        : 'bg-muted border-muted'
                     }`} />
+                  {index < timeline.length - 1 && (
+                    <div className={`w-0.5 h-14 my-2 ${item.status === 'completed' ? 'bg-success/30' : 'bg-border'
+                      }`} />
                   )}
                 </div>
                 <div className="pb-4 pt-0.5">
-                  <p className={`text-sm font-semibold ${
-                    item.status === 'completed' ? 'text-foreground' : 'text-muted-foreground'
-                  }`}>
+                  <p className={`text-sm font-semibold ${item.status === 'completed' ? 'text-foreground' : 'text-muted-foreground'
+                    }`}>
                     {item.event}
                   </p>
                   <p className="text-xs text-muted-foreground font-medium">{item.date}</p>

@@ -14,7 +14,7 @@ import { Loader2, ArrowLeft } from 'lucide-react'
 export default function DocumentsPage() {
   const router = useRouter()
   const { data: session } = useSession()
-  const token = (session as any)?.accessToken || ''
+  const token = (session as any)?.backendToken || ''
   const [application, setApplication] = useState<any>(null)
   const [workflow, setWorkflow] = useState<any>(null)
   const [pageContent, setPageContent] = useState<any>(null)
@@ -77,11 +77,11 @@ export default function DocumentsPage() {
   const requiredDocKeys = (pageContent?.blocks || [])
     .filter((b: any) => b.type === 'upload' && b.enabled !== false)
     .map((b: any) => b.fieldKey)
-  
+
   const fallbackKeys = ['RESUME', 'PASSPORT', 'PHOTO']
   const keysToCheck = requiredDocKeys.length > 0 ? requiredDocKeys : fallbackKeys
 
-  const allRequiredDocsUploaded = keysToCheck.every((key: string) => 
+  const allRequiredDocsUploaded = keysToCheck.every((key: string) =>
     uploadedDocs[key] && uploadedDocs[key].status !== 'REJECTED'
   )
   const canContinue = allRequiredDocsUploaded && !hasRejectedDocuments
@@ -94,7 +94,7 @@ export default function DocumentsPage() {
 
     try {
       setSubmitting(true)
-      
+
       // Determine next step
       let nextStepId = 'documents'
       if (workflow?.steps) {
@@ -123,6 +123,26 @@ export default function DocumentsPage() {
     )
   }
 
+  const DEFAULT_JOURNEY_STEPS = [
+    'application',
+    'documents',
+    'interview',
+    'payment1',
+    'hotel',
+    'payment2',
+    'contract',
+    'payment3',
+    'workpermit',
+    'visa',
+    'travel'
+  ]
+  const journeySteps = workflow?.steps?.map((s: any) => s.id) || DEFAULT_JOURNEY_STEPS
+  const currentStepId = application?.currentStepId || 'documents'
+  const currentStepIndex = journeySteps.indexOf(currentStepId) !== -1 
+    ? journeySteps.indexOf(currentStepId) 
+    : journeySteps.indexOf('documents')
+  const nextStepIndex = currentStepIndex + 1 < journeySteps.length ? currentStepIndex + 1 : currentStepIndex
+
   return (
     <StudentLayout currentStep="documents">
       <div className="w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -130,6 +150,8 @@ export default function DocumentsPage() {
           pageContent={pageContent}
           uploadedDocs={uploadedDocs}
           onUpload={openUpload}
+          application={application}
+          workflow={workflow}
         />
 
         <div className="rounded-3xl border border-[#C6F16D]/30 bg-[#FAFFF0] p-5 text-sm text-[#3F6212]">
@@ -145,29 +167,29 @@ export default function DocumentsPage() {
         </div>
 
         <div className="flex items-center justify-between pt-8 border-t border-gray-100">
-          <Button 
-            variant="ghost" 
-            className="text-[#666666] font-medium hover:bg-gray-100 rounded-xl gap-2" 
+          <Button
+            variant="ghost"
+            className="text-[#666666] font-medium hover:bg-gray-100 rounded-xl gap-2"
             onClick={() => router.push('/dashboard/application')}
           >
             <ArrowLeft className="w-4 h-4" />
             Previous: Personal Details
           </Button>
-          
+
           <div className="flex items-center gap-3">
-            <Button 
+            <Button
               variant="ghost"
               className="text-[#666666] font-medium hover:bg-gray-100 rounded-xl"
             >
               Save Draft
             </Button>
-            <Button 
+            <Button
               onClick={handleContinue}
               disabled={submitting || !canContinue}
               className="bg-[#C6F16D] hover:bg-[#b5e359] text-[#1A1A1A] font-bold h-12 px-8 rounded-full tracking-wide gap-2 disabled:opacity-50"
             >
               {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
-              Continue to Step 4
+              Continue to Step {nextStepIndex + 1}
             </Button>
           </div>
         </div>

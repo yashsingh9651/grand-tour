@@ -308,24 +308,48 @@ export function ProfileBuilderStep({ application, onSubmit, submitting, pageCont
     return value !== undefined && value !== null && String(value).trim() !== ''
   })
 
-  const completion = Math.min(100, Math.round((completedFields.length / Math.max(1, requiredFields.length)) * 100))
-
   const journeySteps = [
     'application',
     'documents',
     'interview',
-    'selection',
     'payment1',
+    'hotel',
+    'payment2',
     'contract',
+    'payment3',
     'workpermit',
     'visa',
-    'travel',
-    'hotel'
+    'travel'
   ]
   const currentStepId = application?.currentStepId || 'application'
   const currentStepIndex = journeySteps.indexOf(currentStepId) !== -1 
     ? journeySteps.indexOf(currentStepId) 
     : 0
+
+  const completion = currentStepIndex === journeySteps.length - 1
+    ? 100
+    : Math.min(100, Math.round((completedFields.length / Math.max(1, requiredFields.length)) * 100))
+
+  // Calculate dynamic section steps
+  const sectionProgress = sections.map((secGroup: any) => {
+    const reqFields = secGroup.fields.filter((field: any) => field.fieldKey && field.type !== 'section' && field.type !== 'user' && field.enabled !== false && field.required !== false)
+    const compFields = reqFields.filter((field: any) => {
+      const value = formData[field.fieldKey]
+      if (field.type === 'checkbox') return Boolean(value)
+      if (typeof value === 'number') return value !== 0 && !Number.isNaN(value)
+      return value !== undefined && value !== null && String(value).trim() !== ''
+    })
+    const isCompleted = reqFields.length > 0 ? compFields.length === reqFields.length : true
+    return {
+      name: secGroup.section,
+      isCompleted
+    }
+  })
+
+  let activeSectionIndex = sectionProgress.findIndex((s: any) => !s.isCompleted)
+  if (activeSectionIndex === -1) {
+    activeSectionIndex = Math.max(0, sectionProgress.length - 1)
+  }
 
   return (
     <div className="w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -334,22 +358,22 @@ export function ProfileBuilderStep({ application, onSubmit, submitting, pageCont
         <p className="text-[#666666] text-lg">{resolvedPageContent?.subtitle || fallbackPageContent.subtitle}</p>
 
         <div className="flex flex-wrap items-center gap-1.5 mt-6">
-          {journeySteps.map((step, idx) => {
+          {sectionProgress.map((sec: any, idx: number) => {
             let barColor = 'bg-gray-200'
-            if (idx < currentStepIndex) {
+            if (idx < activeSectionIndex || sec.isCompleted) {
               barColor = 'bg-[#4D6B19]' // Completed
-            } else if (idx === currentStepIndex) {
+            } else if (idx === activeSectionIndex) {
               barColor = 'bg-[#C6F16D]' // Current
             }
             return (
               <div
-                key={step}
+                key={sec.name}
                 className={`h-1.5 flex-1 max-w-[60px] min-w-[40px] ${barColor} rounded-full transition-all duration-300`}
               />
             )
           })}
           <span className="ml-4 text-[10px] font-bold tracking-widest uppercase text-[#4D6B19]">
-            Step {currentStepIndex + 1} of 10
+            Step {activeSectionIndex + 1} of {sectionProgress.length}
           </span>
         </div>
       </div>
