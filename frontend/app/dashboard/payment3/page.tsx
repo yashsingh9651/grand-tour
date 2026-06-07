@@ -89,7 +89,9 @@ export default function Payment3Page() {
     )
   }
 
-  const isUnlocked = application?.currentStepId === STEP_ID
+  const currentStepIndex = workflow?.steps?.findIndex((s: any) => s.id === application?.currentStepId) ?? -1
+  const targetStepIndex = workflow?.steps?.findIndex((s: any) => s.id === STEP_ID) ?? -1
+  const isUnlocked = currentStepIndex >= 0 && targetStepIndex <= currentStepIndex
 
   if (!isUnlocked) {
     return (

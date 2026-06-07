@@ -42,7 +42,8 @@ export default function HotelPage() {
     try {
       const appData = await applicationService.getMy()
       setApplication(appData)
-      const isP1Approved = appData.payment1?.status === 'COMPLETED'
+      const stepsAfterP1 = ['hotel', 'payment2', 'contract', 'payment3', 'workpermit', 'visa', 'travel']
+      const isP1Approved = appData.payment1?.status === 'COMPLETED' || stepsAfterP1.includes(appData.currentStepId)
       setPayment1Approved(isP1Approved)
       if (isP1Approved) {
         const assignData = await hotelService.getMyAssignment()

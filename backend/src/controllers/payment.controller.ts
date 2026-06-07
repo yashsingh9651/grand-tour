@@ -69,18 +69,34 @@ export const approvePayment = async (req: Request, res: Response) => {
     });
     
     if (application) {
-      // Determine next step based on payment description
+      // Determine next step and update relation IDs based on payment description
       const desc = (payment.description || '').toLowerCase();
       let nextStep = 'hotel'; // default (payment1)
+      let updateData: any = { currentStepId: nextStep };
+
       if (desc.includes('payment2') || desc.includes('2nd installment') || desc.includes('hotel')) {
         nextStep = 'contract';
+        updateData = {
+          currentStepId: nextStep,
+          payment2Id: payment.id
+        };
       } else if (desc.includes('payment3') || desc.includes('3rd installment') || desc.includes('contract')) {
         nextStep = 'workpermit';
+        updateData = {
+          currentStepId: nextStep,
+          payment3Id: payment.id
+        };
+      } else {
+        // Default to payment1
+        updateData = {
+          currentStepId: nextStep,
+          payment1Id: payment.id
+        };
       }
 
       await prisma.application.update({
         where: { id: application.id },
-        data: { currentStepId: nextStep }
+        data: updateData
       });
       
       await activityService.log(

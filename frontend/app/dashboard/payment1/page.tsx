@@ -85,7 +85,9 @@ export default function Payment1Page() {
     )
   }
 
-  const paymentStageUnlocked = application?.currentStepId === 'payment1'
+  const currentStepIndex = workflow?.steps?.findIndex((s: any) => s.id === application?.currentStepId) ?? -1
+  const targetStepIndex = workflow?.steps?.findIndex((s: any) => s.id === 'payment1') ?? -1
+  const paymentStageUnlocked = currentStepIndex >= 0 && targetStepIndex <= currentStepIndex
 
   if (!paymentStageUnlocked) {
     return (
