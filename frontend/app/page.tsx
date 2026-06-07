@@ -44,9 +44,14 @@ export default function Home() {
 
   useEffect(() => {
     if (status === "authenticated") {
-      router.replace("/dashboard");
+      const user = session?.user as any;
+      if (user?.role === "SUPER_ADMIN" || user?.role === "ADMIN") {
+        router.replace("/admin");
+      } else {
+        router.replace("/dashboard");
+      }
     }
-  }, [status, router]);
+  }, [status, session, router]);
 
   const handleSendOtp = async (e?: React.FormEvent) => {
     e?.preventDefault();

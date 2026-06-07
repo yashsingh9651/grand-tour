@@ -9,6 +9,10 @@ export default auth((req) => {
     if (!isLoggedIn) {
       return Response.redirect(new URL("/", req.nextUrl));
     }
+    const user = req.auth?.user as any;
+    if (user?.role === "SUPER_ADMIN" || user?.role === "ADMIN") {
+      return Response.redirect(new URL("/admin", req.nextUrl));
+    }
   }
 
   // Protect /admin routes
