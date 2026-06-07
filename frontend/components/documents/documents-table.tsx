@@ -31,6 +31,8 @@ export function DocumentsTable() {
   }
 
   const filteredDocuments = documents.filter((d) => {
+    if (d.type === 'UNSIGNED_CONTRACT') return false
+
     const candidateName = d.application?.user 
       ? `${d.application.user.firstName} ${d.application.user.lastName}`.toLowerCase()
       : 'Unknown Candidate'
@@ -150,7 +152,7 @@ export function DocumentsTable() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-xs bg-secondary/20 p-3 rounded-2xl border border-border/30">
+                    <div className="grid grid-cols-2  gap-6 text-xs bg-secondary/20 p-3 rounded-2xl border border-border/30">
                       <div>
                         <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-tighter mb-1">Type</p>
                         <p className="font-bold text-foreground">{doc.type}</p>
@@ -186,13 +188,28 @@ export function DocumentsTable() {
                   </div>
 
                   <div className="flex md:flex-col gap-2 shrink-0">
-                    {doc.status === 'PENDING' ? (
-                      <>
+                    <div className="flex gap-2 w-full">
+                      <Button variant="secondary" size="sm" className="rounded-xl h-9 px-3 gap-1.5 flex-1 md:flex-initial" asChild>
+                        <a href={doc.url} target="_blank" rel="noopener noreferrer">
+                          <Eye className="w-4 h-4" />
+                          View
+                        </a>
+                      </Button>
+                      <Button variant="outline" size="sm" className="rounded-xl h-9 px-3 gap-1.5 border-border/50 flex-1 md:flex-initial" asChild>
+                        <a href={doc.url} target="_blank" rel="noopener noreferrer" download>
+                          <Download className="w-4 h-4" />
+                          Download
+                        </a>
+                      </Button>
+                    </div>
+
+                    {doc.status === 'PENDING' && (
+                      <div className="flex md:flex-col gap-2 w-full">
                         <Button
                           variant="default"
                           size="sm"
                           onClick={() => handleStatusUpdate(doc.id, 'APPROVED')}
-                          className="bg-green-600 hover:bg-green-700 text-white rounded-xl h-9 px-4 gap-2 shadow-lg shadow-green-600/20"
+                          className="bg-green-600 hover:bg-green-700 text-white rounded-xl h-9 px-4 gap-2 shadow-lg shadow-green-600/20 w-full"
                         >
                           <Check className="w-4 h-4" />
                           Approve
@@ -201,35 +218,23 @@ export function DocumentsTable() {
                           variant="outline"
                           size="sm"
                           onClick={() => handleStatusUpdate(doc.id, 'REJECTED')}
-                          className="border-red-200 text-red-600 hover:bg-red-50 rounded-xl h-9 px-4 gap-2"
+                          className="border-red-200 text-red-600 hover:bg-red-500 rounded-xl h-9 px-4 gap-2 w-full"
                         >
                           <X className="w-4 h-4" />
                           Reject
                         </Button>
-                      </>
-                    ) : (
-                      <>
-                        <Button variant="secondary" size="sm" className="rounded-xl h-9 px-4 gap-2" asChild>
-                          <a href={doc.url} target="_blank" rel="noopener noreferrer">
-                            <Eye className="w-4 h-4" />
-                            View
-                          </a>
-                        </Button>
-                        <Button variant="outline" size="sm" className="rounded-xl h-9 px-4 gap-2 border-border/50">
-                          <Download className="w-4 h-4" />
-                          Download
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          onClick={() => handleDelete(doc.id)}
-                          className="rounded-xl h-9 px-4 gap-2 text-muted-foreground hover:text-red-600 transition-colors"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                          Delete
-                        </Button>
-                      </>
+                      </div>
                     )}
+
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => handleDelete(doc.id)}
+                      className="rounded-xl h-9 px-4 gap-2 text-muted-foreground hover:bg-red-500 transition-colors w-full md:w-auto"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Delete
+                    </Button>
                   </div>
                 </div>
               </Card>

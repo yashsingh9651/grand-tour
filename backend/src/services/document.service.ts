@@ -4,6 +4,11 @@ import { DocumentStatus } from '@prisma/client';
 class DocumentService {
   async getAllDocuments() {
     return await prisma.document.findMany({
+      where: {
+        type: {
+          not: 'UNSIGNED_CONTRACT'
+        }
+      },
       include: {
         application: {
           include: {
