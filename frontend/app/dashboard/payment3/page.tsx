@@ -159,6 +159,8 @@ export default function Payment3Page() {
     toast.success(`${label} copied`)
   }
 
+  const isWorkPermitIssued = application?.workPermit?.status === 'ISSUED'
+
   return (
     <StudentLayout
       currentStep={STEP_ID}
@@ -179,7 +181,20 @@ export default function Payment3Page() {
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6 items-start mb-8">
+      {!isWorkPermitIssued ? (
+        <Card className="p-8 border-2 border-dashed border-purple-200 bg-purple-50/40 rounded-[2rem] text-center max-w-2xl mx-auto space-y-6">
+          <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto">
+            <Clock className="w-8 h-8 text-purple-600 animate-pulse" />
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-black text-purple-900">Awaiting Work Permit</h2>
+            <p className="text-sm text-purple-600 font-medium max-w-md mx-auto">
+              Please wait for the administration to issue and upload your work permit. Once the work permit is uploaded, the payment details and submission options will unlock here.
+            </p>
+          </div>
+        </Card>
+      ) : (
+        <div className="grid lg:grid-cols-3 gap-6 items-start mb-8">
 
         {/* Left Column: Payment details */}
         <Card className="p-8 border-2 border-primary/20 bg-gradient-to-br from-background to-primary/5 rounded-[2.5rem] shadow-xl">
@@ -395,7 +410,8 @@ export default function Payment3Page() {
             </div>
           </Card>
         )}
-      </div>
+        </div>
+      )}
 
       {/* Lightbox Modal */}
       {viewingProofUrl && (

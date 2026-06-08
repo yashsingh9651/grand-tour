@@ -23,10 +23,17 @@ export const uploadWorkPermit = async (req: Request, res: Response) => {
     });
   }
 
-  // Move application to visa step
+  // Find application to check current step
+  const app = await prisma.application.findUnique({
+    where: { id: applicationId }
+  });
+
+  const nextStepId = (app?.currentStepId === 'payment3') ? 'payment3' : 'visa';
+
+  // Move application to appropriate step
   const application = await prisma.application.update({
     where: { id: applicationId },
-    data: { currentStepId: 'visa' },
+    data: { currentStepId: nextStepId },
     include: { user: true }
   });
 
@@ -53,6 +60,7 @@ export const getAllWorkPermits = async (req: Request, res: Response) => {
   const applications = await prisma.application.findMany({
     where: {
       OR: [
+        { currentStepId: 'payment3' },
         { currentStepId: 'workpermit' },
         { workPermit: { isNot: null } }
       ]

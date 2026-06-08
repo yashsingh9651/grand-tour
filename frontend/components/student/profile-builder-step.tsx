@@ -318,6 +318,7 @@ export function ProfileBuilderStep({ application, onSubmit, submitting, pageCont
     'contract',
     'payment3',
     'workpermit',
+    'visapayments',
     'visa',
     'travel'
   ]

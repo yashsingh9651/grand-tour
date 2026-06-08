@@ -28,6 +28,8 @@ export default function AdminContractsPage() {
   const [isUploadOpen, setIsUploadOpen] = useState(false)
   const [uploadTargetAppId, setUploadTargetAppId] = useState<string | null>(null)
   const [uploadTargetStudentName, setUploadTargetStudentName] = useState<string>('')
+  const [uploadDocType, setUploadDocType] = useState<string>('UNSIGNED_CONTRACT')
+  const [uploadDocLabel, setUploadDocLabel] = useState<string>('Unsigned Contract')
 
   // Review Modal State
   const [selectedDocToReview, setSelectedDocToReview] = useState<any | null>(null)
@@ -58,19 +60,21 @@ export default function AdminContractsPage() {
     fetchData()
   }, [])
 
-  const handleOpenUpload = (appId: string, studentName: string) => {
+  const handleOpenUpload = (appId: string, studentName: string, docType: string = 'UNSIGNED_CONTRACT', docLabel: string = 'Unsigned Contract') => {
     setUploadTargetAppId(appId)
     setUploadTargetStudentName(studentName)
+    setUploadDocType(docType)
+    setUploadDocLabel(docLabel)
     setIsUploadOpen(true)
   }
 
   const handleUploadComplete = () => {
-    toast.success('Custom unsigned contract uploaded successfully!')
+    toast.success('File uploaded successfully!')
     fetchData()
   }
 
   const handleDeleteUnsigned = async (docId: string) => {
-    if (!confirm('Are you sure you want to delete this custom contract? The student will fall back to downloading the generic template.')) {
+    if (!confirm('Are you sure you want to delete this document?')) {
       return
     }
     try {
@@ -213,6 +217,9 @@ export default function AdminContractsPage() {
               const studentName = `${app.user?.firstName || ''} ${app.user?.lastName || ''}`
               const unsignedContract = app.documents?.find((d: any) => d.type === 'UNSIGNED_CONTRACT')
               const signedContract = app.documents?.find((d: any) => d.type === 'SIGNED_CONTRACT')
+              const extraDoc1 = app.documents?.find((d: any) => d.type === 'CONTRACT_EXTRA_1')
+              const extraDoc2 = app.documents?.find((d: any) => d.type === 'CONTRACT_EXTRA_2')
+              const extraDoc3 = app.documents?.find((d: any) => d.type === 'CONTRACT_EXTRA_3')
 
               return (
                 <Card key={app.id} className="p-6 bg-white border border-slate-200 hover:shadow-md transition-shadow rounded-3xl">
@@ -253,7 +260,7 @@ export default function AdminContractsPage() {
                             <Button 
                               variant="ghost" 
                               size="icon" 
-                              onClick={() => handleOpenUpload(app.id, studentName)} 
+                              onClick={() => handleOpenUpload(app.id, studentName, 'UNSIGNED_CONTRACT', 'Unsigned Contract')} 
                               className="h-8 w-8 hover:bg-slate-200"
                               title="Replace file"
                             >
@@ -274,7 +281,7 @@ export default function AdminContractsPage() {
                         <Button 
                           variant="outline" 
                           size="sm" 
-                          onClick={() => handleOpenUpload(app.id, studentName)}
+                          onClick={() => handleOpenUpload(app.id, studentName, 'UNSIGNED_CONTRACT', 'Unsigned Contract')}
                           className="w-full text-xs font-bold border-dashed border-2 border-slate-300 bg-white hover:border-primary hover:text-primary gap-1.5 h-9"
                         >
                           <Upload className="w-3.5 h-3.5" /> Upload Specific Contract
@@ -337,6 +344,116 @@ export default function AdminContractsPage() {
                       )}
                     </div>
                   </div>
+
+                  {/* Additional Contract Documents Row */}
+                  <div className="mt-5 pt-4 border-t border-slate-100 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Additional Documents (Max 3)</span>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {/* Doc 1 Slot */}
+                      <div className="p-3 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[10px] font-bold text-slate-500">Document 1</p>
+                          {extraDoc1 ? (
+                            <a href={extraDoc1.url} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-primary hover:underline truncate block mt-0.5">
+                              {extraDoc1.fileName || 'Document 1'}
+                            </a>
+                          ) : (
+                            <p className="text-xs text-slate-400 italic mt-0.5">Not uploaded</p>
+                          )}
+                        </div>
+                        <div className="flex gap-1 shrink-0">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 hover:bg-slate-200"
+                            onClick={() => handleOpenUpload(app.id, studentName, 'CONTRACT_EXTRA_1', 'Additional Document 1')}
+                          >
+                            <Upload className="w-3.5 h-3.5 text-slate-600" />
+                          </Button>
+                          {extraDoc1 && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 hover:bg-red-50 text-red-500"
+                              onClick={() => handleDeleteUnsigned(extraDoc1.id)}
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Doc 2 Slot */}
+                      <div className="p-3 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[10px] font-bold text-slate-500">Document 2</p>
+                          {extraDoc2 ? (
+                            <a href={extraDoc2.url} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-primary hover:underline truncate block mt-0.5">
+                              {extraDoc2.fileName || 'Document 2'}
+                            </a>
+                          ) : (
+                            <p className="text-xs text-slate-400 italic mt-0.5">Not uploaded</p>
+                          )}
+                        </div>
+                        <div className="flex gap-1 shrink-0">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 hover:bg-slate-200"
+                            onClick={() => handleOpenUpload(app.id, studentName, 'CONTRACT_EXTRA_2', 'Additional Document 2')}
+                          >
+                            <Upload className="w-3.5 h-3.5 text-slate-600" />
+                          </Button>
+                          {extraDoc2 && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 hover:bg-red-50 text-red-500"
+                              onClick={() => handleDeleteUnsigned(extraDoc2.id)}
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Doc 3 Slot */}
+                      <div className="p-3 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[10px] font-bold text-slate-500">Document 3</p>
+                          {extraDoc3 ? (
+                            <a href={extraDoc3.url} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-primary hover:underline truncate block mt-0.5">
+                              {extraDoc3.fileName || 'Document 3'}
+                            </a>
+                          ) : (
+                            <p className="text-xs text-slate-400 italic mt-0.5">Not uploaded</p>
+                          )}
+                        </div>
+                        <div className="flex gap-1 shrink-0">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 hover:bg-slate-200"
+                            onClick={() => handleOpenUpload(app.id, studentName, 'CONTRACT_EXTRA_3', 'Additional Document 3')}
+                          >
+                            <Upload className="w-3.5 h-3.5 text-slate-600" />
+                          </Button>
+                          {extraDoc3 && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 hover:bg-red-50 text-red-500"
+                              onClick={() => handleDeleteUnsigned(extraDoc3.id)}
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </Card>
               )
             })
@@ -355,8 +472,8 @@ export default function AdminContractsPage() {
           onUploadComplete={handleUploadComplete}
           token={token}
           applicationId={uploadTargetAppId}
-          documentType="UNSIGNED_CONTRACT"
-          documentName={`${uploadTargetStudentName} - Unsigned Contract`}
+          documentType={uploadDocType}
+          documentName={`${uploadTargetStudentName} - ${uploadDocLabel}`}
         />
       )}
 

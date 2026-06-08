@@ -204,6 +204,7 @@ class ApplicationService {
         payment1: true,
         payment2: true,
         payments: true,
+        workPermit: true,
         hotelAssignment: {
           include: {
             hotel: true

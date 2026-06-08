@@ -87,11 +87,75 @@ export const approvePayment = async (req: Request, res: Response) => {
           payment3Id: payment.id
         };
       } else {
-        // Default to payment1
-        updateData = {
-          currentStepId: nextStep,
-          payment1Id: payment.id
-        };
+        // Retrieve active workflow to resolve customized step titles
+        const activeWorkflow = await prisma.workflow.findFirst({
+          where: { isActive: true }
+        });
+        const visaStep = (activeWorkflow?.steps as any[])?.find((s: any) => s.id === 'visapayments');
+        const amounts = visaStep?.amounts || {};
+
+        const visaName = (amounts.visaFeeName || 'visa fee').toLowerCase();
+        const sevisName = (amounts.sevisFeeName || 'sevis fee').toLowerCase();
+        const miscName = (amounts.miscFeeName || 'misc fee').toLowerCase();
+
+        const isVisaPayment = 
+          desc.includes('visa fee') || desc.includes(visaName) ||
+          desc.includes('sevis fee') || desc.includes(sevisName) ||
+          desc.includes('misc fee') || desc.includes('miscellaneous fee') || desc.includes(miscName) ||
+          desc.includes('visapayments');
+
+        if (isVisaPayment) {
+          // Find all completed payments for this student
+          const allCompletedPayments = await prisma.payment.findMany({
+            where: { 
+              userId: payment.userId,
+              status: 'COMPLETED'
+            }
+          });
+          
+          const visaFeePaid = allCompletedPayments.some(p => {
+            const pDesc = (p.description || '').toLowerCase();
+            return pDesc.includes('visa fee') || pDesc.includes(visaName);
+          });
+          const sevisFeePaid = allCompletedPayments.some(p => {
+            const pDesc = (p.description || '').toLowerCase();
+            return pDesc.includes('sevis fee') || pDesc.includes(sevisName);
+          });
+          const miscFeePaid = allCompletedPayments.some(p => {
+            const pDesc = (p.description || '').toLowerCase();
+            return pDesc.includes('misc fee') || pDesc.includes('miscellaneous fee') || pDesc.includes(miscName);
+          });
+
+          if (visaFeePaid && sevisFeePaid && miscFeePaid) {
+            nextStep = 'visa';
+            updateData = {
+              currentStepId: nextStep
+            };
+            
+            await prisma.application.update({
+              where: { id: application.id },
+              data: updateData
+            });
+            
+            await activityService.log(
+              `Application moved to ${nextStep} step (all visa payments approved)`,
+              'APPLICATION_MOVE',
+              application.id,
+              (req as any).user?.id
+            );
+          }
+          
+          return res.status(200).json({
+            success: true,
+            data: payment,
+          });
+        } else {
+          // Default to payment1
+          updateData = {
+            currentStepId: nextStep,
+            payment1Id: payment.id
+          };
+        }
       }
 
       await prisma.application.update({

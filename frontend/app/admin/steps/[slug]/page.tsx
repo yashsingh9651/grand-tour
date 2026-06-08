@@ -7,6 +7,7 @@ import { DynamicPageContentEditor } from '@/components/admin/dynamic-page-conten
 import { ApplicationPageContentEditor } from '@/components/admin/application-page-content-editor'
 import { DocumentsPageContentEditor } from '@/components/admin/documents-page-content-editor'
 import { PaymentStepEditor } from '@/components/admin/payment-step-editor'
+import { VisaPaymentsStepEditor } from '@/components/admin/visapayments-step-editor'
 
 const STEP_EDITOR_CONFIGS: Record<string, { label: string; description: string; editorComponent?: React.ComponentType; previewComponent?: React.ComponentType<any>; previewComponentProps?: Record<string, any> }> = {
   applications: {
@@ -23,6 +24,11 @@ const STEP_EDITOR_CONFIGS: Record<string, { label: string; description: string; 
     label: 'Payment',
     description: 'Manage the payment bank details, QR image, and installment schedule for the student finance stage.',
     editorComponent: PaymentStepEditor,
+  },
+  visapayments: {
+    label: 'Visa Payments',
+    description: 'Manage the descriptions and amounts for the visa processing fee, SEVIS fee, and miscellaneous fee.',
+    editorComponent: VisaPaymentsStepEditor,
   },
 }
 

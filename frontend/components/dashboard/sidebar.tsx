@@ -56,6 +56,7 @@ const ALL_MENU_ITEMS: MenuItem[] = [
       { label: "Applications Step Editor", href: "/admin/steps/applications", feature: "applications" },
       { label: "Documents Step Editor", href: "/admin/steps/documents", feature: "documents" },
       { label: "Payment Step Editor", href: "/admin/steps/payment", feature: "payments" },
+      { label: "Visa Payments Step Editor", href: "/admin/steps/visapayments", feature: "payments" },
     ],
   },
   { icon: Calendar, label: "Interviews", href: "/admin/interviews", feature: "interviews" },

@@ -34,8 +34,9 @@ const WORKFLOW_STEP_ORDER: Record<string, number> = {
   contract: 6,
   payment3: 7,
   workpermit: 8,
-  visa: 9,
-  travel: 10,
+  visapayments: 9,
+  visa: 10,
+  travel: 11,
 }
 
 const NAV_ITEMS = [
@@ -48,6 +49,7 @@ const NAV_ITEMS = [
   { icon: ClipboardCheck, label: 'Contract', href: '/dashboard/contract', stepKey: 'contract' },
   { icon: Banknote, label: 'Final Payment', href: '/dashboard/payment3', stepKey: 'payment3' },
   { icon: Briefcase, label: 'Work Permit', href: '/dashboard/workpermit', stepKey: 'workpermit' },
+  { icon: Banknote, label: 'Visa Payments', href: '/dashboard/visapayments', stepKey: 'visapayments' },
   { icon: Stamp, label: 'Visa', href: '/dashboard/visa', stepKey: 'visa' },
   { icon: Plane, label: 'Travel', href: '/dashboard/travel', stepKey: 'travel' },
 ]

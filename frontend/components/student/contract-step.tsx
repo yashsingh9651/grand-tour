@@ -30,6 +30,11 @@ export function ContractStep({ application, currentStepConfig, onSubmit, submitt
     (d: any) => d.type === 'UNSIGNED_CONTRACT'
   )
 
+  const extraDoc1 = application?.documents?.find((d: any) => d.type === 'CONTRACT_EXTRA_1')
+  const extraDoc2 = application?.documents?.find((d: any) => d.type === 'CONTRACT_EXTRA_2')
+  const extraDoc3 = application?.documents?.find((d: any) => d.type === 'CONTRACT_EXTRA_3')
+  const hasExtraDocs = extraDoc1 || extraDoc2 || extraDoc3
+
   const handleDownload = async () => {
     if (unsignedContractDoc?.url) {
       // Direct download of the student-specific unsigned contract uploaded by the admin
@@ -263,6 +268,54 @@ export function ContractStep({ application, currentStepConfig, onSubmit, submitt
           </div>
         </div>
       </Card>
+
+      {/* Additional Documents from Admin */}
+      {hasExtraDocs && (
+        <Card className="p-8 border-2 border-primary/20 bg-gradient-to-br from-background to-primary/5 rounded-[2rem] space-y-6">
+          <div className="space-y-2">
+            <h3 className="text-xl font-bold flex items-center gap-2">
+              <span className="w-1.5 h-6 bg-primary rounded-full inline-block" />
+              Additional Documents from Administration
+            </h3>
+            <p className="text-sm text-muted-foreground font-medium">
+              Please download and review these supplementary documents uploaded for you by the admin.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-4">
+            {[extraDoc1, extraDoc2, extraDoc3].map((doc, idx) => {
+              if (!doc) return null;
+              return (
+                <Card key={doc.id} className="p-5 border bg-white rounded-2xl flex flex-col justify-between gap-4 hover:shadow-md transition-shadow">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 bg-primary/10 rounded-xl shrink-0">
+                      <FileText className="w-5 h-5 text-primary" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-slate-800 truncate" title={doc.fileName || `Document ${idx + 1}`}>
+                        {doc.fileName || `Document ${idx + 1}`}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {doc.size ? `${doc.size.toFixed(2)} MB` : 'Size unknown'}
+                      </p>
+                    </div>
+                  </div>
+                  <a
+                    href={doc.url?.includes('cloudinary.com') ? doc.url.replace('/upload/', '/upload/fl_attachment/') : doc.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download
+                    className="w-full"
+                  >
+                    <Button variant="outline" size="sm" className="w-full gap-2 rounded-xl h-10 border-primary/20 hover:bg-primary/5 hover:text-primary">
+                      <Download className="w-4 h-4" /> Download File
+                    </Button>
+                  </a>
+                </Card>
+              );
+            })}
+          </div>
+        </Card>
+      )}
 
       {/* Additional admin-configured fields */}
       {hasAdditionalFields ? (

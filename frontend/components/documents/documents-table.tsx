@@ -31,7 +31,7 @@ export function DocumentsTable() {
   }
 
   const filteredDocuments = documents.filter((d) => {
-    if (d.type === 'UNSIGNED_CONTRACT') return false
+    if (['UNSIGNED_CONTRACT', 'CONTRACT_EXTRA_1', 'CONTRACT_EXTRA_2', 'CONTRACT_EXTRA_3'].includes(d.type)) return false
 
     const candidateName = d.application?.user 
       ? `${d.application.user.firstName} ${d.application.user.lastName}`.toLowerCase()

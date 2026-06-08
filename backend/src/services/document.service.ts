@@ -6,7 +6,7 @@ class DocumentService {
     return await prisma.document.findMany({
       where: {
         type: {
-          not: 'UNSIGNED_CONTRACT'
+          notIn: ['UNSIGNED_CONTRACT', 'CONTRACT_EXTRA_1', 'CONTRACT_EXTRA_2', 'CONTRACT_EXTRA_3']
         }
       },
       include: {

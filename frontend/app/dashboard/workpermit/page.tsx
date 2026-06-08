@@ -16,15 +16,28 @@ export default function WorkPermitPage() {
   const [application, setApplication] = useState<any>(null)
   const [workPermit, setWorkPermit] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [transitioning, setTransitioning] = useState(false)
 
   useEffect(() => { fetchData() }, [])
+
+  const handleProceedToVisa = async () => {
+    try {
+      setTransitioning(true)
+      await applicationService.updateStep(application.id, 'visapayments')
+      toast.success('Proceeding to visa payments stage!')
+      window.location.href = '/dashboard/visapayments'
+    } catch {
+      toast.error('Failed to update stage')
+      setTransitioning(false)
+    }
+  }
 
   const fetchData = async () => {
     try {
       const appData = await applicationService.getMy()
       setApplication(appData)
 
-      if (appData?.currentStepId === 'workpermit' || appData?.currentStepId === 'visa' || appData?.currentStepId === 'travel') {
+      if (appData?.currentStepId === 'workpermit' || appData?.currentStepId === 'visapayments' || appData?.currentStepId === 'visa' || appData?.currentStepId === 'travel') {
         try {
           const wpData = await workPermitService.getMyWorkPermit()
           setWorkPermit(wpData)
@@ -47,7 +60,7 @@ export default function WorkPermitPage() {
     )
   }
 
-  const isUnlocked = ['workpermit', 'visa', 'travel'].includes(application?.currentStepId)
+  const isUnlocked = ['workpermit', 'visapayments', 'visa', 'travel'].includes(application?.currentStepId)
 
   if (!isUnlocked) {
     return (
@@ -122,11 +135,19 @@ export default function WorkPermitPage() {
                         Download Work Permit
                       </Button>
                     </a>
-                    <Link href="/dashboard/visa">
-                      <Button variant="outline" size="lg" className="gap-2">
-                        Next: Visa Appointment <ChevronRight className="w-4 h-4" />
-                      </Button>
-                    </Link>
+                    <Button 
+                      variant="outline" 
+                      size="lg" 
+                      onClick={handleProceedToVisa} 
+                      disabled={transitioning}
+                      className="gap-2"
+                    >
+                      {transitioning ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <>Next: Visa Payments <ChevronRight className="w-4 h-4" /></>
+                      )}
+                    </Button>
                   </div>
                 </div>
               </div>

@@ -9,6 +9,47 @@ class WorkflowService {
     if (!workflow) {
       // Create a default workflow if none exists
       workflow = await this.initializeDefaultWorkflow();
+    } else {
+      // Check if visapayments step is present in steps, if not insert it
+      const steps = (workflow.steps as any[]) || [];
+      const hasVisaPayments = steps.some(s => s.id === 'visapayments');
+      if (!hasVisaPayments) {
+        // Find index of workpermit and insert visapayments right after it
+        const wpIndex = steps.findIndex(s => s.id === 'workpermit');
+        const visaPaymentsStep = {
+          id: 'visapayments',
+          name: 'Visa Payments',
+          description: 'Pay visa processing fees and SEVIS fees',
+          order: 10,
+          fields: [],
+          isVisaPaymentsStep: true,
+          amounts: {
+            visaFee: 15000,
+            sevisFee: 25000,
+            miscFee: 5000
+          }
+        };
+
+        // Adjust orders of steps after workpermit
+        const adjustedSteps = steps.map(s => {
+          if (s.order > 9) {
+            return { ...s, order: s.order + 1 };
+          }
+          return s;
+        });
+
+        // Insert new step
+        if (wpIndex !== -1) {
+          adjustedSteps.splice(wpIndex + 1, 0, visaPaymentsStep);
+        } else {
+          adjustedSteps.push(visaPaymentsStep);
+        }
+
+        workflow = await prisma.workflow.update({
+          where: { id: workflow.id },
+          data: { steps: adjustedSteps }
+        });
+      }
     }
 
     return workflow;
@@ -87,8 +128,9 @@ class WorkflowService {
           { id: 'contract', name: 'Contract Signing', description: 'Sign your internship contract', order: 7, fields: [], isContractStep: true },
           { id: 'payment3', name: 'Payment 3', description: 'Complete your third payment installment', order: 8, fields: [], isPaymentStep: true, amount: 50000, gstPercentage: 18, discountPercentage: 0, paymentConfig: { accountName: 'International Education Corp', accountNumber: '1234567890', ifsc: 'ICIC0000001', bankName: 'ICICI Bank', qrCodeUrl: '' } },
           { id: 'workpermit', name: 'Work Permit', description: 'Work permit processing', order: 9, fields: [] },
-          { id: 'visa', name: 'Visa Stage', description: 'Visa application process', order: 10, fields: [] },
-          { id: 'travel', name: 'Travel Details', description: 'Your travel itinerary', order: 11, fields: [] },
+          { id: 'visapayments', name: 'Visa Payments', description: 'Pay visa processing fees and SEVIS fees', order: 10, fields: [], isVisaPaymentsStep: true, amounts: { visaFee: 15000, sevisFee: 25000, miscFee: 5000 } },
+          { id: 'visa', name: 'Visa Stage', description: 'Visa application process', order: 11, fields: [] },
+          { id: 'travel', name: 'Travel Details', description: 'Your travel itinerary', order: 12, fields: [] },
         ]
       }
     });

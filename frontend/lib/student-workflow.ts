@@ -8,6 +8,7 @@ export type WorkflowStep =
   | 'contract'
   | 'payment3'
   | 'workpermit'
+  | 'visapayments'
   | 'visa'
   | 'travel'
 
@@ -32,8 +33,9 @@ export const WORKFLOW_STEPS: Record<WorkflowStep, Omit<WorkflowStepData, 'comple
   contract: { id: 'contract', title: 'Contract', description: 'Sign agreement', icon: '🔒', order: 7 },
   payment3: { id: 'payment3', title: 'Third Payment', description: 'Payment installment 3', icon: '🔒', order: 8 },
   workpermit: { id: 'workpermit', title: 'Work Permit', description: 'Permit processing', icon: '🔒', order: 9 },
-  visa: { id: 'visa', title: 'Visa Stage', description: 'Visa application', icon: '🔒', order: 10 },
-  travel: { id: 'travel', title: 'Travel Details', description: 'Travel information', icon: '🔒', order: 11 },
+  visapayments: { id: 'visapayments', title: 'Visa Payments', description: 'Pay visa fees & SEVIS', icon: '🔒', order: 10 },
+  visa: { id: 'visa', title: 'Visa Stage', description: 'Visa application', icon: '🔒', order: 11 },
+  travel: { id: 'travel', title: 'Travel Details', description: 'Travel information', icon: '🔒', order: 12 },
 }
 
 export const getWorkflowSteps = (currentStepId: WorkflowStep): WorkflowStepData[] => {
