@@ -126,6 +126,21 @@ export default function HotelsAdminPage() {
       return
     }
 
+    const checkInDateObj = new Date(assignmentData.checkIn)
+    const checkOutDateObj = new Date(assignmentData.checkOut)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    if (checkInDateObj < today) {
+      toast.error('Check-in date cannot be in the past')
+      return
+    }
+
+    if (checkOutDateObj < checkInDateObj) {
+      toast.error('Check-out date cannot be earlier than check-in date')
+      return
+    }
+
     try {
       await hotelService.assign({
         hotelId: assignmentData.hotelId,

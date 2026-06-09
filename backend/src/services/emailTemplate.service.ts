@@ -83,6 +83,12 @@ class EmailTemplateService {
         subject: 'Visa Slot Booked - Meeting Link Attached',
         body: '<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #1f2937;"> <h1 style="color: #8B48F6;">Visa Appointment Scheduled</h1> <p>Hi {{studentName}},</p> <p>Your visa appointment has been scheduled successfully.</p> <p><strong>Date/Time:</strong> {{dateTime}}</p> <p><strong>Google Meet Link:</strong> <a href="{{meetLink}}">{{meetLink}}</a></p> <p>Please make sure to join the meeting on time for your visa interview processing.</p> </div>',
         variables: ['studentName', 'dateTime', 'meetLink']
+      },
+      {
+        name: 'INTERVIEW_BOOKED',
+        subject: 'Interview Scheduled - Meeting Link Attached',
+        body: '<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #1f2937;"> <h1 style="color: #8B48F6;">Interview Scheduled</h1> <p>Hi {{studentName}},</p> <p>Your interview has been scheduled successfully.</p> <p><strong>Date/Time:</strong> {{dateTime}}</p> <p><strong>Google Meet Link:</strong> <a href="{{meetLink}}">{{meetLink}}</a></p> <p>Please make sure to join the meeting on time.</p> </div>',
+        variables: ['studentName', 'dateTime', 'meetLink']
       }
     ];
 
