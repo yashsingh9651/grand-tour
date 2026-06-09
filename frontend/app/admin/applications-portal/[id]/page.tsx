@@ -460,9 +460,11 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
     } finally {
       setSubmittingAction(false)
     }
-    const handleDeleteDoc = async (docId: string) => {
-      if (!confirm('Are you sure you want to delete this document?')) return
-      try {
+  }
+
+  const handleDeleteDoc = async (docId: string) => {
+    if (!confirm('Are you sure you want to delete this document?')) return
+    try {
         setSubmittingAction(true)
         await documentService.delete(docId)
         toast.success('Document deleted successfully')
@@ -1678,4 +1680,3 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
       </DashboardLayout>
     )
   }
-}
