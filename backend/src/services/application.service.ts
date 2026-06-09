@@ -11,6 +11,13 @@ class ApplicationService {
       select: { id: true }
     });
 
+    const payloadData = data.data || {};
+    const passportNumber = data.passportNumber !== undefined ? data.passportNumber : payloadData.passportNumber;
+    const educationalInstitution = data.educationalInstitution !== undefined ? data.educationalInstitution : payloadData.educationalInstitution;
+    const enrollmentStatus = data.enrollmentStatus !== undefined ? data.enrollmentStatus : payloadData.enrollmentStatus;
+    const preferredDepartment = data.preferredDepartment !== undefined ? data.preferredDepartment : payloadData.preferredDepartment;
+    const statementOfPurpose = data.statementOfPurpose !== undefined ? data.statementOfPurpose : payloadData.statementOfPurpose;
+
     const application = await prisma.application.upsert({
       where: { userId: data.userId },
       update: {
@@ -18,11 +25,11 @@ class ApplicationService {
         currentStepId: data.currentStepId,
         notes: data.notes,
         data: data.data,
-        passportNumber: data.passportNumber,
-        educationalInstitution: data.educationalInstitution,
-        enrollmentStatus: data.enrollmentStatus,
-        preferredDepartment: data.preferredDepartment,
-        statementOfPurpose: data.statementOfPurpose,
+        passportNumber,
+        educationalInstitution,
+        enrollmentStatus,
+        preferredDepartment,
+        statementOfPurpose,
         payment1Id: data.payment1Id || (data.payment1?.id),
         payment2Id: data.payment2Id || (data.payment2?.id),
       },
@@ -32,11 +39,11 @@ class ApplicationService {
         currentStepId: data.currentStepId || 'application',
         notes: data.notes,
         data: data.data || {},
-        passportNumber: data.passportNumber,
-        educationalInstitution: data.educationalInstitution,
-        enrollmentStatus: data.enrollmentStatus,
-        preferredDepartment: data.preferredDepartment,
-        statementOfPurpose: data.statementOfPurpose,
+        passportNumber,
+        educationalInstitution,
+        enrollmentStatus,
+        preferredDepartment,
+        statementOfPurpose,
         payment1Id: data.payment1Id || (data.payment1?.id),
         payment2Id: data.payment2Id || (data.payment2?.id),
       },
@@ -76,6 +83,13 @@ class ApplicationService {
       select: { status: true }
     });
 
+    const payloadData = data.data || {};
+    const passportNumber = data.passportNumber !== undefined ? data.passportNumber : payloadData.passportNumber;
+    const educationalInstitution = data.educationalInstitution !== undefined ? data.educationalInstitution : payloadData.educationalInstitution;
+    const enrollmentStatus = data.enrollmentStatus !== undefined ? data.enrollmentStatus : payloadData.enrollmentStatus;
+    const preferredDepartment = data.preferredDepartment !== undefined ? data.preferredDepartment : payloadData.preferredDepartment;
+    const statementOfPurpose = data.statementOfPurpose !== undefined ? data.statementOfPurpose : payloadData.statementOfPurpose;
+
     const application = await prisma.application.update({
       where: { id },
       data: {
@@ -83,11 +97,11 @@ class ApplicationService {
         currentStepId: data.currentStepId,
         notes: data.notes,
         data: data.data,
-        passportNumber: data.passportNumber,
-        educationalInstitution: data.educationalInstitution,
-        enrollmentStatus: data.enrollmentStatus,
-        preferredDepartment: data.preferredDepartment,
-        statementOfPurpose: data.statementOfPurpose,
+        passportNumber,
+        educationalInstitution,
+        enrollmentStatus,
+        preferredDepartment,
+        statementOfPurpose,
         payment1Id: data.payment1Id || (data.payment1?.id),
         payment2Id: data.payment2Id || (data.payment2?.id),
       },

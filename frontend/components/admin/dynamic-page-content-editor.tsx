@@ -77,7 +77,7 @@ export function DynamicPageContentEditor({
       content.blocks.forEach((block: any, index: number) => {
         const blockKey = block.id || `block-${index}`
         if (nextState[blockKey] === undefined) {
-          nextState[blockKey] = true
+          nextState[blockKey] = index === 0
         }
       })
 
@@ -124,8 +124,7 @@ export function DynamicPageContentEditor({
       blocks: [...(current?.blocks || []), newSection],
     }))
 
-    setExpandedBlocks((current) => ({
-      ...current,
+    setExpandedBlocks(() => ({
       [newSection.id]: true,
     }))
   }
@@ -151,8 +150,7 @@ export function DynamicPageContentEditor({
       blocks: [...(current?.blocks || []), newField],
     }))
 
-    setExpandedBlocks((current) => ({
-      ...current,
+    setExpandedBlocks(() => ({
       [newField.id]: true,
     }))
   }
@@ -171,10 +169,13 @@ export function DynamicPageContentEditor({
   }
 
   const toggleBlock = (blockId: string, open: boolean) => {
-    setExpandedBlocks((current) => ({
-      ...current,
-      [blockId]: open,
-    }))
+    setExpandedBlocks(() => {
+      const nextState: Record<string, boolean> = {}
+      if (open) {
+        nextState[blockId] = true
+      }
+      return nextState
+    })
   }
 
   const saveContent = async () => {
@@ -297,26 +298,35 @@ export function DynamicPageContentEditor({
                       onOpenChange={(open) => toggleBlock(blockKey, open)}
                     >
                       <div className="border rounded-2xl bg-muted/20 overflow-hidden">
-                        <div className="flex items-center justify-between gap-3 px-4 py-3 bg-slate-50/50">
-                          <div className="flex items-center gap-3 text-left">
-                            <span className="rounded-full bg-primary/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-primary">{block.type || 'text'}</span>
-                            <div>
-                              <p className="text-sm font-semibold text-slate-800">#{index + 1} {block.label || 'Untitled block'}</p>
-                              <p className="text-[10px] text-muted-foreground">{block.section || 'General'} • Order Position {block.order ?? index + 1}</p>
+                        <CollapsibleTrigger asChild>
+                          <div className="flex items-center justify-between gap-3 px-4 py-3 bg-slate-50/50 cursor-pointer hover:bg-slate-50 transition-colors">
+                            <div className="flex items-center gap-3 text-left">
+                              <span className="rounded-full bg-primary/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-primary">{block.type || 'text'}</span>
+                              <div>
+                                <p className="text-sm font-semibold text-slate-800">#{index + 1} {block.label || 'Untitled block'}</p>
+                                <p className="text-[10px] text-muted-foreground">{block.section || 'General'} • Order Position {block.order ?? index + 1}</p>
+                              </div>
                             </div>
-                          </div>
 
-                          <div className="flex items-center gap-2">
-                            <Button type="button" size="icon" variant="ghost" onClick={() => removeBlock(block.id)} className="h-8 w-8 text-rose-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl">
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                            <CollapsibleTrigger asChild>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                type="button"
+                                size="icon"
+                                variant="ghost"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  removeBlock(block.id)
+                                }}
+                                className="h-8 w-8 text-rose-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
                               <Button type="button" variant="ghost" className="h-8 w-8 p-0 rounded-xl">
                                 <ChevronDown className={`w-4 h-4 transition-transform ${expandedBlocks[blockKey] ? 'rotate-180' : ''}`} />
                               </Button>
-                            </CollapsibleTrigger>
+                            </div>
                           </div>
-                        </div>
+                        </CollapsibleTrigger>
 
                         <CollapsibleContent className="border-t bg-background/90 px-5 py-5 space-y-5">
                           {/* Basic Fields Grid */}

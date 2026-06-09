@@ -387,37 +387,49 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
               <div className="grid md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
                 <div className="space-y-1">
                   <span className="text-[10px] font-bold text-slate-400 uppercase block">Institution Name</span>
-                  <span className="font-bold text-slate-800">{application.collegeName || 'N/A'}</span>
+                  <span className="font-bold text-slate-800">{application.data?.educationalInstitution || application.educationalInstitution || application.collegeName || 'N/A'}</span>
                 </div>
                 <div className="space-y-1">
                   <span className="text-[10px] font-bold text-slate-400 uppercase block">University Affiliation</span>
-                  <span className="font-semibold text-slate-800">{application.universityName || 'N/A'}</span>
+                  <span className="font-semibold text-slate-800">{application.data?.universityName || application.universityName || 'N/A'}</span>
                 </div>
                 <div className="space-y-1">
                   <span className="text-[10px] font-bold text-slate-400 uppercase block">Course</span>
-                  <span className="font-semibold text-slate-800">{application.course || 'N/A'}</span>
+                  <span className="font-semibold text-slate-800">{application.data?.course || application.course || 'N/A'}</span>
                 </div>
                 <div className="space-y-1">
                   <span className="text-[10px] font-bold text-slate-400 uppercase block">Year / Semester</span>
-                  <span className="font-semibold text-slate-800">{application.currentYear || 'N/A'}</span>
+                  <span className="font-semibold text-slate-800">{application.data?.currentYear || application.currentYear || 'N/A'}</span>
                 </div>
                 <div className="space-y-1">
                   <span className="text-[10px] font-bold text-slate-400 uppercase block">Department</span>
-                  <span className="font-semibold text-slate-800">{application.department || 'N/A'}</span>
+                  <span className="font-semibold text-slate-800">{application.data?.preferredDepartment || application.preferredDepartment || application.department || 'N/A'}</span>
                 </div>
                 <div className="space-y-1">
                   <span className="text-[10px] font-bold text-slate-400 uppercase block">CGPA</span>
-                  <span className="font-black text-primary">{application.cgpa || 'N/A'}</span>
+                  <span className="font-black text-primary">{application.data?.cgpa || application.cgpa || 'N/A'}</span>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Passport Number</span>
+                  <span className="font-semibold text-slate-800">{application.data?.passportNumber || application.passportNumber || 'N/A'}</span>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Enrollment Status</span>
+                  <span className="font-semibold text-slate-800">{application.data?.enrollmentStatus || application.enrollmentStatus || 'N/A'}</span>
                 </div>
                 <div className="space-y-1">
                   <span className="text-[10px] font-bold text-slate-400 uppercase block">Preferred Dates</span>
                   <span className="font-semibold text-slate-600">
-                    {application.data?.internshipStartDate ? `${new Date(application.data.internshipStartDate).toLocaleDateString()} to ${new Date(application.data.internshipEndDate).toLocaleDateString()}` : 'N/A'}
+                    {application.data?.preferredStartDate 
+                      ? `Starts ${new Date(application.data.preferredStartDate).toLocaleDateString()}` 
+                      : (application.data?.internshipStartDate 
+                          ? `${new Date(application.data.internshipStartDate).toLocaleDateString()} to ${new Date(application.data.internshipEndDate).toLocaleDateString()}` 
+                          : 'N/A')}
                   </span>
                 </div>
                 <div className="space-y-1">
                   <span className="text-[10px] font-bold text-slate-400 uppercase block">SOP Summary</span>
-                  <p className="text-slate-600 text-xs mt-0.5 leading-relaxed bg-slate-50 p-3 border rounded-xl">{application.statementOfPurpose || 'N/A'}</p>
+                  <p className="text-slate-600 text-xs mt-0.5 leading-relaxed bg-slate-50 p-3 border rounded-xl">{application.data?.statementOfPurpose || application.statementOfPurpose || 'N/A'}</p>
                 </div>
               </div>
             </Card>
@@ -1180,7 +1192,7 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400 uppercase font-bold text-[9px]">College / CGPA</span>
-                  <span className="font-bold truncate max-w-[120px]">{application.collegeName || 'N/A'} ({application.cgpa || '0'})</span>
+                  <span className="font-bold truncate max-w-[120px]">{application.data?.educationalInstitution || application.educationalInstitution || application.collegeName || 'N/A'} ({application.data?.cgpa || application.cgpa || '0'})</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400 uppercase font-bold text-[9px]">Enrolled Stage</span>

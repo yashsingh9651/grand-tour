@@ -323,8 +323,8 @@ export function ProfileBuilderStep({ application, onSubmit, submitting, pageCont
     'travel'
   ]
   const currentStepId = application?.currentStepId || 'application'
-  const currentStepIndex = journeySteps.indexOf(currentStepId) !== -1 
-    ? journeySteps.indexOf(currentStepId) 
+  const currentStepIndex = journeySteps.indexOf(currentStepId) !== -1
+    ? journeySteps.indexOf(currentStepId)
     : 0
 
   const completion = currentStepIndex === journeySteps.length - 1
