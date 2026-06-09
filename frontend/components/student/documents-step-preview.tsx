@@ -237,6 +237,19 @@ export function DocumentsStepPreview({
 
                   {(status === 'NOT UPLOADED' || status === 'REJECTED') ? (
                     <>
+                      {status === 'REJECTED' && uploadedDocs[block.fieldKey]?.remarks && (
+                        <div className="mb-6 p-4 rounded-2xl bg-red-50/80 border border-red-200/50 text-red-900 text-sm flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                          <div className="mt-0.5 shrink-0 bg-red-100 p-1.5 rounded-lg text-red-600">
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                          </div>
+                          <div>
+                            <span className="font-extrabold block text-xs tracking-wider uppercase text-red-800 mb-1">Feedback from Admin</span>
+                            <p className="text-red-700 leading-relaxed font-semibold">{uploadedDocs[block.fieldKey].remarks}</p>
+                          </div>
+                        </div>
+                      )}
                       <div className="border-2 border-dashed border-gray-200 rounded-2xl py-12 px-8 flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-[#C6F16D] hover:bg-[#FAFFF0] transition-all group"
                         onClick={() => onUpload?.(block.fieldKey, block.label)}
                       >

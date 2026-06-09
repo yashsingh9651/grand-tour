@@ -84,11 +84,14 @@ export default function DocumentsPage() {
   const allRequiredDocsUploaded = keysToCheck.every((key: string) =>
     uploadedDocs[key] && uploadedDocs[key].status !== 'REJECTED'
   )
-  const canContinue = allRequiredDocsUploaded && !hasRejectedDocuments
+  const allRequiredDocsVerified = keysToCheck.every((key: string) =>
+    uploadedDocs[key] && uploadedDocs[key].status === 'APPROVED'
+  )
+  const canContinue = allRequiredDocsVerified
 
   const handleContinue = async () => {
     if (!canContinue) {
-      toast.error('All required documents must be uploaded before continuing to the next stage.')
+      toast.error('All required documents must be verified and approved by the admin before continuing.')
       return
     }
 
@@ -159,10 +162,10 @@ export default function DocumentsPage() {
             <p className="font-semibold">One or more documents were rejected. Please resubmit the rejected files before continuing.</p>
           ) : !allRequiredDocsUploaded ? (
             <p className="font-semibold">Upload all required documents to unlock the next stage.</p>
-          ) : allUploadedDocsApproved ? (
-            <p className="font-semibold">All uploaded documents are approved. You can now continue to the next stage.</p>
+          ) : !allRequiredDocsVerified ? (
+            <p className="font-semibold">Your documents are uploaded and under review. Please wait for the admin to verify and approve them before continuing.</p>
           ) : (
-            <p className="font-semibold">Your documents are uploaded and under review. You can continue to the next stage.</p>
+            <p className="font-semibold">All required documents are approved. You can now continue to the next stage.</p>
           )}
         </div>
 

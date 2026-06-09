@@ -4,12 +4,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { StudentLayout } from '@/components/student/student-layout'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { applicationService, interviewService } from '@/lib/services/api.service'
+import { applicationService, interviewService, applicationPageContentService } from '@/lib/services/api.service'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import {
   Loader2, ChevronLeft, ChevronRight, Video,
-  Calendar as CalendarIcon, FileText, Code2, Lightbulb, User
+  Calendar as CalendarIcon, FileText, Code2, Lightbulb, User, Lock
 } from 'lucide-react'
 import {
   format,
@@ -33,15 +33,17 @@ export default function InterviewPage() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [selectedSlotId, setSelectedSlotId] = useState<string | null>(null)
   const [bookingInProgress, setBookingInProgress] = useState(false)
+  const [isUnlocked, setIsUnlocked] = useState(true)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true)
-        const [appData, slotData, interviewData] = await Promise.all([
+        const [appData, slotData, interviewData, contentData] = await Promise.all([
           applicationService.getMy().catch(() => null),
           interviewService.getAvailableSlots().catch(() => []),
           interviewService.getMy().catch(() => null),
+          applicationPageContentService.get('documents').catch(() => null),
         ])
 
         setApplication(appData)
@@ -49,6 +51,38 @@ export default function InterviewPage() {
 
         const availableSlots = Array.isArray(slotData) ? slotData : []
         setSlots(availableSlots)
+
+        // Check if all required documents are approved
+        const requiredDocKeys = (contentData?.blocks || [])
+          .filter((b: any) => b.type === 'upload' && b.enabled !== false)
+          .map((b: any) => b.fieldKey)
+        const keysToCheck = requiredDocKeys.length > 0 ? requiredDocKeys : ['RESUME', 'PASSPORT', 'PHOTO']
+        
+        const allVerified = keysToCheck.every((key: string) => {
+          const doc = (appData?.documents || []).find((d: any) => d.type === key)
+          return doc && doc.status === 'APPROVED'
+        })
+
+        const journeySteps = [
+          'application',
+          'documents',
+          'interview',
+          'payment1',
+          'hotel',
+          'payment2',
+          'contract',
+          'payment3',
+          'workpermit',
+          'visa',
+          'travel'
+        ]
+        const currentStepId = appData?.currentStepId || 'interview'
+        const currentStepIndex = journeySteps.indexOf(currentStepId) !== -1 
+          ? journeySteps.indexOf(currentStepId) 
+          : journeySteps.indexOf('interview')
+        
+        const isPastDocuments = currentStepIndex > journeySteps.indexOf('documents')
+        setIsUnlocked(allVerified || isPastDocuments)
 
         if (interviewData?.scheduledAt) {
           const scheduledDate = new Date(interviewData.scheduledAt)
@@ -195,6 +229,27 @@ export default function InterviewPage() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <Loader2 className="w-8 h-8 text-[#C6F16D] animate-spin" />
       </div>
+    )
+  }
+
+  if (!isUnlocked) {
+    return (
+      <StudentLayout currentStep="interview" headerContent={interviewHeader}>
+        <div className="max-w-4xl space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <Card className="p-12 border-2 border-dashed bg-secondary/20 flex flex-col items-center text-center">
+            <div className="w-20 h-20 bg-background rounded-full flex items-center justify-center shadow-inner mb-6">
+              <Lock className="w-10 h-10 text-muted-foreground" />
+            </div>
+            <h2 className="text-2xl font-bold">Step Locked</h2>
+            <p className="text-muted-foreground mt-2 max-w-md">
+              Your interview hub will unlock once all required documents are verified and approved by our team.
+            </p>
+            <Button className="mt-8" onClick={() => router.push('/dashboard/documents')}>
+              Go to Documents Step <ChevronRight className="w-4 h-4 ml-2" />
+            </Button>
+          </Card>
+        </div>
+      </StudentLayout>
     )
   }
 
