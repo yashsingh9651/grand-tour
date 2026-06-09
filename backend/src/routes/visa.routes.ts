@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   createVisaSlot,
+  generateVisaSlots,
   uploadVisaDocument,
   getAllVisaSlots,
   deleteVisaSlot,
@@ -23,6 +24,7 @@ router.post('/book', bookVisaSlot);
 // Admin routes
 router.get('/', restrictTo('ADMIN', 'SUPER_ADMIN'), getAllVisaSlots);
 router.post('/', restrictTo('ADMIN', 'SUPER_ADMIN'), createVisaSlot);
+router.post('/slots/generate', restrictTo('ADMIN', 'SUPER_ADMIN'), generateVisaSlots);
 router.post('/document', restrictTo('ADMIN', 'SUPER_ADMIN'), uploadVisaDocument);
 router.post('/:id/approve', restrictTo('ADMIN', 'SUPER_ADMIN'), approveVisaSlot);
 router.post('/:id/reject', restrictTo('ADMIN', 'SUPER_ADMIN'), rejectVisaSlot);

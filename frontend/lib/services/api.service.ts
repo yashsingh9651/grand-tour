@@ -371,6 +371,10 @@ export const visaService = {
     const response = await apiClient.delete(`/api/visa/${id}`);
     return response.data;
   },
+  generateSlots: async (startDate: string, endDate: string, bufferTime: number, availability: any[]) => {
+    const response = await apiClient.post('/api/visa/slots/generate', { startDate, endDate, bufferTime, availability });
+    return response.data;
+  },
 };
 
 export const travelService = {

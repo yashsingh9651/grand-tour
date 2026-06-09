@@ -66,6 +66,101 @@ export const createVisaSlot = async (req: Request, res: Response) => {
   res.status(201).json({ success: true, data: slot });
 };
 
+// Admin: Generate visa slots in bulk
+export const generateVisaSlots = async (req: Request, res: Response) => {
+  const { startDate, endDate, bufferTime = 0, availability = [] } = req.body;
+
+  try {
+    if (!availability || availability.length === 0) {
+      return res.status(400).json({ success: false, error: 'No availability rules provided.' });
+    }
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    // Normalize dates to start/end of day
+    start.setHours(0, 0, 0, 0);
+    end.setHours(23, 59, 59, 999);
+
+    const slotsToCreate = [];
+
+    // Loop through each day in the range
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      const dayOfWeek = d.getDay();
+      const dayAvail = availability.find((a: any) => a.dayOfWeek === dayOfWeek);
+
+      if (!dayAvail || !dayAvail.isActive) continue;
+
+      const [startH, startM] = dayAvail.startTime.split(':').map(Number);
+      const [endH, endM] = dayAvail.endTime.split(':').map(Number);
+
+      let current = new Date(d);
+      current.setHours(startH, startM, 0, 0);
+
+      const dayEnd = new Date(d);
+      dayEnd.setHours(endH, endM, 0, 0);
+
+      const lunchStart = dayAvail.lunchStart ? dayAvail.lunchStart.split(':').map(Number) : null;
+      const lunchEnd = dayAvail.lunchEnd ? dayAvail.lunchEnd.split(':').map(Number) : null;
+
+      while (current < dayEnd) {
+        const slotEnd = new Date(current.getTime() + dayAvail.slotDuration * 60000);
+
+        if (slotEnd > dayEnd) break;
+
+        // Check for lunch gap
+        let isLunch = false;
+        if (lunchStart && lunchEnd) {
+          const lStart = new Date(d);
+          lStart.setHours(lunchStart[0], lunchStart[1], 0, 0);
+          const lEnd = new Date(d);
+          lEnd.setHours(lunchEnd[0], lunchEnd[1], 0, 0);
+
+          if ((current >= lStart && current < lEnd) || (slotEnd > lStart && slotEnd <= lEnd)) {
+            isLunch = true;
+          }
+        }
+
+        if (!isLunch) {
+          // Check if slot already exists to avoid duplicates
+          const existing = await prisma.visaSlot.findFirst({
+            where: {
+              startTime: current,
+              endTime: slotEnd,
+            },
+          });
+
+          if (!existing) {
+            slotsToCreate.push({
+              startTime: new Date(current),
+              endTime: new Date(slotEnd),
+              capacity: dayAvail.capacity || 1,
+            });
+          }
+        }
+
+        // Advance current time by duration + buffer
+        current = new Date(slotEnd.getTime() + bufferTime * 60000);
+      }
+    }
+
+    if (slotsToCreate.length > 0) {
+      await prisma.visaSlot.createMany({
+        data: slotsToCreate,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: `${slotsToCreate.length} visa slots generated successfully`,
+      count: slotsToCreate.length,
+    });
+  } catch (error) {
+    logger.error('Error generating visa slots:', error);
+    return res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+};
+
 // Admin: Upload document to all visa slots (or a specific one)
 export const uploadVisaDocument = async (req: Request, res: Response) => {
   const { slotId, documentUrl } = req.body;
