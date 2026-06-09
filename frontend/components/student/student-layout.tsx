@@ -55,21 +55,6 @@ export function StudentLayout({ children, currentStep = 'application', headerCon
             </span>
           </div>
 
-          {/* Center: Global Search */}
-          <div className="flex-1 max-w-xs relative">
-            <div
-              className="flex items-center gap-2 px-3 py-2 rounded-full text-xs transition-all duration-200 hover:shadow-sm cursor-pointer"
-              style={{
-                backgroundColor: '#EDEDEA',
-                color: '#888',
-                border: '1px solid #E0E0DA',
-              }}
-            >
-              <Search className="w-3.5 h-3.5 shrink-0" />
-              <span>Global Search...</span>
-            </div>
-          </div>
-
           {/* Right: Nav tabs + icons */}
           <div className="flex items-center gap-5">
             {/* Nav Tabs */}
