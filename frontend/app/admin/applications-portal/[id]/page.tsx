@@ -17,7 +17,8 @@ import {
   workPermitService, 
   visaService, 
   travelService,
-  uploadService
+  uploadService,
+  applicationPageContentService
 } from '@/lib/services/api.service'
 import { toast } from 'sonner'
 import { 
@@ -29,6 +30,148 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import UploadPopup from '@/components/UploadPopup'
+
+const fallbackPageContent = {
+  title: 'Build Your Editorial Profile',
+  subtitle: 'Phase 1: Defining your academic and professional coordinates.',
+  blocks: [
+    {
+      id: 'section-personal-credentials',
+      type: 'section',
+      label: 'Personal Credentials',
+      section: 'Personal Credentials',
+      column: 'left',
+      order: 1,
+      enabled: true,
+    },
+    {
+      id: 'full-name',
+      type: 'text',
+      label: 'Full Legal Name',
+      fieldKey: 'fullName',
+      placeholder: 'e.g. John Doe',
+      section: 'Personal Credentials',
+      column: 'left',
+      order: 2,
+    },
+    {
+      id: 'primary-email',
+      type: 'user',
+      label: 'Primary Email',
+      fieldKey: 'email',
+      valueSource: 'user.email',
+      section: 'Personal Credentials',
+      column: 'left',
+      order: 3,
+      disabled: true,
+    },
+    {
+      id: 'passport-number',
+      type: 'text',
+      label: 'Passport Number',
+      fieldKey: 'passportNumber',
+      placeholder: 'E1234567',
+      section: 'Personal Credentials',
+      column: 'left',
+      order: 4,
+      required: false,
+    },
+    {
+      id: 'passport-confirmation',
+      type: 'checkbox',
+      label: 'I confirm I have a valid passport',
+      fieldKey: 'passportConfirmed',
+      defaultValue: true,
+      section: 'Personal Credentials',
+      column: 'left',
+      order: 5,
+      required: true,
+    },
+    {
+      id: 'section-academic-nexus',
+      type: 'section',
+      label: 'Academic Nexus',
+      section: 'Academic Nexus',
+      column: 'left',
+      order: 6,
+      enabled: true,
+    },
+    {
+      id: 'educational-institution',
+      type: 'text',
+      label: 'Educational Institution',
+      fieldKey: 'educationalInstitution',
+      placeholder: 'Metropolitan Institute of Technology',
+      section: 'Academic Nexus',
+      column: 'left',
+      order: 7,
+      required: false,
+    },
+    {
+      id: 'enrollment-status',
+      type: 'select',
+      label: 'B.Tech Enrollment Status',
+      fieldKey: 'enrollmentStatus',
+      options: ['Active Candidate', 'Alumni'],
+      defaultValue: 'Active Candidate',
+      section: 'Academic Nexus',
+      column: 'left',
+      order: 8,
+    },
+    {
+      id: 'cgpa',
+      type: 'number',
+      label: 'CGPA',
+      fieldKey: 'cgpa',
+      placeholder: '8.5',
+      section: 'Academic Nexus',
+      column: 'left',
+      order: 9,
+      required: false,
+    },
+    {
+      id: 'section-journey-intent',
+      type: 'section',
+      label: 'Journey Intent',
+      section: 'Journey Intent',
+      column: 'right',
+      order: 10,
+      enabled: true,
+    },
+    {
+      id: 'preferred-department',
+      type: 'select',
+      label: 'Preferred Department',
+      fieldKey: 'preferredDepartment',
+      options: ['Journalism', 'Digital Media', 'Publishing', 'Content Strategy'],
+      section: 'Journey Intent',
+      column: 'right',
+      order: 11,
+    },
+    {
+      id: 'statement-of-purpose',
+      type: 'textarea',
+      label: 'Statement of Purpose (250 Words)',
+      fieldKey: 'statementOfPurpose',
+      placeholder: 'Describe your vision for this editorial internship...',
+      description: 'Tell us why this program matters to your editorial journey.',
+      section: 'Journey Intent',
+      column: 'right',
+      order: 12,
+      maxWords: 250,
+    },
+    {
+      id: 'preferred-start-date',
+      type: 'date',
+      label: 'Preferred Start Date',
+      fieldKey: 'preferredStartDate',
+      section: 'Journey Intent',
+      column: 'right',
+      order: 13,
+      required: false,
+    },
+  ],
+}
 
 export default function AdminApplicationDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: applicationId } = use(params)
@@ -42,6 +185,68 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
   const [activeStepId, setActiveStepId] = useState<string>('application')
   const [overridingStep, setOverridingStep] = useState(false)
   const [submittingAction, setSubmittingAction] = useState(false)
+  const [pageContent, setPageContent] = useState<any>(null)
+
+  const resolveFieldValue = (field: any) => {
+    if (!application) return 'N/A'
+
+    if (field.type === 'user') {
+      const source = field.valueSource || ''
+      const user = application.user
+      if (source === 'user.fullName') {
+        if (user?.firstName || user?.lastName) {
+          return `${user.firstName || ''} ${user.lastName || ''}`.trim()
+        }
+        return user?.name || 'N/A'
+      }
+      if (source === 'user.email') {
+        return user?.email || 'N/A'
+      }
+      if (source === 'user.firstName') {
+        return user?.firstName || 'N/A'
+      }
+      if (source === 'user.lastName') {
+        return user?.lastName || 'N/A'
+      }
+      return field.defaultValue || 'N/A'
+    }
+
+    if (field.fieldKey === 'fullName') {
+      const user = application.user
+      if (user?.firstName || user?.lastName) {
+        return `${user.firstName || ''} ${user.lastName || ''}`.trim()
+      }
+      return user?.name || 'N/A'
+    }
+
+    const persistedData = application.data || {}
+    if (persistedData[field.fieldKey] !== undefined && persistedData[field.fieldKey] !== null && persistedData[field.fieldKey] !== '') {
+      const val = persistedData[field.fieldKey]
+      if (typeof val === 'boolean') {
+        return val ? 'Yes' : 'No'
+      }
+      return val
+    }
+
+    // Fallbacks
+    if (field.fieldKey === 'passportNumber' && application.passportNumber) {
+      return application.passportNumber
+    }
+    if (field.fieldKey === 'educationalInstitution' && application.educationalInstitution) {
+      return application.educationalInstitution
+    }
+    if (field.fieldKey === 'enrollmentStatus' && application.enrollmentStatus) {
+      return application.enrollmentStatus
+    }
+    if (field.fieldKey === 'preferredDepartment' && (application.preferredDepartment || application.department)) {
+      return application.preferredDepartment || application.department
+    }
+    if (field.fieldKey === 'statementOfPurpose' && application.statementOfPurpose) {
+      return application.statementOfPurpose
+    }
+
+    return 'N/A'
+  }
 
   // Document review remarks state
   const [docReviewRemarks, setDocReviewRemarks] = useState<Record<string, string>>({})
@@ -72,15 +277,17 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
   const fetchDetails = async () => {
     try {
       setLoading(true)
-      const [appData, wfData, hotelData] = await Promise.all([
+      const [appData, wfData, hotelData, contentData] = await Promise.all([
         applicationService.getById(applicationId),
         workflowService.get(),
-        hotelService.getAll()
+        hotelService.getAll(),
+        applicationPageContentService.get('application').catch(() => null)
       ])
       
       setApplication(appData)
       setWorkflow(wfData)
       setHotels(hotelData || [])
+      setPageContent(contentData)
       
       if (appData) {
         // Set active step to current candidate step
@@ -384,54 +591,37 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
 
             <Card className="p-6 border border-slate-200 rounded-3xl space-y-4">
               <h4 className="font-bold text-slate-900 border-b pb-2 flex items-center gap-2"><Sparkles className="w-4 h-4 text-primary" /> Application Form Details</h4>
-              <div className="grid md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
-                <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Institution Name</span>
-                  <span className="font-bold text-slate-800">{application.data?.educationalInstitution || application.educationalInstitution || application.collegeName || 'N/A'}</span>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">University Affiliation</span>
-                  <span className="font-semibold text-slate-800">{application.data?.universityName || application.universityName || 'N/A'}</span>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Course</span>
-                  <span className="font-semibold text-slate-800">{application.data?.course || application.course || 'N/A'}</span>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Year / Semester</span>
-                  <span className="font-semibold text-slate-800">{application.data?.currentYear || application.currentYear || 'N/A'}</span>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Department</span>
-                  <span className="font-semibold text-slate-800">{application.data?.preferredDepartment || application.preferredDepartment || application.department || 'N/A'}</span>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">CGPA</span>
-                  <span className="font-black text-primary">{application.data?.cgpa || application.cgpa || 'N/A'}</span>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Passport Number</span>
-                  <span className="font-semibold text-slate-800">{application.data?.passportNumber || application.passportNumber || 'N/A'}</span>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Enrollment Status</span>
-                  <span className="font-semibold text-slate-800">{application.data?.enrollmentStatus || application.enrollmentStatus || 'N/A'}</span>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">Preferred Dates</span>
-                  <span className="font-semibold text-slate-600">
-                    {application.data?.preferredStartDate 
-                      ? `Starts ${new Date(application.data.preferredStartDate).toLocaleDateString()}` 
-                      : (application.data?.internshipStartDate 
-                          ? `${new Date(application.data.internshipStartDate).toLocaleDateString()} to ${new Date(application.data.internshipEndDate).toLocaleDateString()}` 
-                          : 'N/A')}
-                  </span>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block">SOP Summary</span>
-                  <p className="text-slate-600 text-xs mt-0.5 leading-relaxed bg-slate-50 p-3 border rounded-xl">{application.data?.statementOfPurpose || application.statementOfPurpose || 'N/A'}</p>
-                </div>
-              </div>
+              {(() => {
+                // Use actual page content from DB, or fall back to default schema
+                const activeBlocks = (pageContent?.blocks || fallbackPageContent.blocks)
+                  .filter((b: any) => b.type !== 'section' && b.fieldKey)
+                  .sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0))
+
+                if (activeBlocks.length === 0) {
+                  return <p className="text-sm text-slate-400 italic">No form fields configured.</p>
+                }
+
+                return (
+                  <div className="grid md:grid-cols-2 gap-x-8 gap-y-4 text-sm">
+                    {activeBlocks.map((field: any) => {
+                      const value = resolveFieldValue(field)
+                      // Skip fields with no value to avoid showing N/A for fields that don't exist in this form
+                      if (value === 'N/A' || value === null || value === undefined || value === '') return null
+                      const isLong = field.type === 'textarea' || (typeof value === 'string' && value.length > 80)
+                      return (
+                        <div key={field.id} className={`space-y-1 ${isLong ? 'md:col-span-2' : ''}`}>
+                          <span className="text-[10px] font-bold text-slate-400 uppercase block">{field.label}</span>
+                          {isLong ? (
+                            <p className="text-slate-600 text-xs mt-0.5 leading-relaxed bg-slate-50 p-3 border rounded-xl">{String(value)}</p>
+                          ) : (
+                            <span className="font-semibold text-slate-800">{String(value)}</span>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                )
+              })()}
             </Card>
           </div>
         )
