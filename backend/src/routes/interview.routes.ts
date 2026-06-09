@@ -22,6 +22,9 @@ router.get('/slots/admin', InterviewController.getAdminSlots);
 router.patch('/slots/:id/link', InterviewController.updateSlotLink);
 router.delete('/slots/:id', InterviewController.deleteSlot);
 
+// Admin: Approve / Reject interview
+router.patch('/:id/status', InterviewController.updateInterviewStatus);
+
 
 
 export default router;

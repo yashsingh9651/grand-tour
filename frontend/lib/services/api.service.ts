@@ -162,6 +162,10 @@ export const interviewService = {
     const response = await apiClient.delete(`/api/interviews/slots/${id}`);
     return response.data;
   },
+  updateStatus: async (id: string, status: 'COMPLETED' | 'REJECTED') => {
+    const response = await apiClient.patch(`/api/interviews/${id}/status`, { status });
+    return response.data;
+  },
 };
 
 

@@ -18,7 +18,8 @@ import {
   visaService, 
   travelService,
   uploadService,
-  applicationPageContentService
+  applicationPageContentService,
+  interviewService
 } from '@/lib/services/api.service'
 import { toast } from 'sonner'
 import { 
@@ -705,6 +706,23 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
 
       case 'interview':
         const currentSlot = application.interviews?.[0]
+        const handleInterviewDecision = async (decision: 'COMPLETED' | 'REJECTED') => {
+          if (!currentSlot) return
+          try {
+            setSubmittingAction(true)
+            await interviewService.updateStatus(currentSlot.id, decision)
+            if (decision === 'COMPLETED') {
+              toast.success('Interview approved! Candidate advanced to the next step.')
+            } else {
+              toast.success('Interview marked as rejected.')
+            }
+            await fetchDetails()
+          } catch (error: any) {
+            toast.error(error.message || 'Failed to update interview status')
+          } finally {
+            setSubmittingAction(false)
+          }
+        }
         return (
           <div className="space-y-4">
             <h4 className="font-bold text-slate-900 border-b pb-2 flex items-center gap-2"><Calendar className="w-4 h-4 text-primary" /> Interview Schedule</h4>
@@ -738,9 +756,47 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
                   )}
                 </div>
 
-                <div className="bg-slate-50 p-4 border rounded-2xl text-xs space-y-1">
-                  <p className="font-bold text-slate-700">Interview Status: <Badge className="ml-1 capitalize">{currentSlot.status.toLowerCase()}</Badge></p>
-                  <p className="text-slate-400 mt-1 font-medium">To complete this step, manually advance the candidate step to Payment 1 using the force-override tools below once they pass their evaluation.</p>
+                <div className="bg-slate-50 p-4 border rounded-2xl space-y-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs font-bold text-slate-700">Interview Status: <Badge className="ml-1 capitalize">{currentSlot.status.toLowerCase()}</Badge></p>
+                  </div>
+
+                  {currentSlot.status === 'PENDING' && (
+                    <div className="flex flex-col sm:flex-row gap-2 pt-1 border-t">
+                      <p className="text-[10px] text-slate-400 font-medium self-center flex-1">Approve to advance the candidate to the next step, or reject to keep them in this stage.</p>
+                      <div className="flex gap-2 shrink-0">
+                        <Button
+                          onClick={() => handleInterviewDecision('REJECTED')}
+                          disabled={submittingAction}
+                          variant="outline"
+                          size="sm"
+                          className="text-rose-600 border-rose-200 hover:bg-rose-50 h-9 px-4 rounded-xl font-bold"
+                        >
+                          <X className="w-3.5 h-3.5 mr-1.5" /> Reject
+                        </Button>
+                        <Button
+                          onClick={() => handleInterviewDecision('COMPLETED')}
+                          disabled={submittingAction}
+                          size="sm"
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white h-9 px-4 rounded-xl font-bold"
+                        >
+                          <Check className="w-3.5 h-3.5 mr-1.5" /> Approve & Advance
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {currentSlot.status === 'COMPLETED' && (
+                    <div className="flex items-center gap-2 text-emerald-700 text-xs font-bold pt-1 border-t">
+                      <CheckCircle2 className="w-4 h-4" /> Interview approved. Candidate has been advanced.
+                    </div>
+                  )}
+
+                  {currentSlot.status === 'REJECTED' && (
+                    <div className="flex items-center gap-2 text-rose-600 text-xs font-bold pt-1 border-t">
+                      <X className="w-4 h-4" /> Interview was rejected.
+                    </div>
+                  )}
                 </div>
               </Card>
             ) : (

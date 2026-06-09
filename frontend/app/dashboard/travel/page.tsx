@@ -110,7 +110,7 @@ export default function TravelPage() {
         </div>
 
         {/* Journey Milestones */}
-        <Card className="p-6 border-none shadow-sm">
+        {/* <Card className="p-6 border-none shadow-sm">
           <h3 className="font-bold text-lg mb-5 flex items-center gap-2">
             <CheckCircle2 className="w-5 h-5 text-green-500" /> Your Completed Journey
           </h3>
@@ -137,7 +137,7 @@ export default function TravelPage() {
               </div>
             ))}
           </div>
-        </Card>
+        </Card> */}
 
         {/* Travel Documents */}
         <div className="space-y-4">

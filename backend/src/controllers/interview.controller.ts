@@ -474,3 +474,72 @@ export const deleteSlot = async (req: Request, res: Response) => {
     }
 };
 
+// --- Admin: Approve / Reject an interview ---
+
+export const updateInterviewStatus = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { status } = req.body; // 'COMPLETED' | 'REJECTED'
+
+    if (!['COMPLETED', 'REJECTED'].includes(status)) {
+        return res.status(400).json({ error: 'Invalid status. Use COMPLETED or REJECTED.' });
+    }
+
+    try {
+        const interview = await prisma.interview.update({
+            where: { id },
+            data: { status },
+        });
+
+        // On approval, advance the application to the next workflow step
+        if (status === 'COMPLETED' && interview.applicationId) {
+            const application = await prisma.application.findUnique({
+                where: { id: interview.applicationId },
+            });
+
+            // steps is a Json field, not a relation — fetch without include
+            const workflow = await prisma.workflow.findFirst();
+
+            if (application && workflow) {
+                // Parse steps from Json field and sort by order
+                const rawSteps = Array.isArray(workflow.steps) ? workflow.steps : [];
+                const steps = [...rawSteps].sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0));
+
+                const currentIdx = steps.findIndex((s: any) => s.id === application.currentStepId);
+                const nextStep = currentIdx >= 0 && currentIdx < steps.length - 1
+                    ? steps[currentIdx + 1]
+                    : null;
+
+                if (nextStep) {
+                    await prisma.application.update({
+                        where: { id: interview.applicationId },
+                        data: { currentStepId: (nextStep as any).id },
+                    });
+
+                    await prisma.activityLog.create({
+                        data: {
+                            applicationId: interview.applicationId,
+                            description: `Interview approved. Candidate advanced to step: ${(nextStep as any).name}`,
+                            type: 'STEP_ADVANCED',
+                        },
+                    });
+                }
+            }
+        }
+
+
+        if (status === 'REJECTED' && interview.applicationId) {
+            await prisma.activityLog.create({
+                data: {
+                    applicationId: interview.applicationId,
+                    description: 'Interview rejected by admin.',
+                    type: 'INTERVIEW_REJECTED',
+                },
+            });
+        }
+
+        return res.status(200).json({ message: `Interview ${status.toLowerCase()} successfully`, interview });
+    } catch (error) {
+        logger.error('Error updating interview status:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
