@@ -106,7 +106,7 @@ export function StudentSidebar({ currentStep }: { currentStep?: string }) {
           {NAV_ITEMS.map((item) => {
             const isActive =
               pathname === item.href ||
-              (item.href !== '/dashboard' && pathname.startsWith(item.href))
+              (item.href !== '/dashboard' && (pathname.startsWith(item.href + '/') || pathname === item.href))
             const itemStepOrder = WORKFLOW_STEP_ORDER[item.stepKey || 'application'] ?? 0
             const isLocked = itemStepOrder > currentStepOrder && !isActive
 

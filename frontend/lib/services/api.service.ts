@@ -26,6 +26,10 @@ export const applicationService = {
     const response = await apiClient.get('/api/applications');
     return response.data.data;
   },
+  getById: async (id: string) => {
+    const response = await apiClient.get(`/api/applications/${id}`);
+    return response.data.data;
+  },
   getMy: async () => {
     if (getMyPromise) return getMyPromise;
 

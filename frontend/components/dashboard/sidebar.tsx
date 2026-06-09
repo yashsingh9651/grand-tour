@@ -53,6 +53,7 @@ const MENU_SECTIONS: MenuSection[] = [
     items: [
       { icon: LayoutDashboard, label: "Dashboard", href: "/admin", feature: "dashboard" },
       { icon: Users, label: "Candidates", href: "/admin/candidates", feature: "candidates" },
+      { icon: ClipboardList, label: "Applications Portal", href: "/admin/applications-portal", feature: "applications" },
       { icon: ShieldCheck, label: "Approvals", href: "/admin/applications", feature: "applications", badge: "New" },
       { icon: Search, label: "Search", href: "/admin/search", feature: "search" },
     ]
@@ -226,11 +227,11 @@ export function Sidebar() {
                   {section.items.map((item) => {
                     const hasChildren = Boolean(item.children?.length)
                     const isActive = item.href
-                      ? pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href))
+                      ? pathname === item.href || (item.href !== "/admin" && (pathname.startsWith(item.href + "/") || pathname === item.href))
                       : false
                     const hasActiveChild = item.children?.some((child) => {
                       const childHref = child.href || ""
-                      return childHref ? pathname === childHref || pathname.startsWith(childHref) : false
+                      return childHref ? pathname === childHref || pathname.startsWith(childHref + "/") || pathname === childHref : false
                     })
                     const activeState = isActive || hasActiveChild
                     const isOpen = !!openSubMenus[item.label]
@@ -301,7 +302,7 @@ export function Sidebar() {
                           <div className="ml-4 space-y-0.5 border-l border-white/10 pl-3">
                             {item.children?.map((child) => {
                               const childHref = child.href || ""
-                              const childActive = pathname === childHref || (childHref !== "/admin" && pathname.startsWith(childHref))
+                              const childActive = pathname === childHref || (childHref !== "/admin" && (pathname.startsWith(childHref + "/") || pathname === childHref))
 
                               return (
                                 <Link

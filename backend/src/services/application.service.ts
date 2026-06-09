@@ -205,6 +205,7 @@ class ApplicationService {
         payment2: true,
         payments: true,
         workPermit: true,
+        travelDocuments: true,
         hotelAssignment: {
           include: {
             hotel: true
@@ -217,6 +218,33 @@ class ApplicationService {
   async deleteApplication(id: string) {
     return await prisma.application.delete({
       where: { id },
+    });
+  }
+
+  async getApplicationById(id: string) {
+    return await prisma.application.findUnique({
+      where: { id },
+      include: {
+        user: true,
+        interviews: {
+          orderBy: { scheduledAt: 'desc' }
+        },
+        documents: true,
+        activities: {
+          orderBy: { createdAt: 'desc' },
+          take: 20
+        },
+        payment1: true,
+        payment2: true,
+        payments: true,
+        workPermit: true,
+        travelDocuments: true,
+        hotelAssignment: {
+          include: {
+            hotel: true
+          }
+        }
+      }
     });
   }
 }
