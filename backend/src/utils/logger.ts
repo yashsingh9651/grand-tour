@@ -1,5 +1,16 @@
 import winston from 'winston';
 
+const transports: winston.transport[] = [];
+
+if (process.env.VERCEL) {
+  transports.push(new winston.transports.Console());
+} else {
+  transports.push(
+    new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
+    new winston.transports.File({ filename: 'logs/combined.log' })
+  );
+}
+
 const logger = winston.createLogger({
   level: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
   format: winston.format.combine(
@@ -11,14 +22,11 @@ const logger = winston.createLogger({
     winston.format.json()
   ),
   defaultMeta: { service: 'grand-tour-api' },
-  transports: [
-    new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'logs/combined.log' })
-  ]
+  transports
 });
 
 // If we're not in production, log to the console as well
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
   logger.add(new winston.transports.Console({
     format: winston.format.combine(
       winston.format.colorize(),
