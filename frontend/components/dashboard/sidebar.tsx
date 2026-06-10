@@ -87,6 +87,7 @@ const MENU_SECTIONS: MenuSection[] = [
         ],
       },
       { icon: Users, label: "Users", href: "/admin/users", feature: "users" },
+      { icon: ShieldCheck, label: "Role Access", href: "/admin/settings/roles", feature: "settings" },
       { icon: Mail, label: "Email Templates", href: "/admin/emails", feature: "emails" },
       { icon: BarChart3, label: "Reports", href: "/admin/reports", feature: "reports" },
       { icon: Activity, label: "Audit Logs", href: "/admin/activity", feature: "activity", badge: "3" },

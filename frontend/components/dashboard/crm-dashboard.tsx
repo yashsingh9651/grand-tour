@@ -8,6 +8,7 @@ export function CRMDashboard() {
   const [data, setData] = useState<any>(null)
   const [activities, setActivities] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     fetchDashboardData()
@@ -16,20 +17,42 @@ export function CRMDashboard() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true)
+      setError(null)
       const [statsData, actData] = await Promise.all([
         analyticsService.getDashboard(),
         activityService.getRecent(),
       ])
       setData(statsData)
       setActivities(actData)
-    } catch (error: any) {
-      toast.error(error.message)
+    } catch (err: any) {
+      const errMsg = err.response?.data?.message || err.message || "Failed to load dashboard metrics"
+      setError(errMsg)
+      toast.error(errMsg)
     } finally {
       setLoading(false)
     }
   }
 
-  if (loading || !data) {
+  if (error && !data) {
+    return (
+      <div className="flex flex-col items-center justify-center p-20 gap-4">
+        <AlertTriangle className="w-12 h-12 text-destructive animate-bounce" style={{ color: "#FF6B6B" }} />
+        <h3 className="text-lg font-bold" style={{ color: "#111" }}>Failed to Load Dashboard</h3>
+        <p className="text-sm text-center max-w-md" style={{ color: "#666" }}>
+          {error}
+        </p>
+        <button
+          onClick={fetchDashboardData}
+          className="mt-4 px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-200 hover:opacity-90 hover:scale-105"
+          style={{ backgroundColor: "#CCFF00", color: "#111", border: "none" }}
+        >
+          Try Again
+        </button>
+      </div>
+    )
+  }
+
+  if (loading && !data) {
     return (
       <div className="flex flex-col items-center justify-center p-20 gap-4">
         <Loader2 className="w-8 h-8 animate-spin" style={{ color: "#CCFF00" }} />

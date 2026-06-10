@@ -216,14 +216,39 @@ export const notificationService = {
   }
 };
 
+let getDashboardPromise: Promise<any> | null = null;
+let getWorkflowStatsPromise: Promise<any> | null = null;
+
 export const analyticsService = {
   getDashboard: async () => {
-    const response = await apiClient.get('/api/analytics/dashboard');
-    return response.data.data;
+    if (getDashboardPromise) return getDashboardPromise;
+
+    getDashboardPromise = apiClient.get('/api/analytics/dashboard')
+      .then(response => {
+        getDashboardPromise = null;
+        return response.data.data;
+      })
+      .catch(error => {
+        getDashboardPromise = null;
+        throw error;
+      });
+
+    return getDashboardPromise;
   },
   getWorkflow: async () => {
-    const response = await apiClient.get('/api/analytics/workflow');
-    return response.data.data;
+    if (getWorkflowStatsPromise) return getWorkflowStatsPromise;
+
+    getWorkflowStatsPromise = apiClient.get('/api/analytics/workflow')
+      .then(response => {
+        getWorkflowStatsPromise = null;
+        return response.data.data;
+      })
+      .catch(error => {
+        getWorkflowStatsPromise = null;
+        throw error;
+      });
+
+    return getWorkflowStatsPromise;
   }
 };
 

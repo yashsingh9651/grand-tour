@@ -1,8 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 import logger from '../utils/logger';
 
+// Only log warnings and errors to avoid extra DB connections per query log
 export const prisma = new PrismaClient({
-  log: ['query', 'info', 'warn', 'error'],
+  log: ['warn', 'error'],
 });
 
 export const connectDB = async (): Promise<void> => {

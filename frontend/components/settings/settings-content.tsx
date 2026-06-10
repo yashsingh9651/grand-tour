@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Save, Bell, Lock, Palette, Database } from 'lucide-react'
+import { Save, Bell, Lock, Palette, Database, ShieldCheck } from 'lucide-react'
+import Link from 'next/link'
 
 export function SettingsContent() {
   const [companyName, setCompanyName] = useState('Tech Solutions Inc.')
@@ -181,6 +182,20 @@ export function SettingsContent() {
             </div>
           </div>
         </div>
+      </Card>
+
+      {/* Access Control (Roles & Permissions) */}
+      <Card className="p-6">
+        <h3 className="font-semibold text-foreground mb-2 flex items-center gap-2">
+          <ShieldCheck className="w-5 h-5 text-primary" />
+          Access Control
+        </h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          Configure feature permissions and access rights for different administrative roles.
+        </p>
+        <Link href="/admin/settings/roles">
+          <Button variant="outline">Manage Role Permissions</Button>
+        </Link>
       </Card>
 
       {/* API Keys (placeholder) */}

@@ -2,30 +2,36 @@ import { prisma } from '../config/db';
 
 class AnalyticsService {
   async getDashboardStats() {
-    const [
-      totalCandidates,
-      pendingApplications,
-      acceptedApplications,
-      totalRevenue,
-      recentApplications
-    ] = await Promise.all([
-      prisma.application.count(),
-      prisma.application.count({ where: { status: 'PENDING' } }),
-      prisma.application.count({ where: { status: 'ACCEPTED' } }),
+    // Use a single groupBy to count all statuses in one DB round-trip
+    // instead of 3 separate count() calls
+    const [statusCounts, totalRevenue, recentApplications] = await Promise.all([
+      prisma.application.groupBy({
+        by: ['status'],
+        _count: { id: true },
+      }),
       prisma.payment.aggregate({
         where: { status: 'COMPLETED' },
-        _sum: { amount: true }
+        _sum: { amount: true },
       }),
       prisma.application.findMany({
         take: 5,
         orderBy: { createdAt: 'desc' },
-        include: { user: true }
-      })
+        include: { user: true },
+      }),
     ]);
 
-    // Conversion rate (Acceptance rate)
-    const conversionRate = totalCandidates > 0 
-      ? Math.round((acceptedApplications / totalCandidates) * 100) 
+    // Derive counts from the groupBy result
+    const countMap = statusCounts.reduce((acc: Record<string, number>, s) => {
+      acc[s.status] = s._count.id;
+      return acc;
+    }, {});
+
+    const totalCandidates = statusCounts.reduce((sum, s) => sum + s._count.id, 0);
+    const pendingApplications = countMap['PENDING'] || 0;
+    const acceptedApplications = countMap['ACCEPTED'] || 0;
+
+    const conversionRate = totalCandidates > 0
+      ? Math.round((acceptedApplications / totalCandidates) * 100)
       : 0;
 
     return {
@@ -34,9 +40,9 @@ class AnalyticsService {
         pendingApplications,
         acceptedApplications,
         totalRevenue: totalRevenue._sum.amount || 0,
-        conversionRate
+        conversionRate,
       },
-      recentApplications
+      recentApplications,
     };
   }
 
