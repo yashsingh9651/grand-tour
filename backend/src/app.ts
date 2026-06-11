@@ -24,6 +24,7 @@ import applicationPageContentRoutes from './routes/applicationPageContent.routes
 import workpermitRoutes from './routes/workpermit.routes';
 import visaRoutes from './routes/visa.routes';
 import travelRoutes from './routes/travel.routes';
+import documentTemplateRoutes from './routes/documentTemplate.routes';
 
 
 
@@ -65,6 +66,7 @@ app.use('/api/application-page-content', applicationPageContentRoutes);
 app.use('/api/workpermit', workpermitRoutes);
 app.use('/api/visa', visaRoutes);
 app.use('/api/travel', travelRoutes);
+app.use('/api/document-templates', documentTemplateRoutes);
 
 
 

@@ -168,7 +168,35 @@ export const interviewService = {
   },
 };
 
-
+export const documentTemplateService = {
+  getAll: async () => {
+    const response = await apiClient.get('/api/document-templates');
+    return response.data.data;
+  },
+  getById: async (id: string) => {
+    const response = await apiClient.get(`/api/document-templates/${id}`);
+    return response.data.data;
+  },
+  create: async (data: {
+    name: string;
+    description?: string;
+    fileUrl: string;
+    fileName: string;
+    variables: string[];
+    category?: string;
+  }) => {
+    const response = await apiClient.post('/api/document-templates', data);
+    return response.data.data;
+  },
+  update: async (id: string, data: any) => {
+    const response = await apiClient.put(`/api/document-templates/${id}`, data);
+    return response.data.data;
+  },
+  delete: async (id: string) => {
+    const response = await apiClient.delete(`/api/document-templates/${id}`);
+    return response.data;
+  },
+};
 
 let getWorkflowPromise: Promise<any> | null = null;
 

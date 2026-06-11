@@ -292,6 +292,18 @@ model EmailTemplate {
   updatedAt   DateTime @updatedAt
 }
 
+model DocumentTemplate {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  fileUrl     String           // Cloudinary URL of the .docx template file
+  fileName    String
+  variables   String[]         // e.g. ["studentName", "passportNumber", "visaDate"]
+  category    String?          // e.g. "visa", "work-permit", "offer-letter"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 model ApplicationPageContent {
   id          String   @id @default(uuid())
   pageKey     String   @unique
