@@ -30,7 +30,7 @@ import {
   Trash2
 } from 'lucide-react'
 import Link from 'next/link'
-import UploadPopup from '@/components/UploadPopup'
+import DocumentUploadDialog from '@/components/documents/document-upload-dialog'
 
 const fallbackPageContent = {
   title: 'Build Your Editorial Profile',
@@ -1667,7 +1667,7 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
         )}
 
         {/* Custom Template Upload Popup */}
-        <UploadPopup
+        <DocumentUploadDialog
           isOpen={isUploadOpen}
           onClose={() => setIsUploadOpen(false)}
           onUploadComplete={fetchDetails}
@@ -1675,6 +1675,25 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
           applicationId={application.id}
           documentType={uploadDocType}
           documentName={`${studentName} - ${uploadDocLabel}`}
+          studentData={{
+            studentName: `${application.user?.firstName || ''} ${application.user?.lastName || ''}`.trim(),
+            firstName: application.user?.firstName || '',
+            lastName: application.user?.lastName || '',
+            email: application.user?.email || '',
+            passportNumber: application.passportNumber || application.data?.passportNumber || '',
+            educationalInstitution: application.educationalInstitution || application.data?.educationalInstitution || '',
+            enrollmentStatus: application.enrollmentStatus || application.data?.enrollmentStatus || '',
+            cgpa: String(application.cgpa || application.data?.cgpa || ''),
+            preferredDepartment: application.preferredDepartment || application.department || application.data?.preferredDepartment || '',
+            statementOfPurpose: application.statementOfPurpose || application.data?.statementOfPurpose || '',
+            phone: application.phone || '',
+            applicationId: application.id || '',
+            visaNumber: application.visa?.visaNumber || '',
+            visaDate: application.visa?.issuedAt ? new Date(application.visa.issuedAt).toLocaleDateString() : '',
+            hotelName: application.hotelAssignment?.hotel?.name || '',
+            checkIn: application.hotelAssignment?.checkIn ? new Date(application.hotelAssignment.checkIn).toLocaleDateString() : '',
+            checkOut: application.hotelAssignment?.checkOut ? new Date(application.hotelAssignment.checkOut).toLocaleDateString() : '',
+          }}
         />
 
       </DashboardLayout>

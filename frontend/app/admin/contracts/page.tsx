@@ -13,7 +13,7 @@ import {
   Upload, Eye, Trash2, ArrowRight, UserCheck, Check, X
 } from 'lucide-react'
 import { applicationService, documentService, workflowService } from '@/lib/services/api.service'
-import UploadPopup from '@/components/UploadPopup'
+import DocumentUploadDialog from '@/components/documents/document-upload-dialog'
 
 export default function AdminContractsPage() {
   const { data: session } = useSession()
@@ -462,20 +462,42 @@ export default function AdminContractsPage() {
       </div>
 
       {/* Upload Popup for Admin Custom Contract */}
-      {uploadTargetAppId && (
-        <UploadPopup
-          isOpen={isUploadOpen}
-          onClose={() => {
-            setIsUploadOpen(false)
-            setUploadTargetAppId(null)
-          }}
-          onUploadComplete={handleUploadComplete}
-          token={token}
-          applicationId={uploadTargetAppId}
-          documentType={uploadDocType}
-          documentName={`${uploadTargetStudentName} - ${uploadDocLabel}`}
-        />
-      )}
+      {uploadTargetAppId && (() => {
+        const activeApp = applications.find(app => app.id === uploadTargetAppId);
+        return (
+          <DocumentUploadDialog
+            isOpen={isUploadOpen}
+            onClose={() => {
+              setIsUploadOpen(false)
+              setUploadTargetAppId(null)
+            }}
+            onUploadComplete={handleUploadComplete}
+            token={token}
+            applicationId={uploadTargetAppId}
+            documentType={uploadDocType}
+            documentName={`${uploadTargetStudentName} - ${uploadDocLabel}`}
+            studentData={activeApp ? {
+              studentName: `${activeApp.user?.firstName || ''} ${activeApp.user?.lastName || ''}`.trim(),
+              firstName: activeApp.user?.firstName || '',
+              lastName: activeApp.user?.lastName || '',
+              email: activeApp.user?.email || '',
+              passportNumber: activeApp.passportNumber || activeApp.data?.passportNumber || '',
+              educationalInstitution: activeApp.educationalInstitution || activeApp.data?.educationalInstitution || '',
+              enrollmentStatus: activeApp.enrollmentStatus || activeApp.data?.enrollmentStatus || '',
+              cgpa: String(activeApp.cgpa || activeApp.data?.cgpa || ''),
+              preferredDepartment: activeApp.preferredDepartment || activeApp.department || activeApp.data?.preferredDepartment || '',
+              statementOfPurpose: activeApp.statementOfPurpose || activeApp.data?.statementOfPurpose || '',
+              phone: activeApp.phone || '',
+              applicationId: activeApp.id || '',
+              visaNumber: activeApp.visa?.visaNumber || '',
+              visaDate: activeApp.visa?.issuedAt ? new Date(activeApp.visa.issuedAt).toLocaleDateString() : '',
+              hotelName: activeApp.hotelAssignment?.hotel?.name || '',
+              checkIn: activeApp.hotelAssignment?.checkIn ? new Date(activeApp.hotelAssignment.checkIn).toLocaleDateString() : '',
+              checkOut: activeApp.hotelAssignment?.checkOut ? new Date(activeApp.hotelAssignment.checkOut).toLocaleDateString() : '',
+            } : {}}
+          />
+        );
+      })()}
 
       {/* Review Signed Contract Modal */}
       {selectedDocToReview && (

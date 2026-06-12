@@ -81,6 +81,22 @@ export default function DocumentUploadDialog({
   }, [isOpen])
 
   useEffect(() => {
+    if (isOpen && templates.length > 0) {
+      if (documentType) {
+        const match = templates.find(t => t.category === documentType)
+        if (match) {
+          setSelectedTemplate(match)
+          setMode('template')
+        } else {
+          setMode('upload')
+        }
+      } else {
+        setMode('template')
+      }
+    }
+  }, [templates, documentType, isOpen])
+
+  useEffect(() => {
     if (selectedTemplate) {
       // Pre-fill variables from studentData
       const prefilled: Record<string, string> = {}

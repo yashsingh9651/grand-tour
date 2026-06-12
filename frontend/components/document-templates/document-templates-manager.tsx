@@ -16,6 +16,7 @@ import {
   Variable,
   FolderOpen,
   Download,
+  ClipboardList,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { documentTemplateService } from '@/lib/services/api.service'
@@ -30,6 +31,16 @@ const CATEGORIES = [
   { value: 'hotel', label: 'Hotel Booking' },
   { value: 'contract', label: 'Contract' },
   { value: 'other', label: 'Other' },
+]
+
+const SYSTEM_TEMPLATES = [
+  { type: 'UNSIGNED_CONTRACT', label: 'Main Contract Template', description: 'Used for the main contract signed by students.' },
+  { type: 'CONTRACT_EXTRA_1', label: 'Contract Additional Document 1', description: 'Predefined slot for additional document 1.' },
+  { type: 'CONTRACT_EXTRA_2', label: 'Contract Additional Document 2', description: 'Predefined slot for additional document 2.' },
+  { type: 'CONTRACT_EXTRA_3', label: 'Contract Additional Document 3', description: 'Predefined slot for additional document 3.' },
+  { type: 'PAYMENT1_DOCUMENT', label: 'Payment 1 Document Template', description: 'Predefined slot for documents sent in Installment 1.' },
+  { type: 'PAYMENT2_DOCUMENT', label: 'Payment 2 Document Template', description: 'Predefined slot for documents sent in Installment 2.' },
+  { type: 'PAYMENT3_DOCUMENT', label: 'Payment 3 Document Template', description: 'Predefined slot for documents sent in Installment 3.' },
 ]
 
 const SUGGESTED_VARIABLES = [
@@ -99,6 +110,27 @@ export default function DocumentTemplatesManager() {
     setShowDialog(true)
   }
 
+  function openSystemTemplateCreate(type: string, label: string) {
+    const existing = templates.find(t => t.category === type)
+    if (existing) {
+      openEdit(existing)
+      return
+    }
+    setEditingTemplate(null)
+    setForm({
+      name: label,
+      description: `Predefined system template for ${label}`,
+      category: type,
+      variables: [],
+      fileUrl: '',
+      fileName: '',
+    })
+    setVarInput('')
+    setFileStatus('idle')
+    setFileProgress(0)
+    setShowDialog(true)
+  }
+
   function openEdit(t: Template) {
     setEditingTemplate(t)
     setForm({
@@ -129,12 +161,63 @@ export default function DocumentTemplatesManager() {
     setFileProgress(0)
 
     try {
+      // 1. Read file as array buffer and parse with PizZip
+      const reader = new FileReader()
+      const arrayBufferPromise = new Promise<ArrayBuffer>((resolve, reject) => {
+        reader.onload = () => resolve(reader.result as ArrayBuffer)
+        reader.onerror = () => reject(new Error('Failed to read file buffer'))
+        reader.readAsArrayBuffer(file)
+      })
+      const arrayBuffer = await arrayBufferPromise
+
+      const PizZip = (await import('pizzip')).default
+      const zip = new PizZip(arrayBuffer)
+      
+      const xmlFiles = Object.keys(zip.files).filter(name => name.endsWith('.xml'))
+      let fullText = ''
+      for (const xmlFile of xmlFiles) {
+        const fileContent = zip.files[xmlFile].asText()
+        const cleanText = fileContent.replace(/<[^>]+>/g, '')
+        fullText += ' ' + cleanText
+      }
+
+      const regex = /\{\{([^}]+)\}\}/g
+      const extractedVars: string[] = []
+      let match
+      while ((match = regex.exec(fullText)) !== null) {
+        const varName = match[1].trim().replace(/[^a-zA-Z0-9_]/g, '')
+        if (varName && !extractedVars.includes(varName)) {
+          extractedVars.push(varName)
+        }
+      }
+
+      // 2. Upload file to Cloudinary
       const { getSession } = await import('next-auth/react')
       const session = await getSession()
       const token = (session as any)?.backendToken || (session as any)?.user?.token || localStorage.getItem('token') || ''
       const result = await uploadFile(file, token, (p) => setFileProgress(p))
-      setForm(prev => ({ ...prev, fileUrl: result.data.url, fileName: file.name }))
+      
+      setForm(prev => {
+        const mergedVars = [...prev.variables]
+        extractedVars.forEach(v => {
+          if (!mergedVars.includes(v)) {
+            mergedVars.push(v)
+          }
+        })
+        return {
+          ...prev,
+          fileUrl: result.data.url,
+          fileName: file.name,
+          variables: mergedVars
+        }
+      })
+      
       setFileStatus('done')
+      if (extractedVars.length > 0) {
+        toast.success(`Extracted ${extractedVars.length} variables: ${extractedVars.join(', ')}`)
+      } else {
+        toast.success('File uploaded successfully')
+      }
     } catch (e: any) {
       setFileStatus('error')
       toast.error(e.message || 'Upload failed')
@@ -203,153 +286,310 @@ export default function DocumentTemplatesManager() {
     hotel: 'bg-orange-500/10 text-orange-600',
     contract: 'bg-red-500/10 text-red-600',
     other: 'bg-gray-500/10 text-gray-600',
+    
+    UNSIGNED_CONTRACT: 'bg-violet-500/10 text-violet-600',
+    CONTRACT_EXTRA_1: 'bg-fuchsia-500/10 text-fuchsia-600',
+    CONTRACT_EXTRA_2: 'bg-fuchsia-500/10 text-fuchsia-600',
+    CONTRACT_EXTRA_3: 'bg-fuchsia-500/10 text-fuchsia-600',
+    PAYMENT1_DOCUMENT: 'bg-emerald-500/10 text-emerald-600',
+    PAYMENT2_DOCUMENT: 'bg-emerald-500/10 text-emerald-600',
+    PAYMENT3_DOCUMENT: 'bg-emerald-500/10 text-emerald-600',
   }
 
   return (
-    <div className="space-y-6">
-      {/* Action Bar */}
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">
-          {templates.length} template{templates.length !== 1 ? 's' : ''} saved
-        </p>
-        <button
-          onClick={openCreate}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-2xl font-bold text-sm tracking-wide transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-md"
-          style={{ background: '#141414', color: '#CCFF00' }}
-        >
-          <Plus className="w-4 h-4" />
-          New Template
-        </button>
+    <div className="space-y-10">
+      {/* Predefined System Templates */}
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+            <ClipboardList className="w-5 h-5" style={{ color: '#CCFF00' }} />
+            System Document Templates
+          </h3>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Predefined document slots integrated directly with candidate application stages.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {SYSTEM_TEMPLATES.map(slot => {
+            const t = templates.find(item => item.category === slot.type)
+            if (t) {
+              return (
+                <motion.div
+                  key={t.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="group relative bg-background rounded-2xl border border-border/60 p-5 hover:border-border hover:shadow-md transition-all duration-200"
+                >
+                  {/* Header */}
+                  <div className="flex items-start justify-between gap-3 mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center shrink-0">
+                        <FileText className="w-5 h-5 text-muted-foreground" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-bold text-sm text-foreground truncate">{t.name}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{slot.description}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                      <a
+                        href={t.fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-1.5 rounded-lg hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-all"
+                        title="Download template"
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                      </a>
+                      <button
+                        onClick={() => openEdit(t)}
+                        className="p-1.5 rounded-lg hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-all"
+                        title="Edit template"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => setDeleteConfirm(t.id)}
+                        className="p-1.5 rounded-lg hover:bg-red-50 text-muted-foreground hover:text-red-500 transition-all"
+                        title="Delete template"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Badge */}
+                  <span className={cn('inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full mb-3', categoryColor[t.category || ''] || categoryColor.other)}>
+                    <Tag className="w-2.5 h-2.5" />
+                    System Slot: {slot.label}
+                  </span>
+
+                  {/* Variables */}
+                  {t.variables.length > 0 && (
+                    <div className="space-y-1.5">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1">
+                        <Variable className="w-3 h-3" /> Variables ({t.variables.length})
+                      </p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {t.variables.slice(0, 6).map(v => (
+                          <span key={v} className="text-[10px] font-mono font-semibold bg-muted/60 text-foreground px-2 py-0.5 rounded-md">
+                            {`{{${v}}}`}
+                          </span>
+                        ))}
+                        {t.variables.length > 6 && (
+                          <span className="text-[10px] font-semibold text-muted-foreground px-2 py-0.5">
+                            +{t.variables.length - 6} more
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Footer */}
+                  <div className="mt-4 pt-3 border-t border-border/40 flex items-center justify-between">
+                    <p className="text-[10px] text-muted-foreground truncate max-w-[160px]">{t.fileName}</p>
+                    <p className="text-[10px] text-muted-foreground">
+                      {new Date(t.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+
+                  {/* Delete confirm overlay */}
+                  <AnimatePresence>
+                    {deleteConfirm === t.id && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute inset-0 bg-background/95 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center gap-4 p-5"
+                      >
+                        <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                          <Trash2 className="w-5 h-5 text-red-500" />
+                        </div>
+                        <p className="text-sm font-bold text-center">Delete &ldquo;{t.name}&rdquo;?</p>
+                        <p className="text-xs text-muted-foreground text-center">This slot will become empty.</p>
+                        <div className="flex gap-2">
+                          <button onClick={() => setDeleteConfirm(null)} className="px-4 py-2 rounded-xl text-xs font-bold bg-muted/50 hover:bg-muted">Cancel</button>
+                          <button onClick={() => handleDelete(t.id)} className="px-4 py-2 rounded-xl text-xs font-bold bg-red-500 text-white hover:bg-red-600">Delete</button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              )
+            } else {
+              // Empty dashed upload box
+              return (
+                <button
+                  key={slot.type}
+                  onClick={() => openSystemTemplateCreate(slot.type, slot.label)}
+                  className="flex flex-col items-center justify-center text-center p-6 rounded-2xl border-2 border-dashed border-border/60 hover:border-primary/45 hover:bg-primary/5 transition-all duration-200 cursor-pointer min-h-[180px] bg-background w-full"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center mb-3">
+                    <Upload className="w-5 h-5 text-muted-foreground" />
+                  </div>
+                  <p className="text-sm font-bold text-foreground">Upload {slot.label}</p>
+                  <p className="text-xs text-muted-foreground mt-1 max-w-[200px]">{slot.description}</p>
+                </button>
+              )
+            }
+          })}
+        </div>
       </div>
 
-      {/* Templates Grid */}
-      {loading ? (
-        <div className="flex justify-center py-16">
-          <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-        </div>
-      ) : templates.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 rounded-3xl border-2 border-dashed border-border/50 bg-muted/10">
-          <div className="w-16 h-16 rounded-2xl bg-muted/50 flex items-center justify-center mb-4">
-            <FolderOpen className="w-8 h-8 text-muted-foreground" />
+      <hr className="border-border/40" />
+
+      {/* Custom templates section */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+              <FolderOpen className="w-5 h-5" style={{ color: '#CCFF00' }} />
+              Custom Document Templates
+            </h3>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Create and manage other reusable custom templates.
+            </p>
           </div>
-          <p className="font-bold text-foreground">No templates yet</p>
-          <p className="text-sm text-muted-foreground mt-1">Upload a .docx file with {`{{variables}}`} to get started</p>
-          <button onClick={openCreate} className="mt-5 px-5 py-2.5 rounded-2xl text-sm font-bold" style={{ background: '#141414', color: '#CCFF00' }}>
-            Create First Template
+          <button
+            onClick={openCreate}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs tracking-wide transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-md cursor-pointer"
+            style={{ background: '#141414', color: '#CCFF00' }}
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Add Custom Template
           </button>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-          <AnimatePresence>
-            {templates.map((t) => (
-              <motion.div
-                key={t.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="group relative bg-background rounded-2xl border border-border/60 p-5 hover:border-border hover:shadow-md transition-all duration-200"
-              >
-                {/* Header */}
-                <div className="flex items-start justify-between gap-3 mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center shrink-0">
-                      <FileText className="w-5 h-5 text-muted-foreground" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="font-bold text-sm text-foreground truncate">{t.name}</p>
-                      {t.description && (
-                        <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{t.description}</p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
-                    <a
-                      href={t.fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="p-1.5 rounded-lg hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-all"
-                      title="Download template"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                    </a>
-                    <button
-                      onClick={() => openEdit(t)}
-                      className="p-1.5 rounded-lg hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-all"
-                    >
-                      <Pencil className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={() => setDeleteConfirm(t.id)}
-                      className="p-1.5 rounded-lg hover:bg-red-50 text-muted-foreground hover:text-red-500 transition-all"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
 
-                {/* Category badge */}
-                {t.category && (
-                  <span className={cn('inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full mb-3', categoryColor[t.category] || categoryColor.other)}>
-                    <Tag className="w-2.5 h-2.5" />
-                    {CATEGORIES.find(c => c.value === t.category)?.label || t.category}
-                  </span>
-                )}
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+          </div>
+        ) : (() => {
+          const customTemplates = templates.filter(t => !SYSTEM_TEMPLATES.some(s => s.type === t.category))
+          if (customTemplates.length === 0) {
+            return (
+              <div className="flex flex-col items-center justify-center py-12 rounded-2xl border-2 border-dashed border-border/40 bg-muted/10">
+                <FolderOpen className="w-8 h-8 text-muted-foreground mb-2" />
+                <p className="text-xs font-semibold text-muted-foreground">No custom templates yet</p>
+              </div>
+            )
+          }
 
-                {/* Variables */}
-                {t.variables.length > 0 && (
-                  <div className="space-y-1.5">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1">
-                      <Variable className="w-3 h-3" /> Variables ({t.variables.length})
-                    </p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {t.variables.slice(0, 6).map(v => (
-                        <span key={v} className="text-[10px] font-mono font-semibold bg-muted/60 text-foreground px-2 py-0.5 rounded-md">
-                          {`{{${v}}}`}
-                        </span>
-                      ))}
-                      {t.variables.length > 6 && (
-                        <span className="text-[10px] font-semibold text-muted-foreground px-2 py-0.5">
-                          +{t.variables.length - 6} more
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Footer */}
-                <div className="mt-4 pt-3 border-t border-border/40 flex items-center justify-between">
-                  <p className="text-[10px] text-muted-foreground truncate max-w-[160px]">{t.fileName}</p>
-                  <p className="text-[10px] text-muted-foreground">
-                    {new Date(t.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
-
-                {/* Delete confirm overlay */}
-                <AnimatePresence>
-                  {deleteConfirm === t.id && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="absolute inset-0 bg-background/95 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center gap-4 p-5"
-                    >
-                      <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
-                        <Trash2 className="w-5 h-5 text-red-500" />
+          return (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              <AnimatePresence>
+                {customTemplates.map((t) => (
+                  <motion.div
+                    key={t.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="group relative bg-background rounded-2xl border border-border/60 p-5 hover:border-border hover:shadow-md transition-all duration-200"
+                  >
+                    {/* Header */}
+                    <div className="flex items-start justify-between gap-3 mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center shrink-0">
+                          <FileText className="w-5 h-5 text-muted-foreground" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-bold text-sm text-foreground truncate">{t.name}</p>
+                          {t.description && (
+                            <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{t.description}</p>
+                          )}
+                        </div>
                       </div>
-                      <p className="text-sm font-bold text-center">Delete &ldquo;{t.name}&rdquo;?</p>
-                      <p className="text-xs text-muted-foreground text-center">This cannot be undone.</p>
-                      <div className="flex gap-2">
-                        <button onClick={() => setDeleteConfirm(null)} className="px-4 py-2 rounded-xl text-xs font-bold bg-muted/50 hover:bg-muted">Cancel</button>
-                        <button onClick={() => handleDelete(t.id)} className="px-4 py-2 rounded-xl text-xs font-bold bg-red-500 text-white hover:bg-red-600">Delete</button>
+                      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                        <a
+                          href={t.fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-1.5 rounded-lg hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-all"
+                          title="Download template"
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                        </a>
+                        <button
+                          onClick={() => openEdit(t)}
+                          className="p-1.5 rounded-lg hover:bg-muted/50 text-muted-foreground hover:text-foreground transition-all"
+                        >
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => setDeleteConfirm(t.id)}
+                          className="p-1.5 rounded-lg hover:bg-red-50 text-muted-foreground hover:text-red-500 transition-all"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
                       </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
-      )}
+                    </div>
+
+                    {/* Category badge */}
+                    {t.category && (
+                      <span className={cn('inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full mb-3', categoryColor[t.category] || categoryColor.other)}>
+                        <Tag className="w-2.5 h-2.5" />
+                        {CATEGORIES.find(c => c.value === t.category)?.label || t.category}
+                      </span>
+                    )}
+
+                    {/* Variables */}
+                    {t.variables.length > 0 && (
+                      <div className="space-y-1.5">
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1">
+                          <Variable className="w-3 h-3" /> Variables ({t.variables.length})
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {t.variables.slice(0, 6).map(v => (
+                            <span key={v} className="text-[10px] font-mono font-semibold bg-muted/60 text-foreground px-2 py-0.5 rounded-md">
+                              {`{{${v}}}`}
+                            </span>
+                          ))}
+                          {t.variables.length > 6 && (
+                            <span className="text-[10px] font-semibold text-muted-foreground px-2 py-0.5">
+                              +{t.variables.length - 6} more
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Footer */}
+                    <div className="mt-4 pt-3 border-t border-border/40 flex items-center justify-between">
+                      <p className="text-[10px] text-muted-foreground truncate max-w-[160px]">{t.fileName}</p>
+                      <p className="text-[10px] text-muted-foreground">
+                        {new Date(t.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+
+                    {/* Delete confirm overlay */}
+                    <AnimatePresence>
+                      {deleteConfirm === t.id && (
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className="absolute inset-0 bg-background/95 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center gap-4 p-5"
+                        >
+                          <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                            <Trash2 className="w-5 h-5 text-red-500" />
+                          </div>
+                          <p className="text-sm font-bold text-center">Delete &ldquo;{t.name}&rdquo;?</p>
+                          <p className="text-xs text-muted-foreground text-center">This cannot be undone.</p>
+                          <div className="flex gap-2">
+                            <button onClick={() => setDeleteConfirm(null)} className="px-4 py-2 rounded-xl text-xs font-bold bg-muted/50 hover:bg-muted">Cancel</button>
+                            <button onClick={() => handleDelete(t.id)} className="px-4 py-2 rounded-xl text-xs font-bold bg-red-500 text-white hover:bg-red-600">Delete</button>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          )
+        })()}
+      </div>
 
       {/* Create / Edit Dialog */}
       <AnimatePresence>
@@ -388,6 +628,16 @@ export default function DocumentTemplatesManager() {
 
                 {/* Dialog Body */}
                 <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
+                  {(() => {
+                    const isSystemSlot = SYSTEM_TEMPLATES.some(s => s.type === form.category);
+                    return isSystemSlot ? (
+                      <div className="p-3 bg-primary/10 border border-primary/20 rounded-2xl text-xs font-semibold text-foreground flex items-center gap-2">
+                        <ClipboardList className="w-4 h-4 text-primary shrink-0" />
+                        This is a predefined system template slot. The template name and category are managed automatically.
+                      </div>
+                    ) : null;
+                  })()}
+
                   {/* Name */}
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Template Name *</label>
@@ -395,7 +645,8 @@ export default function DocumentTemplatesManager() {
                       value={form.name}
                       onChange={e => setForm(prev => ({ ...prev, name: e.target.value }))}
                       placeholder="e.g. Visa Approval Letter"
-                      className="w-full px-4 py-3 rounded-xl border border-border/60 bg-muted/20 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
+                      disabled={SYSTEM_TEMPLATES.some(s => s.type === form.category)}
+                      className="w-full px-4 py-3 rounded-xl border border-border/60 bg-muted/20 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all disabled:opacity-75 disabled:cursor-not-allowed"
                     />
                   </div>
 
@@ -416,12 +667,19 @@ export default function DocumentTemplatesManager() {
                     <select
                       value={form.category}
                       onChange={e => setForm(prev => ({ ...prev, category: e.target.value }))}
-                      className="w-full px-4 py-3 rounded-xl border border-border/60 bg-muted/20 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all"
+                      disabled={SYSTEM_TEMPLATES.some(s => s.type === form.category)}
+                      className="w-full px-4 py-3 rounded-xl border border-border/60 bg-muted/20 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all disabled:opacity-75 disabled:cursor-not-allowed"
                     >
                       <option value="">— Select category —</option>
                       {CATEGORIES.map(c => (
                         <option key={c.value} value={c.value}>{c.label}</option>
                       ))}
+                      {/* Add system category options dynamically if editing a system template */}
+                      {SYSTEM_TEMPLATES.some(s => s.type === form.category) && (
+                        <option value={form.category}>
+                          {SYSTEM_TEMPLATES.find(s => s.type === form.category)?.label}
+                        </option>
+                      )}
                     </select>
                   </div>
 
