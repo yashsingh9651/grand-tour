@@ -39,6 +39,12 @@ export default function StudentDashboard() {
     fetchData()
   }, [])
 
+  useEffect(() => {
+    if (!loading && !application) {
+      router.push('/dashboard/application')
+    }
+  }, [loading, application, router])
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -48,7 +54,6 @@ export default function StudentDashboard() {
   }
 
   if (!application) {
-    router.push('/dashboard/application')
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Loader2 className="w-8 h-8 text-primary animate-spin" />
