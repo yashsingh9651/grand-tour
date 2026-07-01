@@ -7,7 +7,7 @@ export default auth((req) => {
   // Protect /dashboard routes
   if (pathname.startsWith("/dashboard")) {
     if (!isLoggedIn) {
-      return Response.redirect(new URL("/", req.nextUrl));
+      return Response.redirect(new URL("/login", req.nextUrl));
     }
     const user = req.auth?.user as any;
     if (user?.role === "SUPER_ADMIN" || user?.role === "ADMIN") {
@@ -18,7 +18,7 @@ export default auth((req) => {
   // Protect /admin routes
   if (pathname.startsWith("/admin")) {
     if (!isLoggedIn) {
-      return Response.redirect(new URL("/", req.nextUrl));
+      return Response.redirect(new URL("/login", req.nextUrl));
     }
     
     // Check if the user is an admin
