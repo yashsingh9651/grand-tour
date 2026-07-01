@@ -11,7 +11,7 @@ import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import {
   Loader2, Check, Lock, UploadCloud, Eye, X, Copy,
-  ShieldCheck, Landmark, Clock, IndianRupee, CheckCircle2, Info, FileText
+  ShieldCheck, Landmark, Clock, IndianRupee, CheckCircle2, Info, FileText, PartyPopper
 } from 'lucide-react'
 
 export default function Payment1Page() {
@@ -80,7 +80,7 @@ export default function Payment1Page() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     )
   }
@@ -92,7 +92,7 @@ export default function Payment1Page() {
   if (!paymentStageUnlocked) {
     return (
       <StudentLayout currentStep="payment1">
-        <div className="max-w-3xl rounded-3xl border border-dashed border-purple-200 bg-purple-50/40 p-8">
+        <div className="max-w-3xl rounded-3xl border border-dashed border-border bg-secondary/20 p-8 text-foreground mx-auto mt-10">
           <h2 className="text-2xl font-bold">Payment Stage Locked</h2>
           <p className="mt-2 text-muted-foreground">
             The finance stage will unlock once your application reaches the payment review. Please complete the current workflow step first.
@@ -154,18 +154,18 @@ export default function Payment1Page() {
     <StudentLayout
       currentStep="payment1"
       headerContent={
-        <div className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+        <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
           MANAGEMENT › <span className="text-[#84CC16] font-extrabold">FINANCIAL CENTER</span>
         </div>
       }
     >
       {/* Page Title */}
       <div className="mb-8">
-        <p className="text-[10px] font-black tracking-[0.2em] text-gray-400 uppercase mb-2">MANAGEMENT</p>
-        <h1 className="text-4xl font-extrabold tracking-tight text-[#1A1A1A] leading-none mb-3">
+        <p className="text-[10px] font-black tracking-[0.2em] text-muted-foreground uppercase mb-2">MANAGEMENT</p>
+        <h1 className="text-4xl font-extrabold tracking-tight text-foreground leading-none mb-3">
           1st Installment Payment
         </h1>
-        <p className="text-sm text-gray-500 font-medium max-w-lg">
+        <p className="text-sm text-muted-foreground font-medium max-w-lg">
           Please complete your first tuition payment installment to proceed to the hotel allocation step.
         </p>
       </div>
@@ -173,7 +173,7 @@ export default function Payment1Page() {
       <div className="grid lg:grid-cols-3 gap-6 items-start mb-8">
 
         {/* Left Column: Payment details */}
-        <Card className="p-8 border-2 border-primary/20 bg-gradient-to-br from-background to-primary/5 rounded-[2.5rem] shadow-xl">
+        <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-foreground">
           <div className="space-y-6">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center">
@@ -186,35 +186,35 @@ export default function Payment1Page() {
             </div>
 
             <div className="space-y-4">
-              <div className="space-y-2 text-sm bg-primary/5 p-4 rounded-xl border border-primary/10">
+              <div className="space-y-2 text-sm bg-muted p-4 rounded-xl border border-border">
                 {discountPercentage > 0 && (
-                  <div className="flex justify-between items-center text-emerald-600 font-medium">
+                  <div className="flex justify-between items-center text-emerald-600 dark:text-emerald-400 font-medium">
                     <span>Discount ({discountPercentage}%)</span>
                     <span>-{currencySymbol}{discountAmount.toLocaleString()}</span>
                   </div>
                 )}
                 {gstPercentage > 0 && (
-                  <div className="flex justify-between items-center text-slate-600 font-medium">
+                  <div className="flex justify-between items-center text-foreground font-medium">
                     <span>GST ({gstPercentage}%)</span>
                     <span>+{currencySymbol}{gstAmount.toLocaleString()}</span>
                   </div>
                 )}
-                <div className="pt-2 border-t border-primary/20 flex justify-between items-center font-semibold text-sm text-slate-600">
+                <div className="pt-2 border-t border-border flex justify-between items-center font-semibold text-sm text-foreground">
                   <span>Total Course Fee</span>
                   <span>{currencySymbol}{totalPayable.toLocaleString()}</span>
                 </div>
-                <div className="pt-2 border-t border-primary/20 flex justify-between items-center font-black text-lg text-primary">
+                <div className="pt-2 border-t border-border flex justify-between items-center font-black text-lg text-primary">
                   <span>Installment Due</span>
                   <span>{currencySymbol}{installmentAmount.toLocaleString()}</span>
                 </div>
               </div>
 
-              <div className="p-4 bg-white/50 backdrop-blur-sm border border-primary/10 rounded-2xl space-y-3">
+              <div className="p-4 bg-muted border border-border rounded-2xl space-y-3">
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-muted-foreground font-medium">Account Name</span>
                   <div className="flex items-center gap-1.5">
                     <span className="font-bold">{paymentConfig.accountName}</span>
-                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => copyToClipboard(paymentConfig.accountName, 'Account name')}>
+                    <Button variant="ghost" size="icon" className="h-6 w-6 text-foreground" onClick={() => copyToClipboard(paymentConfig.accountName, 'Account name')}>
                       <Copy className="w-3 h-3" />
                     </Button>
                   </div>
@@ -227,7 +227,7 @@ export default function Payment1Page() {
                   <span className="text-muted-foreground font-medium">Account Number</span>
                   <div className="flex items-center gap-2">
                     <span className="font-mono font-bold text-primary">{paymentConfig.accountNumber}</span>
-                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => copyToClipboard(paymentConfig.accountNumber.replace(/\s/g, ''), 'Account number')}>
+                    <Button variant="ghost" size="icon" className="h-6 w-6 text-foreground" onClick={() => copyToClipboard(paymentConfig.accountNumber.replace(/\s/g, ''), 'Account number')}>
                       <Copy className="w-3 h-3" />
                     </Button>
                   </div>
@@ -236,16 +236,16 @@ export default function Payment1Page() {
                   <span className="text-muted-foreground font-medium">SWIFT / IFSC</span>
                   <div className="flex items-center gap-2">
                     <span className="font-mono font-bold text-primary">{paymentConfig.ifsc}</span>
-                    <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => copyToClipboard(paymentConfig.ifsc, 'SWIFT code')}>
+                    <Button variant="ghost" size="icon" className="h-6 w-6 text-foreground" onClick={() => copyToClipboard(paymentConfig.ifsc, 'SWIFT code')}>
                       <Copy className="w-3 h-3" />
                     </Button>
                   </div>
                 </div>
               </div>
 
-              <div className="p-4 bg-amber-500/5 border border-amber-500/20 rounded-2xl flex gap-3">
+              <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex gap-3">
                 <Info className="w-5 h-5 text-amber-600 flex-shrink-0" />
-                <p className="text-xs text-amber-800 font-medium leading-relaxed">
+                <p className="text-xs text-amber-600 dark:text-amber-400 font-medium leading-relaxed">
                   Please ensure you transfer the exact amount. Mention your Student ID reference in the transaction notes for faster verification.
                 </p>
               </div>
@@ -255,62 +255,81 @@ export default function Payment1Page() {
 
         {/* Right Column: QR and Submission states */}
         {latestPayment?.status === 'COMPLETED' ? (
-          <Card className="p-8 border-2 border-green-500/20 bg-gradient-to-br from-background to-green-50/30 rounded-[2.5rem] shadow-xl text-center space-y-6">
-            <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mx-auto">
-              <Check className="w-10 h-10 text-green-600" />
-            </div>
-            <div className="space-y-2">
-              <h2 className="text-2xl font-black text-green-700">Payment Verified</h2>
-              <p className="text-sm text-muted-foreground font-medium max-w-sm mx-auto">
-                Your 1st installment payment has been successfully verified. You are now cleared for hotel allocation.
-              </p>
-            </div>
-            <div className="p-4 bg-white border border-green-200 rounded-2xl text-left space-y-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">UTR Number:</span>
-                <span className="font-mono font-bold text-green-800">{latestPayment.utrNumber}</span>
+          <>
+            <style>{`
+              @keyframes ping-once { 0% { transform: scale(1); opacity: 0.7; } 100% { transform: scale(2.2); opacity: 0; } }
+              @keyframes success-pop { 0% { transform: scale(0.7); opacity: 0; } 60% { transform: scale(1.08); } 100% { transform: scale(1); opacity: 1; } }
+              @keyframes bounce-check { 0%, 100% { transform: translateY(0); } 30% { transform: translateY(-10px); } 60% { transform: translateY(-4px); } }
+              .success-card-anim { animation: success-pop 0.55s cubic-bezier(0.22,1,0.36,1) both; }
+              .check-bounce { animation: bounce-check 0.9s ease 0.4s both; }
+              .ring-ping-1 { animation: ping-once 1.1s ease-out 0.1s both; }
+              .ring-ping-2 { animation: ping-once 1.1s ease-out 0.4s both; }
+            `}</style>
+            <Card className="success-card-anim p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-center space-y-6 text-foreground">
+              <div className="relative w-20 h-20 mx-auto">
+                {/* Animated ping rings */}
+                <div className="ring-ping-1 absolute inset-0 rounded-full bg-green-400/30" />
+                <div className="ring-ping-2 absolute inset-0 rounded-full bg-green-400/20" />
+                <div className="relative w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center">
+                  <Check className="check-bounce w-10 h-10 text-green-600" />
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Amount Paid:</span>
-                <span className="font-bold text-green-800">{currencySymbol}{latestPayment.amount?.toLocaleString()}</span>
+              <div className="space-y-2">
+                <div className="flex items-center justify-center gap-2">
+                  <h2 className="text-2xl font-black text-green-600 dark:text-green-400">Payment Verified</h2>
+                  <PartyPopper className="w-5 h-5 text-green-600" />
+                </div>
+                <p className="text-sm text-muted-foreground font-medium max-w-sm mx-auto">
+                  Your 1st installment payment has been successfully verified. You are now cleared for hotel allocation.
+                </p>
               </div>
-              <div className="flex justify-between items-center pt-2 border-t border-green-100">
-                <span className="text-muted-foreground">Receipt Attachment:</span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setViewingProofUrl(latestPayment.screenshotUrl)
-                    setViewingReceiptName(`Receipt - UTR ${latestPayment.utrNumber}`)
-                  }}
-                  className="gap-1.5 h-8 text-green-700 hover:text-green-800 hover:bg-green-50"
-                >
-                  <Eye className="w-3.5 h-3.5" /> View Receipt
-                </Button>
+              <div className="p-4 bg-muted border border-border rounded-2xl text-left space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">UTR Number:</span>
+                  <span className="font-mono font-bold text-green-600 dark:text-green-400">{latestPayment.utrNumber}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Amount Paid:</span>
+                  <span className="font-bold text-green-600 dark:text-green-400">{currencySymbol}{latestPayment.amount?.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-center pt-2 border-t border-border">
+                  <span className="text-muted-foreground">Receipt Attachment:</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setViewingProofUrl(latestPayment.screenshotUrl)
+                      setViewingReceiptName(`Receipt - UTR ${latestPayment.utrNumber}`)
+                    }}
+                    className="gap-1.5 h-8 text-foreground border-border hover:bg-muted"
+                  >
+                    <Eye className="w-3.5 h-3.5" /> View Receipt
+                  </Button>
+                </div>
               </div>
-            </div>
-          </Card>
+            </Card>
+          </>
         ) : latestPayment?.status === 'PENDING' ? (
-          <Card className="p-8 border-2 border-purple-500/20 bg-gradient-to-br from-background to-purple-50/30 rounded-[2.5rem] shadow-xl text-center space-y-6">
+          <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-center space-y-6 text-foreground">
             <div className="w-20 h-20 bg-purple-500/10 rounded-full flex items-center justify-center mx-auto animate-pulse">
               <Clock className="w-10 h-10 text-purple-600" />
             </div>
             <div className="space-y-2">
-              <h2 className="text-2xl font-black text-purple-700">Payment Under Review</h2>
+              <h2 className="text-2xl font-black text-purple-600 dark:text-purple-400">Payment Under Review</h2>
               <p className="text-sm text-muted-foreground font-medium max-w-sm mx-auto">
                 We are currently reviewing your payment submission. Your status will be updated within 24 business hours.
               </p>
             </div>
-            <div className="p-4 bg-white border border-purple-200 rounded-2xl text-left space-y-3 text-sm">
+            <div className="p-4 bg-muted border border-border rounded-2xl text-left space-y-3 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">UTR Number:</span>
-                <span className="font-mono font-bold text-purple-800">{latestPayment.utrNumber}</span>
+                <span className="font-mono font-bold text-purple-600 dark:text-purple-400">{latestPayment.utrNumber}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Amount Submitted:</span>
-                <span className="font-bold text-purple-800">{currencySymbol}{latestPayment.amount?.toLocaleString()}</span>
+                <span className="font-bold text-purple-600 dark:text-purple-400">{currencySymbol}{latestPayment.amount?.toLocaleString()}</span>
               </div>
-              <div className="flex justify-between items-center pt-2 border-t border-purple-100">
+              <div className="flex justify-between items-center pt-2 border-t border-border">
                 <span className="text-muted-foreground">Receipt Attachment:</span>
                 <Button
                   variant="outline"
@@ -319,7 +338,7 @@ export default function Payment1Page() {
                     setViewingProofUrl(latestPayment.screenshotUrl)
                     setViewingReceiptName(`Receipt - UTR ${latestPayment.utrNumber}`)
                   }}
-                  className="gap-1.5 h-8 text-purple-700 hover:text-purple-800 hover:bg-purple-50"
+                  className="gap-1.5 h-8 text-foreground border-border hover:bg-muted"
                 >
                   <Eye className="w-3.5 h-3.5" /> View Receipt
                 </Button>
@@ -327,39 +346,39 @@ export default function Payment1Page() {
             </div>
           </Card>
         ) : (
-          <Card className="p-8 border-2 border-slate-200 bg-white rounded-[2.5rem] shadow-xl">
+          <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-foreground">
             <div className="flex flex-col items-center text-center space-y-6">
               <div className="space-y-1">
                 <h3 className="text-lg font-bold">Scan & Pay</h3>
                 <p className="text-sm text-muted-foreground">Scan this QR code using any UPI app</p>
               </div>
 
-              <div className="p-4 bg-slate-50 rounded-3xl border-2 border-slate-100">
+              <div className="p-4 bg-white-force rounded-3xl border border-slate-200">
                 <img
                   src={qrCodeUrl}
                   alt="Payment QR Code"
-                  className="w-48 h-48 mix-blend-multiply"
+                  className="w-48 h-48"
                 />
               </div>
 
               <div className="w-full space-y-4">
                 <div className="space-y-2 text-left">
-                  <label className="text-xs font-bold text-slate-700 ml-1">UTR / Transaction Number</label>
+                  <label className="text-xs font-bold text-foreground ml-1">UTR / Transaction Number</label>
                   <Input
                     placeholder="Enter 12-digit UTR number"
                     value={utrNumber}
                     onChange={(e) => setUtrNumber(e.target.value)}
-                    className="h-12 rounded-xl border-slate-200 focus:ring-primary font-mono text-sm"
+                    className="h-12 rounded-xl border-border bg-muted text-foreground focus:ring-primary font-mono text-sm"
                   />
                 </div>
 
                 <div className="space-y-2 text-left">
-                  <label className="text-xs font-bold text-slate-700 ml-1">Payment Screenshot</label>
+                  <label className="text-xs font-bold text-foreground ml-1">Payment Screenshot</label>
                   {screenshotUrl ? (
-                    <div className="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-xl">
-                      <CheckCircle2 className="w-5 h-5 text-green-500" />
-                      <span className="text-sm font-medium text-green-700 truncate flex-1">Receipt uploaded</span>
-                      <Button variant="ghost" size="sm" className="h-8 text-green-600 hover:text-green-700 hover:bg-green-100" onClick={() => setIsUploadOpen(true)}>
+                    <div className="flex items-center gap-3 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                      <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                      <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400 truncate flex-1">Receipt uploaded</span>
+                      <Button variant="ghost" size="sm" className="h-8 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-500/10" onClick={() => setIsUploadOpen(true)}>
                         Change
                       </Button>
                     </div>
@@ -367,7 +386,7 @@ export default function Payment1Page() {
                     <Button
                       variant="outline"
                       onClick={() => setIsUploadOpen(true)}
-                      className="w-full h-12 rounded-xl border-dashed border-2 border-slate-300 text-slate-500 hover:border-primary hover:text-primary transition-all gap-2"
+                      className="w-full h-12 rounded-xl border-dashed border-2 border-border text-muted-foreground hover:border-primary hover:text-primary transition-all gap-2"
                     >
                       <UploadCloud className="w-4 h-4" />
                       Upload Receipt
@@ -378,7 +397,7 @@ export default function Payment1Page() {
                 <Button
                   onClick={handlePaymentSubmit}
                   disabled={submittingPayment || !utrNumber || !screenshotUrl}
-                  className="w-full h-14 rounded-2xl font-black uppercase tracking-widest bg-primary text-white shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all mt-4"
+                  className="w-full h-14 rounded-2xl font-black uppercase tracking-widest bg-primary text-[#1A1A1A] font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all mt-4"
                 >
                   {submittingPayment ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Confirm Payment'}
                 </Button>
@@ -387,7 +406,7 @@ export default function Payment1Page() {
           </Card>
         )}
         {/* Third Column: Instructions & Attachments */}
-        <Card className="p-8 border-2 border-primary/20 bg-gradient-to-br from-background to-primary/5 rounded-[2.5rem] shadow-xl">
+        <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-foreground">
           <div className="space-y-6">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center">
@@ -401,13 +420,13 @@ export default function Payment1Page() {
 
             {/* Instructions Text */}
             <div className="space-y-3">
-              <h3 className="text-sm font-bold text-slate-800">Instructions</h3>
+              <h3 className="text-sm font-bold text-foreground">Instructions</h3>
               {paymentConfig.instructions ? (
-                <div className="p-4 bg-white/60 backdrop-blur-sm border border-primary/10 rounded-2xl text-xs text-slate-700 leading-relaxed whitespace-pre-wrap font-medium">
+                <div className="p-4 bg-muted border border-border rounded-2xl text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap font-medium">
                   {paymentConfig.instructions}
                 </div>
               ) : (
-                <div className="p-4 bg-white/40 border border-slate-100 rounded-2xl text-xs text-slate-400 italic font-medium">
+                <div className="p-4 bg-muted border border-border rounded-2xl text-xs text-muted-foreground italic font-medium">
                   No custom instructions provided by the admin.
                 </div>
               )}
@@ -423,19 +442,19 @@ export default function Payment1Page() {
 
               return (
                 <div className="space-y-3">
-                  <h3 className="text-sm font-bold text-slate-800">Downloadable Reference Files</h3>
+                  <h3 className="text-sm font-bold text-foreground">Downloadable Reference Files</h3>
                   {combinedDocs.length > 0 ? (
                     <div className="space-y-2">
                       {combinedDocs.map((doc: any, index: number) => (
-                        <div key={index} className="flex items-center justify-between p-3 bg-white border border-primary/10 rounded-2xl hover:border-primary/20 transition-all group">
+                        <div key={index} className="flex items-center justify-between p-3 bg-muted border border-border rounded-2xl hover:bg-muted/80 transition-all group">
                           <div className="flex items-center gap-2 min-w-0 flex-1">
                             <FileText className="w-4 h-4 text-primary shrink-0" />
-                            <span className="text-xs font-bold text-slate-700 truncate">{doc.name}</span>
+                            <span className="text-xs font-bold text-foreground truncate">{doc.name}</span>
                           </div>
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 text-primary font-bold text-xs gap-1 hover:bg-primary rounded-xl shrink-0"
+                            className="h-8 bg-primary text-[#1A1A1A] font-bold text-xs gap-1 hover:bg-primary/95 rounded-xl shrink-0"
                             asChild
                           >
                             <a href={doc.url} target="_blank" rel="noopener noreferrer" download>
@@ -446,7 +465,7 @@ export default function Payment1Page() {
                       ))}
                     </div>
                   ) : (
-                    <div className="p-4 bg-white/40 border border-slate-100 rounded-2xl text-xs text-slate-400 italic font-medium">
+                    <div className="p-4 bg-muted border border-border rounded-2xl text-xs text-muted-foreground italic font-medium">
                       No reference files available.
                     </div>
                   )}
@@ -460,15 +479,15 @@ export default function Payment1Page() {
       {/* Lightbox Modal */}
       {viewingProofUrl && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="relative max-w-xl w-full bg-white rounded-3xl overflow-hidden shadow-2xl">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-              <span className="text-sm font-bold text-gray-900">{viewingReceiptName}</span>
-              <button onClick={() => setViewingProofUrl(null)} className="p-1.5 rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors">
-                <X className="w-4 h-4 text-gray-600" />
+          <div className="relative max-w-xl w-full bg-card border border-border rounded-3xl overflow-hidden shadow-2xl text-foreground">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+              <span className="text-sm font-bold text-foreground">{viewingReceiptName}</span>
+              <button onClick={() => setViewingProofUrl(null)} className="p-1.5 rounded-xl bg-muted hover:bg-muted/85 transition-colors text-foreground">
+                <X className="w-4 h-4 text-foreground" />
               </button>
             </div>
-            <div className="p-4">
-              <img src={viewingProofUrl} alt="Receipt proof" className="w-full max-h-[70vh] object-contain rounded-2xl" />
+            <div className="p-4 bg-muted">
+              <img src={viewingProofUrl} alt="Receipt proof" className="w-full max-h-[70vh] object-contain rounded-2xl border border-border" />
             </div>
           </div>
         </div>

@@ -63,7 +63,7 @@ export function CRMDashboard() {
     )
   }
 
-  const { stats } = data
+  const { stats = {} } = data || {}
 
   // Funnel data derived from real stats
   const totalCandidates = stats.totalCandidates || 0
@@ -95,16 +95,6 @@ export function CRMDashboard() {
 
   return (
     <div className="px-6 pb-8 space-y-5">
-
-      {/* ── System Health ───────────────────────────────── */}
-      <div className="flex items-center justify-end gap-1.5">
-        <span className="text-[10px] tracking-widest uppercase" style={{ color: "#999" }}>
-          System Health
-        </span>
-        <span className="text-[10px] font-bold" style={{ color: "#CCFF00" }}>
-          99.8% Nominal
-        </span>
-      </div>
 
       {/* ── Stat Cards ──────────────────────────────────── */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -218,12 +208,6 @@ export function CRMDashboard() {
                 Candidate distribution across key stages
               </p>
             </div>
-            <button
-              className="text-[10px] font-bold px-3 py-1.5 rounded-full tracking-widest uppercase"
-              style={{ backgroundColor: "#F0F0EB", color: "#555", border: "1px solid #DDD" }}
-            >
-              All Programs ↓
-            </button>
           </div>
 
           <div className="space-y-4">
@@ -377,12 +361,13 @@ export function CRMDashboard() {
             >
               Recent Candidate Movements
             </h3>
-            <button
+            <a
+              href="/admin/applications-portal"
               className="text-[10px] font-bold tracking-widest uppercase"
               style={{ color: "#CCFF00", fontFamily: "Gilroy, sans-serif" }}
             >
               View All
-            </button>
+            </a>
           </div>
 
           {/* Table header */}

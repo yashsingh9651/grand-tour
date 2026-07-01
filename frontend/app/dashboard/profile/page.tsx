@@ -51,21 +51,21 @@ export default function ProfilePage() {
 
   return (
     <StudentLayout currentStep={application.currentStepId}>
-      <div className="max-w-4xl space-y-6">
+      <div className="max-w-4xl space-y-6 text-foreground">
         <div className="space-y-2">
           <h1 className="text-3xl font-bold">My Profile</h1>
           <p className="text-muted-foreground">View and manage your profile information</p>
         </div>
 
         {/* Profile Header */}
-        <Card className="p-8">
+        <Card className="p-8 border border-border bg-card">
           <div className="flex items-start justify-between gap-6 flex-wrap">
             <div className="flex items-center gap-6 flex-1 min-w-[300px]">
               {user.profileImage ? (
                 <img src={user.profileImage} alt={user.firstName} className="w-24 h-24 rounded-full object-cover border-4 border-primary/20" />
               ) : (
-                <div className="w-24 h-24 bg-gradient-to-br from-primary to-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-4xl font-bold text-white">{user.firstName[0]}{user.lastName[0]}</span>
+                <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 border border-primary/30">
+                  <span className="text-4xl font-bold text-primary">{user.firstName[0]}{user.lastName[0]}</span>
                 </div>
               )}
               <div>
@@ -78,7 +78,7 @@ export default function ProfilePage() {
         </Card>
 
         {/* Contact Information */}
-        <Card className="p-6">
+        <Card className="p-6 border border-border bg-card">
           <h2 className="text-lg font-semibold mb-6">Contact Information</h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div className="flex items-start gap-3">
@@ -118,7 +118,7 @@ export default function ProfilePage() {
         </Card>
 
         {/* Educational Information */}
-        <Card className="p-6">
+        <Card className="p-6 border border-border bg-card">
           <h2 className="text-lg font-semibold mb-6 flex items-center gap-2">
             <GraduationCap className="w-5 h-5" />
             Educational Information
@@ -152,7 +152,7 @@ export default function ProfilePage() {
         </Card>
 
         {/* Internship Details */}
-        <Card className="p-6">
+        <Card className="p-6 border border-border bg-card">
           <h2 className="text-lg font-semibold mb-6">Internship Details</h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div>
@@ -171,9 +171,9 @@ export default function ProfilePage() {
               <label className="text-xs font-semibold text-muted-foreground uppercase">Application Status</label>
               <p className="text-foreground font-medium mt-2">
                 <span className={`px-2 py-1 text-xs rounded-full ${
-                  application.status === 'ACCEPTED' ? 'bg-green-100 text-green-700' : 
-                  application.status === 'REJECTED' ? 'bg-red-100 text-red-700' : 
-                  'bg-blue-100 text-blue-700'
+                  application.status === 'ACCEPTED' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 
+                  application.status === 'REJECTED' ? 'bg-red-500/10 text-red-600 dark:text-red-400' : 
+                  'bg-blue-500/10 text-blue-600 dark:text-blue-400'
                 }`}>{application.status}</span>
               </p>
             </div>
@@ -181,7 +181,7 @@ export default function ProfilePage() {
         </Card>
 
         <div className="flex gap-4">
-          <Button variant="outline" onClick={() => window.print()}>Download Profile PDF</Button>
+          <Button variant="outline" className="border-border text-foreground hover:bg-muted" onClick={() => window.print()}>Download Profile PDF</Button>
           <Button 
             variant="ghost" 
             className="text-destructive hover:bg-destructive/10 gap-2" 

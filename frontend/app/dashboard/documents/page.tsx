@@ -157,7 +157,7 @@ export default function DocumentsPage() {
           workflow={workflow}
         />
 
-        <div className="rounded-3xl border border-[#C6F16D]/30 bg-[#FAFFF0] p-5 text-sm text-[#3F6212]">
+        <div className="rounded-3xl border border-emerald-500/20 bg-emerald-500/10 p-5 text-sm text-emerald-600 dark:text-emerald-400">
           {hasRejectedDocuments ? (
             <p className="font-semibold">One or more documents were rejected. Please resubmit the rejected files before continuing.</p>
           ) : !allRequiredDocsUploaded ? (
@@ -169,10 +169,10 @@ export default function DocumentsPage() {
           )}
         </div>
 
-        <div className="flex items-center justify-between pt-8 border-t border-gray-100">
+        <div className="flex items-center justify-between pt-8 border-t border-border">
           <Button
             variant="ghost"
-            className="text-[#666666] font-medium hover:bg-gray-100 rounded-xl gap-2"
+            className="text-muted-foreground font-medium hover:bg-muted rounded-xl gap-2"
             onClick={() => router.push('/dashboard/application')}
           >
             <ArrowLeft className="w-4 h-4" />
@@ -182,7 +182,7 @@ export default function DocumentsPage() {
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
-              className="text-[#666666] font-medium hover:bg-gray-100 rounded-xl"
+              className="text-muted-foreground font-medium hover:bg-muted rounded-xl"
             >
               Save Draft
             </Button>

@@ -162,7 +162,7 @@ export default function VisaPaymentsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 animate-spin text-lime-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     )
   }
@@ -189,13 +189,13 @@ export default function VisaPaymentsPage() {
   if (!isUnlocked) {
     return (
       <StudentLayout currentStep={STEP_ID}>
-        <div className="max-w-3xl rounded-3xl border border-dashed border-lime-200 bg-lime-50/40 p-8">
+        <div className="max-w-3xl rounded-3xl border border-dashed border-border bg-secondary/20 p-8 text-foreground mx-auto mt-10">
           <h2 className="text-2xl font-bold">{STEP_LABEL} — Locked</h2>
           <p className="mt-2 text-muted-foreground">
             {STEP_LABEL} will unlock after {PREV_STEP_LABEL}.
           </p>
           <Button
-            className="mt-5 bg-lime-600 hover:bg-lime-700 text-white"
+            className="mt-5 bg-primary text-[#1A1A1A] font-bold hover:bg-primary/90"
             onClick={() => window.location.href = `/dashboard/${application?.currentStepId || 'application'}`}
           >
             Return to Current Step
@@ -256,22 +256,22 @@ export default function VisaPaymentsPage() {
 
     if (paymentObj?.status === 'COMPLETED') {
       return (
-        <Card className="p-6 border-2 border-green-500/20 bg-gradient-to-br from-background to-green-50/20 rounded-[2rem] shadow-md flex flex-col justify-between h-full">
+        <Card className="p-6 border border-border bg-card rounded-[2rem] shadow-sm flex flex-col justify-between h-full text-foreground">
           <div className="space-y-4">
             <div className="flex justify-between items-start">
-              <span className="text-xs font-bold text-green-700 bg-green-100/60 px-3 py-1 rounded-full uppercase tracking-wider">Verified</span>
-              <span className="text-2xl font-black text-green-800">₹{amount.toLocaleString()}</span>
+              <span className="text-xs font-bold text-emerald-600 bg-emerald-500/10 px-3 py-1 rounded-full uppercase tracking-wider">Verified</span>
+              <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400">₹{amount.toLocaleString()}</span>
             </div>
-            <h3 className="text-xl font-bold text-slate-800">{title}</h3>
+            <h3 className="text-xl font-bold text-foreground">{title}</h3>
             <p className="text-xs text-muted-foreground">Your transaction has been verified by our finance team.</p>
-            <div className="bg-white/80 p-3 rounded-xl border border-green-100 text-xs space-y-1">
+            <div className="bg-muted p-3 rounded-xl border border-border text-xs space-y-1">
               <div className="flex justify-between">
-                <span className="text-slate-400 font-medium">UTR:</span>
-                <span className="font-mono font-bold text-green-700">{paymentObj.utrNumber}</span>
+                <span className="text-muted-foreground font-medium">UTR:</span>
+                <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{paymentObj.utrNumber}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400 font-medium">Date:</span>
-                <span className="font-bold text-slate-600">{new Date(paymentObj.createdAt).toLocaleDateString()}</span>
+                <span className="text-muted-foreground font-medium">Date:</span>
+                <span className="font-bold text-muted-foreground">{new Date(paymentObj.createdAt).toLocaleDateString()}</span>
               </div>
             </div>
           </div>
@@ -282,7 +282,7 @@ export default function VisaPaymentsPage() {
               setViewingProofUrl(paymentObj.screenshotUrl)
               setViewingReceiptName(`${title} Receipt`)
             }}
-            className="w-full mt-4 gap-1.5 text-green-700 border-green-200 hover:bg-green-50 rounded-xl"
+            className="w-full mt-4 gap-1.5 text-foreground border-border hover:bg-muted rounded-xl"
           >
             <Eye className="w-3.5 h-3.5" /> View Receipt
           </Button>
@@ -292,18 +292,18 @@ export default function VisaPaymentsPage() {
 
     if (paymentObj?.status === 'PENDING') {
       return (
-        <Card className="p-6 border-2 border-amber-500/20 bg-gradient-to-br from-background to-amber-50/20 rounded-[2rem] shadow-md flex flex-col justify-between h-full">
+        <Card className="p-6 border border-border bg-card rounded-[2rem] shadow-sm flex flex-col justify-between h-full text-foreground">
           <div className="space-y-4">
             <div className="flex justify-between items-start">
-              <span className="text-xs font-bold text-amber-700 bg-amber-100/60 px-3 py-1 rounded-full uppercase tracking-wider animate-pulse">Under Review</span>
-              <span className="text-2xl font-black text-amber-800">₹{amount.toLocaleString()}</span>
+              <span className="text-xs font-bold text-amber-600 bg-amber-500/10 px-3 py-1 rounded-full uppercase tracking-wider animate-pulse">Under Review</span>
+              <span className="text-2xl font-black text-amber-600 dark:text-amber-400">₹{amount.toLocaleString()}</span>
             </div>
-            <h3 className="text-xl font-bold text-slate-800">{title}</h3>
+            <h3 className="text-xl font-bold text-foreground">{title}</h3>
             <p className="text-xs text-muted-foreground">We are currently verifying this payment. Please check back within 24 hours.</p>
-            <div className="bg-white/80 p-3 rounded-xl border border-amber-100 text-xs space-y-1">
+            <div className="bg-muted p-3 rounded-xl border border-border text-xs space-y-1">
               <div className="flex justify-between">
-                <span className="text-slate-400 font-medium">UTR:</span>
-                <span className="font-mono font-bold text-amber-700">{paymentObj.utrNumber}</span>
+                <span className="text-muted-foreground font-medium">UTR:</span>
+                <span className="font-mono font-bold text-amber-600 dark:text-amber-400">{paymentObj.utrNumber}</span>
               </div>
             </div>
           </div>
@@ -314,7 +314,7 @@ export default function VisaPaymentsPage() {
               setViewingProofUrl(paymentObj.screenshotUrl)
               setViewingReceiptName(`${title} Receipt`)
             }}
-            className="w-full mt-4 gap-1.5 text-amber-700 border-amber-200 hover:bg-amber-50 rounded-xl"
+            className="w-full mt-4 gap-1.5 text-foreground border-border hover:bg-muted rounded-xl"
           >
             <Eye className="w-3.5 h-3.5" /> View Submitted Proof
           </Button>
@@ -323,15 +323,15 @@ export default function VisaPaymentsPage() {
     }
 
     return (
-      <Card className="p-6 border border-slate-200 bg-white rounded-[2rem] shadow-md flex flex-col justify-between h-full space-y-5">
+      <Card className="p-6 border border-border bg-card rounded-[2rem] shadow-sm flex flex-col justify-between h-full space-y-5 text-foreground">
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-bold text-slate-800">{title}</h3>
+            <h3 className="text-lg font-bold text-foreground">{title}</h3>
             <span className="text-xl font-black text-primary">₹{amount.toLocaleString()}</span>
           </div>
 
           {paymentObj?.status === 'FAILED' && (
-            <div className="p-3 bg-rose-50 border border-rose-100 text-rose-800 rounded-xl text-xs flex items-start gap-2">
+            <div className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 rounded-xl text-xs flex items-start gap-2">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <div>
                 <p className="font-bold">Previous Submission Rejected</p>
@@ -340,32 +340,32 @@ export default function VisaPaymentsPage() {
             </div>
           )}
 
-          <div className="flex justify-center p-3 bg-slate-50 border border-slate-100 rounded-2xl">
-            <img src={qrCodeUrl} alt="QR Scanner" className="w-36 h-36 mix-blend-multiply" />
+          <div className="flex justify-center p-3 bg-white-force border border-border rounded-2xl">
+            <img src={qrCodeUrl} alt="QR Scanner" className="w-36 h-36" />
           </div>
 
           <div className="space-y-3 text-left">
             <div>
-              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">UTR Number</label>
+              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block mb-1">UTR Number</label>
               <Input
                 placeholder="Enter 12-digit UTR"
                 value={utrVal}
                 onChange={(e) => setUtrVal(e.target.value)}
-                className="h-10 rounded-xl border-slate-200 text-sm font-mono"
+                className="h-10 rounded-xl border-border bg-muted text-foreground text-sm font-mono"
               />
             </div>
             <div>
-              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Transfer Receipt</label>
+              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block mb-1">Transfer Receipt</label>
               {screenshotVal ? (
-                <div className="flex items-center justify-between p-2 bg-green-50 border border-green-200 rounded-xl text-xs">
-                  <span className="text-green-700 font-bold truncate">Uploaded</span>
-                  <Button variant="ghost" size="sm" className="h-7 text-green-600 hover:bg-green-100" onClick={() => handleOpenUpload(typeKey, title)}>Change</Button>
+                <div className="flex items-center justify-between p-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-xs">
+                  <span className="text-emerald-600 dark:text-emerald-400 font-bold truncate">Uploaded</span>
+                  <Button variant="ghost" size="sm" className="h-7 text-emerald-500 hover:bg-emerald-500/10" onClick={() => handleOpenUpload(typeKey, title)}>Change</Button>
                 </div>
               ) : (
                 <Button
                   variant="outline"
                   onClick={() => handleOpenUpload(typeKey, title)}
-                  className="w-full h-10 rounded-xl border-dashed border-2 text-slate-500 hover:border-primary hover:text-primary gap-1.5 text-xs font-semibold"
+                  className="w-full h-10 rounded-xl border-dashed border-2 border-border text-muted-foreground hover:border-primary hover:text-primary gap-1.5 text-xs font-semibold hover:bg-muted"
                 >
                   <UploadCloud className="w-4 h-4" /> Upload Receipt Screenshot
                 </Button>
@@ -377,7 +377,7 @@ export default function VisaPaymentsPage() {
         <Button
           onClick={() => handlePaymentSubmit(typeKey)}
           disabled={submittingVal || !utrVal || !screenshotVal}
-          className="w-full h-11 bg-primary text-white hover:opacity-90 rounded-xl text-xs font-bold uppercase tracking-wider mt-4"
+          className="w-full h-11 bg-primary text-[#1A1A1A] font-bold hover:opacity-90 rounded-xl text-xs font-bold uppercase tracking-wider mt-4"
         >
           {submittingVal ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Confirm Payment'}
         </Button>
@@ -389,18 +389,18 @@ export default function VisaPaymentsPage() {
     <StudentLayout
       currentStep={STEP_ID}
       headerContent={
-        <div className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+        <div className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
           MANAGEMENT › <span className="text-[#84CC16] font-extrabold">{STEP_LABEL}</span>
         </div>
       }
     >
       <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <p className="text-[10px] font-black tracking-[0.2em] text-gray-400 uppercase mb-2">MANAGEMENT</p>
-          <h1 className="text-4xl font-extrabold tracking-tight text-[#1A1A1A] leading-none mb-3">
+          <p className="text-[10px] font-black tracking-[0.2em] text-muted-foreground uppercase mb-2">MANAGEMENT</p>
+          <h1 className="text-4xl font-extrabold tracking-tight text-foreground leading-none mb-3">
             Visa & Processing Payments
           </h1>
-          <p className="text-sm text-gray-500 font-medium max-w-lg">
+          <p className="text-sm text-muted-foreground font-medium max-w-lg">
             Please complete the remaining visa administration fees. Once verified, you will proceed to book your visa slot.
           </p>
         </div>
@@ -462,52 +462,52 @@ export default function VisaPaymentsPage() {
         </div>
 
         {/* Right Side: Banking details */}
-        <Card className="p-6 border border-slate-200 bg-white rounded-[2rem] shadow-sm space-y-6">
+        <Card className="p-6 border border-border bg-card rounded-[2rem] shadow-sm space-y-6 text-foreground">
           <div className="space-y-2">
-            <h3 className="font-bold text-slate-800 flex items-center gap-2">
+            <h3 className="font-bold text-foreground flex items-center gap-2">
               <Landmark className="w-5 h-5 text-primary" /> Bank Details
             </h3>
             <p className="text-xs text-muted-foreground">Transfer the amount to the official corporate account below.</p>
           </div>
 
-          <div className="space-y-4 text-sm bg-slate-50 p-4 border border-slate-100 rounded-2xl">
+          <div className="space-y-4 text-sm bg-muted p-4 border border-border rounded-2xl">
             <div className="space-y-1">
-              <span className="text-[10px] font-bold text-slate-400 uppercase">Account Name</span>
+              <span className="text-[10px] font-bold text-muted-foreground uppercase">Account Name</span>
               <div className="flex items-center justify-between">
-                <span className="font-bold text-slate-800 text-xs truncate max-w-[150px]">{paymentConfig.accountName}</span>
-                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => copyToClipboard(paymentConfig.accountName, 'Account name')}>
+                <span className="font-bold text-foreground text-xs truncate max-w-[150px]">{paymentConfig.accountName}</span>
+                <Button variant="ghost" size="icon" className="h-6 w-6 text-foreground animate-none hover:bg-background" onClick={() => copyToClipboard(paymentConfig.accountName, 'Account name')}>
                   <Copy className="w-3 h-3" />
                 </Button>
               </div>
             </div>
 
             <div className="space-y-1">
-              <span className="text-[10px] font-bold text-slate-400 uppercase">Bank Name</span>
-              <p className="font-bold text-slate-800 text-xs">{paymentConfig.bankName}</p>
+              <span className="text-[10px] font-bold text-muted-foreground uppercase">Bank Name</span>
+              <p className="font-bold text-foreground text-xs">{paymentConfig.bankName}</p>
             </div>
 
             <div className="space-y-1">
-              <span className="text-[10px] font-bold text-slate-400 uppercase">Account Number</span>
+              <span className="text-[10px] font-bold text-muted-foreground uppercase">Account Number</span>
               <div className="flex items-center justify-between">
                 <span className="font-mono font-bold text-primary text-xs">{paymentConfig.accountNumber}</span>
-                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => copyToClipboard(paymentConfig.accountNumber.replace(/\s/g, ''), 'Account number')}>
+                <Button variant="ghost" size="icon" className="h-6 w-6 text-foreground animate-none hover:bg-background" onClick={() => copyToClipboard(paymentConfig.accountNumber.replace(/\s/g, ''), 'Account number')}>
                   <Copy className="w-3 h-3" />
                 </Button>
               </div>
             </div>
 
             <div className="space-y-1">
-              <span className="text-[10px] font-bold text-slate-400 uppercase">IFSC / SWIFT</span>
+              <span className="text-[10px] font-bold text-muted-foreground uppercase">IFSC / SWIFT</span>
               <div className="flex items-center justify-between">
                 <span className="font-mono font-bold text-primary text-xs">{paymentConfig.ifsc}</span>
-                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => copyToClipboard(paymentConfig.ifsc, 'IFSC')}>
+                <Button variant="ghost" size="icon" className="h-6 w-6 text-foreground animate-none hover:bg-background" onClick={() => copyToClipboard(paymentConfig.ifsc, 'IFSC')}>
                   <Copy className="w-3 h-3" />
                 </Button>
               </div>
             </div>
           </div>
 
-          <div className="p-4 bg-amber-50 border border-amber-100 rounded-2xl flex gap-3 text-xs text-amber-800 font-medium">
+          <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex gap-3 text-xs text-amber-600 dark:text-amber-400 font-semibold">
             <Info className="w-4 h-4 shrink-0" />
             <p>Ensure you mention your name and Student ID reference in the transaction notes when performing the transfer.</p>
           </div>
@@ -517,15 +517,15 @@ export default function VisaPaymentsPage() {
       {/* Lightbox Modal */}
       {viewingProofUrl && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="relative max-w-xl w-full bg-white rounded-3xl overflow-hidden shadow-2xl">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-              <span className="text-sm font-bold text-gray-900">{viewingReceiptName}</span>
-              <button onClick={() => setViewingProofUrl(null)} className="p-1.5 rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors">
-                <X className="w-4 h-4 text-gray-600" />
+          <div className="relative max-w-xl w-full bg-card border border-border rounded-3xl overflow-hidden shadow-2xl text-foreground">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+              <span className="text-sm font-bold text-foreground">{viewingReceiptName}</span>
+              <button onClick={() => setViewingProofUrl(null)} className="p-1.5 rounded-xl bg-muted hover:bg-muted/80 transition-colors text-foreground">
+                <X className="w-4 h-4 text-foreground" />
               </button>
             </div>
-            <div className="p-4">
-              <img src={viewingProofUrl} alt="Receipt proof" className="w-full max-h-[70vh] object-contain rounded-2xl" />
+            <div className="p-4 bg-muted">
+              <img src={viewingProofUrl} alt="Receipt proof" className="w-full max-h-[70vh] object-contain rounded-2xl border border-border" />
             </div>
           </div>
         </div>

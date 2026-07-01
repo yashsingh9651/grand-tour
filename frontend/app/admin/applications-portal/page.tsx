@@ -203,9 +203,11 @@ export default function ApplicationsPortalListPage() {
                     <tr key={app.id} className="hover:bg-slate-50/30 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600 text-sm">
-                            {app.user?.firstName?.[0] || '?'}{app.user?.lastName?.[0] || ''}
-                          </div>
+                          <img
+                            src={app.user?.image || app.user?.profileImage}
+                            alt={app.user?.firstName + ' ' + app.user?.lastName}
+                            className="w-10 h-10 rounded-full object-cover border border-slate-200"
+                          />
                           <div>
                             <p className="font-bold text-slate-900 text-sm">{app.user?.firstName} {app.user?.lastName}</p>
                             <p className="text-xs text-slate-500 font-medium">{app.user?.email}</p>

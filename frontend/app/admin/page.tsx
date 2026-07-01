@@ -26,13 +26,6 @@ export default function DashboardPage() {
                   + New Candidate
                 </Button>
               </Link>
-              <Button
-                variant="outline"
-                className="h-9 text-sm rounded-full px-5 transition-all duration-200 hover:scale-105"
-                style={{ borderColor: "#DDD", color: "#555", backgroundColor: "transparent" }}
-              >
-                Export Report
-              </Button>
             </>
           }
         />

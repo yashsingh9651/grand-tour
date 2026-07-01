@@ -2,7 +2,7 @@
 
 import { StudentSidebar } from './student-sidebar'
 import { useState, useEffect } from 'react'
-import { Bell, Moon, Sun, Search, Loader2 } from 'lucide-react'
+import { Bell, Moon, Sun, Loader2 } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
@@ -20,6 +20,20 @@ export function StudentLayout({ children, currentStep = 'application', headerCon
   const pathname = usePathname()
   const [darkMode, setDarkMode] = useState(false)
 
+  // Persist dark mode preference
+  useEffect(() => {
+    const saved = localStorage.getItem('student-dark-mode')
+    if (saved === 'true') setDarkMode(true)
+  }, [])
+
+  const toggleDark = () => {
+    setDarkMode((prev) => {
+      const next = !prev
+      localStorage.setItem('student-dark-mode', String(next))
+      return next
+    })
+  }
+
   const fullName = user ? `${user.firstName || user.name || ''} ${user.lastName || ''}`.trim() : 'Loading...'
   const userImage = user?.image || user?.profileImage
 
@@ -27,29 +41,30 @@ export function StudentLayout({ children, currentStep = 'application', headerCon
   const isFinance = pathname.includes('payment')
 
   return (
-    <div className="flex min-h-screen" style={{ backgroundColor: '#F5F5F0' }}>
+    // student-panel wrapper: scopes all CSS vars. Adding .dark here switches the entire panel.
+    <div
+      className={`student-panel${darkMode ? ' dark' : ''} flex min-h-screen text-foreground transition-colors duration-300`}
+      style={{ backgroundColor: 'var(--sp-bg)' }}
+    >
       {/* Sidebar spacer */}
       <div className="hidden lg:block w-56 shrink-0" />
-      <StudentSidebar currentStep={currentStep} />
+      <StudentSidebar currentStep={currentStep} darkMode={darkMode} />
 
       {/* Main content */}
       <main className="flex-1 min-w-0">
         {/* ── Topbar ─────────────────────────────────────────────── */}
         <div
-          className="flex items-center justify-between gap-4 px-6 py-3 border-b"
+          className="flex items-center justify-between gap-4 px-6 py-3 border-b sticky top-0 z-40 transition-colors duration-300"
           style={{
-            backgroundColor: '#F5F5F0',
-            borderColor: '#E8E8E2',
-            position: 'sticky',
-            top: 0,
-            zIndex: 40,
+            backgroundColor: 'var(--sp-topbar-bg)',
+            borderColor: 'var(--sp-border)',
           }}
         >
           {/* Left: Brand label */}
           <div className="flex items-center gap-3">
             <span
-              className="text-sm font-bold tracking-tight hidden sm:block"
-              style={{ color: '#111', fontFamily: 'Gilroy, sans-serif' }}
+              className="text-sm font-bold tracking-tight hidden sm:block transition-colors duration-300"
+              style={{ color: 'var(--sp-text)', fontFamily: 'Gilroy, sans-serif' }}
             >
               Student Portal
             </span>
@@ -63,18 +78,18 @@ export function StudentLayout({ children, currentStep = 'application', headerCon
                 href="/dashboard"
                 className="text-xs font-bold tracking-widest uppercase transition-colors duration-200 pb-0.5"
                 style={{
-                  color: isJourney ? '#111' : '#999',
-                  borderBottom: isJourney ? '2px solid #111' : '2px solid transparent',
+                  color: isJourney ? 'var(--sp-text)' : 'var(--sp-text-soft)',
+                  borderBottom: isJourney ? '2px solid var(--sp-text)' : '2px solid transparent',
                 }}
               >
                 Journey
               </Link>
               <Link
-                href="/dashboard/payment"
+                href="/dashboard/payment1"
                 className="text-xs font-bold tracking-widest uppercase transition-colors duration-200 pb-0.5"
                 style={{
-                  color: isFinance ? '#CCFF00' : '#999',
-                  borderBottom: isFinance ? '2px solid #CCFF00' : '2px solid transparent',
+                  color: isFinance ? 'var(--sp-accent)' : 'var(--sp-text-soft)',
+                  borderBottom: isFinance ? '2px solid var(--sp-accent)' : '2px solid transparent',
                 }}
               >
                 Finance
@@ -82,34 +97,35 @@ export function StudentLayout({ children, currentStep = 'application', headerCon
             </div>
 
             {/* Divider */}
-            <div className="h-5 w-px hidden md:block" style={{ backgroundColor: '#DDD' }} />
+            <div className="h-5 w-px hidden md:block" style={{ backgroundColor: 'var(--sp-border)' }} />
 
             {/* Bell */}
             <button
               className="relative transition-all duration-200 hover:scale-110"
-              style={{ color: '#555' }}
+              style={{ color: 'var(--sp-text-muted)' }}
             >
               <Bell className="w-4 h-4" />
             </button>
 
             {/* Dark mode toggle */}
             <button
-              onClick={() => setDarkMode(!darkMode)}
+              onClick={toggleDark}
               className="transition-all duration-200 hover:scale-110"
-              style={{ color: '#555' }}
+              style={{ color: 'var(--sp-text-muted)' }}
+              aria-label="Toggle dark mode"
             >
               {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
 
             {/* Avatar */}
             {status === 'loading' ? (
-              <Loader2 className="w-4 h-4 animate-spin" style={{ color: '#888' }} />
+              <Loader2 className="w-4 h-4 animate-spin" style={{ color: 'var(--sp-text-soft)' }} />
             ) : (
-              <Avatar className="w-8 h-8 ring-2 ring-offset-1 ring-[#E0E0DA]">
+              <Avatar className="w-8 h-8 ring-2 ring-offset-1" style={{ '--tw-ring-color': 'var(--sp-border)' } as any}>
                 <AvatarImage src={userImage} alt={fullName} />
                 <AvatarFallback
                   className="text-xs font-bold"
-                  style={{ backgroundColor: '#CCFF00', color: '#111' }}
+                  style={{ backgroundColor: 'var(--sp-accent)', color: 'var(--sp-accent-text)' }}
                 >
                   {fullName
                     .split(' ')

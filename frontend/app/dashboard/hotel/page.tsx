@@ -161,12 +161,12 @@ export default function HotelPage() {
             </p>
           </div>
           {accepted && (
-            <div className="flex items-center gap-2 px-4 py-2 bg-green-50 border border-green-200 rounded-full text-sm font-semibold text-green-700">
+            <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full text-sm font-semibold text-emerald-600 dark:text-emerald-400">
               <CheckCircle2 className="w-4 h-4" /> Accepted — Proceeding to Payment 2
             </div>
           )}
           {declined && (
-            <div className="flex items-center gap-2 px-4 py-2 bg-rose-50 border border-rose-200 rounded-full text-sm font-semibold text-rose-700">
+            <div className="flex items-center gap-2 px-4 py-2 bg-rose-500/10 border border-rose-500/20 rounded-full text-sm font-semibold text-rose-600 dark:text-rose-400">
               <ThumbsDown className="w-4 h-4" /> Declined — Team will contact you
             </div>
           )}
@@ -174,7 +174,7 @@ export default function HotelPage() {
 
         {/* Hotel Details */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="md:col-span-2 p-0 overflow-hidden border-none shadow-xl">
+          <Card className="md:col-span-2 p-0 overflow-hidden border border-border shadow-md">
             <div className="relative h-48 bg-gradient-to-br from-primary to-accent p-8 flex flex-col justify-end">
               <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-md rounded-lg p-2">
                 <Building2 className="w-8 h-8 text-white" />
@@ -184,7 +184,7 @@ export default function HotelPage() {
                 <MapPin className="w-4 h-4" /> {assignment.hotel.location}
               </p>
             </div>
-            <div className="p-6 bg-card grid grid-cols-2 gap-8">
+            <div className="p-6 bg-card grid grid-cols-2 gap-8 text-foreground">
               <div className="space-y-1">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Check-in</p>
                 <div className="flex items-center gap-2">
@@ -202,17 +202,17 @@ export default function HotelPage() {
             </div>
           </Card>
 
-          <Card className="p-6 flex flex-col items-center justify-center text-center space-y-4 border-primary/20 bg-primary/5">
-            <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-md">
+          <Card className="p-6 flex flex-col items-center justify-center text-center space-y-4 border border-border bg-muted">
+            <div className="w-16 h-16 rounded-full bg-card flex items-center justify-center shadow-md">
               <FileText className="w-8 h-8 text-primary" />
             </div>
-            <div className="space-y-1">
+            <div className="space-y-1 text-foreground">
               <h3 className="font-bold">Hotel Proposal</h3>
               <p className="text-xs text-muted-foreground">Download the complete hotel details and proposal.</p>
             </div>
             {assignment.hotel.proposalPdf ? (
               <a href={assignment.hotel.proposalPdf} target="_blank" rel="noopener noreferrer" className="w-full">
-                <Button variant="outline" className="w-full bg-white hover:bg-secondary">
+                <Button variant="outline" className="w-full bg-card hover:bg-muted text-foreground">
                   <Download className="w-4 h-4 mr-2" /> Download PDF
                 </Button>
               </a>
@@ -224,13 +224,13 @@ export default function HotelPage() {
 
         {/* Accept / Decline Section */}
         {!hasResponded && (
-          <Card className="p-6 border-2 border-primary/20 bg-primary/5">
+          <Card className="p-6 border border-border bg-muted">
             <div className="flex items-start gap-4">
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                 <AlertTriangle className="w-6 h-6 text-primary" />
               </div>
               <div className="flex-1">
-                <h3 className="font-bold text-lg mb-1">Confirm Your Hotel Allocation</h3>
+                <h3 className="font-bold text-lg mb-1 text-foreground">Confirm Your Hotel Allocation</h3>
                 <p className="text-sm text-muted-foreground mb-4">
                   Please review the hotel details above and either accept or decline this allocation. 
                   Accepting will move you to the next payment step. Declining will notify our team to find an alternative.
@@ -240,7 +240,7 @@ export default function HotelPage() {
                     {responding ? <Loader2 className="w-4 h-4 animate-spin" /> : <ThumbsUp className="w-4 h-4" />}
                     Accept Hotel
                   </Button>
-                  <Button onClick={() => setShowDeclineModal(true)} variant="outline" className="border-rose-200 text-rose-600 hover:bg-rose-50 gap-2">
+                  <Button onClick={() => setShowDeclineModal(true)} variant="outline" className="border-rose-500/30 text-rose-500 hover:bg-rose-500/10 gap-2">
                     <ThumbsDown className="w-4 h-4" /> Decline
                   </Button>
                 </div>
@@ -250,30 +250,30 @@ export default function HotelPage() {
         )}
 
         {accepted && (
-          <Card className="p-6 border-green-200 bg-green-50 flex items-center gap-4">
-            <CheckCircle2 className="w-10 h-10 text-green-600 flex-shrink-0" />
+          <Card className="p-6 border border-emerald-500/20 bg-emerald-500/10 flex items-center gap-4 text-foreground">
+            <CheckCircle2 className="w-10 h-10 text-emerald-600 flex-shrink-0" />
             <div>
-              <h3 className="font-bold text-green-800">You've accepted this hotel allocation!</h3>
-              <p className="text-sm text-green-700 mt-1">Your next step is <strong>Payment 2</strong>. Click below to proceed.</p>
+              <h3 className="font-bold text-emerald-600 dark:text-emerald-400">You've accepted this hotel allocation!</h3>
+              <p className="text-sm text-muted-foreground mt-1">Your next step is <strong>Payment 2</strong>. Click below to proceed.</p>
               <Link href="/dashboard/payment2"><Button className="mt-3 bg-green-600 hover:bg-green-700">Go to Payment 2 <ChevronRight className="w-4 h-4 ml-2" /></Button></Link>
             </div>
           </Card>
         )}
 
         {declined && (
-          <Card className="p-6 border-rose-200 bg-rose-50 flex items-center gap-4">
+          <Card className="p-6 border border-rose-500/20 bg-rose-500/10 flex items-center gap-4 text-foreground">
             <ThumbsDown className="w-10 h-10 text-rose-500 flex-shrink-0" />
             <div>
-              <h3 className="font-bold text-rose-800">You've declined this hotel allocation.</h3>
-              <p className="text-sm text-rose-700 mt-1">Our team has been notified and will contact you with alternatives shortly.</p>
-              {assignment.responseNote && <p className="text-xs text-rose-600 mt-2 italic">Your note: "{assignment.responseNote}"</p>}
+              <h3 className="font-bold text-rose-600 dark:text-rose-400">You've declined this hotel allocation.</h3>
+              <p className="text-sm text-muted-foreground mt-1">Our team has been notified and will contact you with alternatives shortly.</p>
+              {assignment.responseNote && <p className="text-xs text-rose-600 mt-2 italic font-bold">Your note: "{assignment.responseNote}"</p>}
             </div>
           </Card>
         )}
 
         {/* Important Info */}
-        <Card className="p-6 bg-secondary/10 border-none">
-          <h3 className="font-bold mb-4 flex items-center gap-2"><MapPin className="w-5 h-5 text-primary" /> Important Information</h3>
+        <Card className="p-6 bg-muted border border-border">
+          <h3 className="font-bold mb-4 flex items-center gap-2 text-foreground"><MapPin className="w-5 h-5 text-primary" /> Important Information</h3>
           <ul className="space-y-3 text-sm text-muted-foreground">
             {['Please carry your valid ID proof (Passport/Aadhar) at the time of check-in.', 
               'Standard check-in time is 2:00 PM and check-out time is 11:00 AM.',
@@ -291,20 +291,20 @@ export default function HotelPage() {
       {/* Decline Modal */}
       {showDeclineModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4">
+          <div className="bg-card border border-border rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4 text-foreground">
             <div className="flex items-center justify-between">
               <h3 className="text-xl font-bold">Decline Hotel Allocation</h3>
-              <button onClick={() => setShowDeclineModal(false)} className="p-1 rounded-lg hover:bg-gray-100"><X className="w-5 h-5" /></button>
+              <button onClick={() => setShowDeclineModal(false)} className="p-1 rounded-lg hover:bg-muted"><X className="w-5 h-5" /></button>
             </div>
             <p className="text-sm text-muted-foreground">Please provide a reason for declining. Our team will reach out to you with alternatives.</p>
             <textarea
               value={declineNote}
               onChange={(e) => setDeclineNote(e.target.value)}
               placeholder="Optional: Reason for declining..."
-              className="w-full h-28 rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-rose-300"
+              className="w-full h-28 rounded-xl border border-border bg-muted p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-rose-300 text-foreground"
             />
             <div className="flex gap-3 justify-end">
-              <Button variant="ghost" onClick={() => setShowDeclineModal(false)}>Cancel</Button>
+              <Button variant="ghost" onClick={() => setShowDeclineModal(false)} className="hover:bg-muted text-foreground">Cancel</Button>
               <Button onClick={handleDecline} disabled={responding} className="bg-rose-600 hover:bg-rose-700 text-white gap-2">
                 {responding ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                 Confirm Decline

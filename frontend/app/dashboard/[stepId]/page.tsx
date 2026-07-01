@@ -400,11 +400,11 @@ export default function DynamicStepPage({ params }: { params: Promise<{ stepId: 
                     <p className="text-sm text-muted-foreground">Scan this QR code using any UPI app</p>
                   </div>
                   
-                  <div className="p-4 bg-slate-50 rounded-3xl border-2 border-slate-100">
+                  <div className="p-4 bg-white-force rounded-3xl border border-slate-200">
                     <img 
                       src={currentStepConfig.paymentConfig?.qrCodeUrl || `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=${currentStepConfig.paymentConfig?.accountNumber}@${currentStepConfig.paymentConfig?.ifsc}&pn=${encodeURIComponent(currentStepConfig.paymentConfig?.accountName || 'Company')}&am=${((currentStepConfig.amount || 0) * (1 - (currentStepConfig.discountPercentage || 0) / 100) * (1 + (currentStepConfig.gstPercentage || 0) / 100))}&cu=INR`} 
                       alt="Payment QR Code"
-                      className="w-48 h-48 mix-blend-multiply"
+                      className="w-48 h-48"
                     />
                   </div>
 

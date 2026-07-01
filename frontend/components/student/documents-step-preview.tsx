@@ -156,27 +156,27 @@ export function DocumentsStepPreview({
   const progressPercent = Math.round((docSteps.filter((d: any) => d.isCompleted).length / Math.max(1, docSteps.length)) * 100)
 
   return (
-    <div className="w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 text-foreground">
       <div className="flex items-start justify-between">
         <div className="space-y-2">
           <div className="flex items-center gap-3 mb-4">
             <span className="text-[10px] font-bold tracking-widest uppercase bg-[#C6F16D] text-[#1A1A1A] px-3 py-1.5 rounded-full">
               Step {activeDocIndex + 1} of {docSteps.length}
             </span>
-            <span className="text-sm font-bold text-[#1A1A1A]">Document Repository</span>
+            <span className="text-sm font-bold text-muted-foreground">Document Repository</span>
           </div>
-          <h1 className="text-4xl font-extrabold tracking-tight text-[#1A1A1A] leading-tight">
+          <h1 className="text-4xl font-extrabold tracking-tight text-foreground leading-tight">
             {resolvedPageContent?.title || fallbackPageContent.title}
           </h1>
-          <p className="text-[#666666] text-base max-w-lg mt-2">
+          <p className="text-muted-foreground text-base max-w-lg mt-2">
             {resolvedPageContent?.subtitle || fallbackPageContent.subtitle}
           </p>
         </div>
 
         <div className="hidden lg:flex items-center gap-4">
-          <div className="flex items-center gap-2 bg-[#F5F5F5] rounded-full px-5 py-3">
-            <span className="text-[9px] font-bold tracking-widest uppercase text-[#666666]">Upload Progress</span>
-            <span className="text-sm font-bold text-[#1A1A1A]">{progressPercent}% Complete</span>
+          <div className="flex items-center gap-2 bg-muted rounded-full px-5 py-3 border border-border">
+            <span className="text-[9px] font-bold tracking-widest uppercase text-muted-foreground">Upload Progress</span>
+            <span className="text-sm font-bold text-foreground">{progressPercent}% Complete</span>
           </div>
           <div className="flex items-center gap-1">
             {docSteps.map((step: any, idx: number) => {
@@ -189,8 +189,8 @@ export function DocumentsStepPreview({
                   key={step.id}
                   className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 ${
                     isCompleted ? 'bg-[#C6F16D] border-[#C6F16D] text-[#1A1A1A]' :
-                    isCurrent ? 'bg-white border-[#C6F16D] text-[#1A1A1A]' :
-                    'bg-white border-gray-200 text-gray-400'
+                    isCurrent ? 'bg-card border-[#C6F16D] text-foreground' :
+                    'bg-muted border-border text-muted-foreground'
                   }`}
                   title={step.label}
                 >
@@ -207,10 +207,10 @@ export function DocumentsStepPreview({
           {leftBlocks.map((block: any) => {
             if (block.type === 'section') {
               return (
-                <Card key={block.id} className="p-6 border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2rem] bg-white">
+                <Card key={block.id} className="p-6 border border-border shadow-sm rounded-[2rem] bg-card text-foreground">
                   <div className="space-y-2">
                     <h3 className="text-xl font-bold">{block.label || 'Section'}</h3>
-                    {block.description && <p className="text-sm text-[#666666]">{block.description}</p>}
+                    {block.description && <p className="text-sm text-muted-foreground">{block.description}</p>}
                   </div>
                 </Card>
               )
@@ -221,11 +221,11 @@ export function DocumentsStepPreview({
               const status = getDocStatus(block.fieldKey)
 
               return (
-                <Card key={block.id} className="p-8 border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2rem] bg-white">
+                <Card key={block.id} className="p-8 border border-border shadow-sm rounded-[2rem] bg-card text-foreground">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-xl font-bold flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-[#F5F0FF] flex items-center justify-center">
-                        <Icon className="w-5 h-5 text-[#8B48F6]" />
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <Icon className="w-5 h-5 text-primary" />
                       </div>
                       {block.label}
                     </h3>
@@ -233,33 +233,33 @@ export function DocumentsStepPreview({
                       {status}
                     </span>
                   </div>
-                  <p className="text-sm text-[#666666] mb-6">{block.description || 'Document upload guidance'}</p>
+                  <p className="text-sm text-muted-foreground mb-6">{block.description || 'Document upload guidance'}</p>
 
                   {(status === 'NOT UPLOADED' || status === 'REJECTED') ? (
                     <>
                       {status === 'REJECTED' && uploadedDocs[block.fieldKey]?.remarks && (
-                        <div className="mb-6 p-4 rounded-2xl bg-red-50/80 border border-red-200/50 text-red-900 text-sm flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
-                          <div className="mt-0.5 shrink-0 bg-red-100 p-1.5 rounded-lg text-red-600">
+                        <div className="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-sm flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                          <div className="mt-0.5 shrink-0 bg-red-500/20 p-1.5 rounded-lg text-red-600 dark:text-red-400">
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
                           </div>
                           <div>
-                            <span className="font-extrabold block text-xs tracking-wider uppercase text-red-800 mb-1">Feedback from Admin</span>
-                            <p className="text-red-700 leading-relaxed font-semibold">{uploadedDocs[block.fieldKey].remarks}</p>
+                            <span className="font-extrabold block text-xs tracking-wider uppercase text-red-800 dark:text-red-300 mb-1">Feedback from Admin</span>
+                            <p className="leading-relaxed font-semibold">{uploadedDocs[block.fieldKey].remarks}</p>
                           </div>
                         </div>
                       )}
-                      <div className="border-2 border-dashed border-gray-200 rounded-2xl py-12 px-8 flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-[#C6F16D] hover:bg-[#FAFFF0] transition-all group"
+                      <div className="border-2 border-dashed border-border rounded-2xl py-12 px-8 flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-[#C6F16D] hover:bg-muted/50 transition-all group"
                         onClick={() => onUpload?.(block.fieldKey, block.label)}
                       >
-                        <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center group-hover:bg-[#C6F16D]/20 transition-colors">
-                          <Upload className="w-5 h-5 text-gray-400 group-hover:text-[#4D6B19]" />
+                        <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center group-hover:bg-[#C6F16D]/20 transition-colors">
+                          <Upload className="w-5 h-5 text-muted-foreground group-hover:text-[#4D6B19]" />
                         </div>
-                        <p className="text-sm text-[#1A1A1A] font-medium">
-                          Drop your document here or <span className="text-[#4D6B19] underline font-bold">browse files</span>
+                        <p className="text-sm text-foreground font-medium">
+                          Drop your document here or <span className="text-emerald-600 dark:text-emerald-400 underline font-bold">browse files</span>
                         </p>
-                        <p className="text-[9px] font-bold tracking-widest uppercase text-gray-400">
+                        <p className="text-[9px] font-bold tracking-widest uppercase text-muted-foreground">
                           {block.placeholder || 'Supported Formats'}
                         </p>
                       </div>
@@ -267,7 +267,8 @@ export function DocumentsStepPreview({
                       <div className="flex justify-end mt-4">
                         <Button
                           onClick={() => onUpload?.(block.fieldKey, block.label)}
-                          className="bg-[#F5F5F5] hover:bg-[#E8E8E8] text-[#1A1A1A] font-bold rounded-full px-6 h-10 gap-2"
+                          variant="secondary"
+                          className="rounded-full px-6 h-10 gap-2 font-bold"
                         >
                           <Upload className="w-4 h-4" />
                           Upload {block.label}
@@ -275,13 +276,13 @@ export function DocumentsStepPreview({
                       </div>
                     </>
                   ) : (
-                    <div className="bg-[#FAFFF0] border border-[#C6F16D]/30 rounded-2xl p-6 flex flex-col items-center justify-center gap-4">
-                      <div className="w-12 h-12 rounded-full bg-[#C6F16D]/20 flex items-center justify-center">
-                        <CheckCircle2 className="w-6 h-6 text-[#4D6B19]" />
+                    <div className="bg-emerald-500/10 border border-emerald-500/25 rounded-2xl p-6 flex flex-col items-center justify-center gap-4">
+                      <div className="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                        <CheckCircle2 className="w-6 h-6 text-emerald-500" />
                       </div>
                       <div className="text-center">
-                        <p className="font-bold text-[#1A1A1A]">Document Uploaded Successfully</p>
-                        <p className="text-sm text-[#666666] mt-1">
+                        <p className="font-bold text-foreground">Document Uploaded Successfully</p>
+                        <p className="text-sm text-muted-foreground mt-1">
                           {status === 'APPROVED' ? 'Your document has been verified and approved.' : 'Your document is currently under review.'}
                         </p>
                       </div>
@@ -290,7 +291,7 @@ export function DocumentsStepPreview({
                           <Button
                             variant="outline"
                             onClick={() => window.open(uploadedDocs[block.fieldKey].url, '_blank')}
-                            className="rounded-full gap-2 text-sm"
+                            className="rounded-full gap-2 text-sm border-border bg-card hover:bg-muted text-foreground"
                           >
                             <FileText className="w-4 h-4" />
                             View Document
@@ -298,7 +299,8 @@ export function DocumentsStepPreview({
                         )}
                         <Button
                           onClick={() => onUpload?.(block.fieldKey, block.label)}
-                          className="bg-[#F5F5F5] hover:bg-[#E8E8E8] text-[#1A1A1A] font-bold rounded-full px-6 h-10 gap-2"
+                          variant="secondary"
+                          className="rounded-full px-6 h-10 gap-2 font-bold"
                         >
                           <Upload className="w-4 h-4" />
                           Re-select Document
@@ -312,9 +314,9 @@ export function DocumentsStepPreview({
 
             if (block.type === 'text') {
               return (
-                <Card key={block.id} className="p-6 border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2rem] bg-white">
+                <Card key={block.id} className="p-6 border border-border shadow-sm rounded-[2rem] bg-card text-foreground">
                   <h3 className="text-lg font-bold mb-2">{block.label}</h3>
-                  <p className="text-sm text-[#666666]">{block.description}</p>
+                  <p className="text-sm text-muted-foreground">{block.description}</p>
                 </Card>
               )
             }
@@ -324,13 +326,13 @@ export function DocumentsStepPreview({
         </div>
 
         <div className="lg:col-span-1">
-          <Card className="p-8 border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2rem] bg-white sticky top-32">
+          <Card className="p-8 border border-border shadow-sm rounded-[2rem] bg-card text-foreground sticky top-32">
             {rightBlocks.map((block: any) => {
               if (block.type === 'summary') {
                 return (
                   <div key={block.id} className="space-y-2">
                     <h3 className="text-xl font-bold mb-2">{block.label}</h3>
-                    {block.description && <p className="text-sm text-[#666666] mb-4">{block.description}</p>}
+                    {block.description && <p className="text-sm text-muted-foreground mb-4">{block.description}</p>}
                   </div>
                 )
               }
@@ -340,8 +342,8 @@ export function DocumentsStepPreview({
                   <div key={block.id} className="flex items-start gap-3 pt-4 first:pt-0">
                     <CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-sm font-bold text-[#1A1A1A]">{block.label}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">{block.description}</p>
+                      <p className="text-sm font-bold text-foreground">{block.label}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{block.description}</p>
                     </div>
                   </div>
                 )
@@ -350,9 +352,9 @@ export function DocumentsStepPreview({
               return null
             })}
 
-            <div className="mt-8 p-4 bg-[#F5F5F5] rounded-xl flex items-center gap-3">
-              <ShieldCheck className="w-5 h-5 text-[#4D6B19] shrink-0" />
-              <p className="text-[11px] text-gray-500">Your data is protected by AES-256 encryption protocols.</p>
+            <div className="mt-8 p-4 bg-muted border border-border rounded-xl flex items-center gap-3">
+              <ShieldCheck className="w-5 h-5 text-primary shrink-0" />
+              <p className="text-[11px] text-muted-foreground">Your data is protected by AES-256 encryption protocols.</p>
             </div>
           </Card>
         </div>

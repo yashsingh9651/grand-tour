@@ -74,9 +74,9 @@ export default function VisaPage() {
   if (!isUnlocked) {
     return (
       <StudentLayout currentStep="visa">
-        <div className="max-w-3xl rounded-3xl border-2 border-dashed border-gray-200 p-12 flex flex-col items-center text-center">
-          <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mb-6">
-            <Lock className="w-10 h-10 text-gray-400" />
+        <div className="max-w-3xl rounded-3xl border-2 border-dashed border-border bg-secondary/20 p-12 flex flex-col items-center text-center text-foreground mx-auto mt-10">
+          <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mb-6">
+            <Lock className="w-10 h-10 text-muted-foreground" />
           </div>
           <h2 className="text-2xl font-bold">Visa Appointment — Locked</h2>
           <p className="text-muted-foreground mt-2 max-w-md">
@@ -94,7 +94,7 @@ export default function VisaPage() {
 
   return (
     <StudentLayout currentStep="visa">
-      <div className="max-w-5xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="max-w-5xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 text-foreground">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -107,7 +107,7 @@ export default function VisaPage() {
             </div>
           </div>
           {hasBooked && (
-            <span className="flex items-center gap-2 px-4 py-2 bg-green-50 border border-green-200 text-green-700 text-sm font-bold rounded-full">
+            <span className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-sm font-bold rounded-full">
               <CheckCircle2 className="w-4 h-4" /> Appointment Booked
             </span>
           )}
@@ -115,7 +115,7 @@ export default function VisaPage() {
 
         {/* Booked Appointment Card */}
         {hasBooked && (
-          <Card className="p-0 overflow-hidden border-none shadow-xl">
+          <Card className="p-0 overflow-hidden border border-border shadow-md bg-card">
             <div className="h-2 bg-gradient-to-r from-blue-500 to-violet-600" />
             <div className="p-8">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -147,13 +147,13 @@ export default function VisaPage() {
 
               {/* Meet Link */}
               {mySlot.meetLink && (
-                <div className="mt-6 p-4 bg-blue-50 border border-blue-100 rounded-2xl flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-sm flex-shrink-0">
-                    <Video className="w-6 h-6 text-blue-600" />
+                <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/25 rounded-2xl flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-card border border-border flex items-center justify-center shadow-sm flex-shrink-0">
+                    <Video className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                   </div>
                   <div className="flex-1">
-                    <p className="font-bold text-blue-900">Join Meeting Link</p>
-                    <p className="text-sm text-blue-700 truncate">{mySlot.meetLink}</p>
+                    <p className="font-bold text-blue-600 dark:text-blue-400">Join Meeting Link</p>
+                    <p className="text-sm text-muted-foreground truncate">{mySlot.meetLink}</p>
                   </div>
                   <a href={mySlot.meetLink} target="_blank" rel="noopener noreferrer">
                     <Button className="bg-blue-600 hover:bg-blue-700 text-white gap-2">
@@ -165,8 +165,8 @@ export default function VisaPage() {
 
               {/* Document download if available */}
               {mySlot.documentUrl && (
-                <div className="mt-4 p-4 bg-secondary/10 rounded-2xl flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm flex-shrink-0">
+                <div className="mt-4 p-4 bg-muted border border-border rounded-2xl flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-card border border-border flex items-center justify-center shadow-sm flex-shrink-0">
                     <FileDown className="w-5 h-5 text-primary" />
                   </div>
                   <div className="flex-1">
@@ -174,7 +174,7 @@ export default function VisaPage() {
                     <p className="text-sm text-muted-foreground">Download your visa appointment documents.</p>
                   </div>
                   <a href={mySlot.documentUrl} target="_blank" rel="noopener noreferrer">
-                    <Button variant="outline" className="gap-2">
+                    <Button variant="outline" className="gap-2 border-border text-foreground hover:bg-muted">
                       <Download className="w-4 h-4" /> Download
                     </Button>
                   </a>
@@ -193,7 +193,7 @@ export default function VisaPage() {
             </div>
 
             {availableSlots.length === 0 ? (
-              <Card className="p-12 text-center border-2 border-dashed">
+              <Card className="p-12 text-center border border-border border-dashed bg-muted">
                 <Globe className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-30" />
                 <h3 className="font-bold text-lg">No Slots Available</h3>
                 <p className="text-muted-foreground mt-1">Our team is scheduling new appointment slots. Please check back shortly.</p>
@@ -204,11 +204,11 @@ export default function VisaPage() {
                   <Card
                     key={slot.id}
                     onClick={() => setSelectedSlot(slot.id)}
-                    className={`p-5 cursor-pointer transition-all duration-200 hover:shadow-lg border-2 ${selectedSlot === slot.id ? 'border-primary bg-primary/5 shadow-lg' : 'border-transparent hover:border-primary/30'}`}
+                    className={`p-5 cursor-pointer transition-all duration-200 hover:shadow-lg border ${selectedSlot === slot.id ? 'border-primary bg-primary/10 shadow-lg' : 'border-border hover:border-primary bg-card text-foreground'}`}
                   >
                     <div className="flex items-start justify-between mb-3">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${selectedSlot === slot.id ? 'bg-primary' : 'bg-secondary'}`}>
-                        <Calendar className={`w-5 h-5 ${selectedSlot === slot.id ? 'text-white' : 'text-muted-foreground'}`} />
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${selectedSlot === slot.id ? 'bg-[#C6F16D] text-[#1A1A1A]' : 'bg-muted'}`}>
+                        <Calendar className={`w-5 h-5 ${selectedSlot === slot.id ? 'text-[#1A1A1A]' : 'text-muted-foreground'}`} />
                       </div>
                       {selectedSlot === slot.id && (
                         <CheckCircle2 className="w-5 h-5 text-primary" />
@@ -244,7 +244,7 @@ export default function VisaPage() {
         )}
 
         {/* Instructions */}
-        <Card className="p-6 bg-secondary/10 border-none rounded-2xl">
+        <Card className="p-6 bg-muted border border-border rounded-2xl">
           <h3 className="font-bold mb-4 flex items-center gap-2">
             <AlertCircle className="w-5 h-5 text-primary" /> Before Your Appointment
           </h3>

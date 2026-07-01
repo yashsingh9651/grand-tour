@@ -220,7 +220,7 @@ export default function InterviewPage() {
   const interviewHeader = (
     <div className="flex flex-col">
       <span className="text-[9px] font-bold tracking-widest uppercase text-[#4D6B19]">PREPARATION PHASE</span>
-      <h1 className="text-3xl font-extrabold tracking-tight text-[#1A1A1A] leading-none mt-1">Interview Hub</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight text-foreground leading-none mt-1">Interview Hub</h1>
     </div>
   )
 
@@ -236,11 +236,11 @@ export default function InterviewPage() {
     return (
       <StudentLayout currentStep="interview" headerContent={interviewHeader}>
         <div className="max-w-4xl space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <Card className="p-12 border-2 border-dashed bg-secondary/20 flex flex-col items-center text-center">
-            <div className="w-20 h-20 bg-background rounded-full flex items-center justify-center shadow-inner mb-6">
+          <Card className="p-12 border-2 border-dashed border-border bg-secondary/20 flex flex-col items-center text-center">
+            <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center shadow-inner mb-6">
               <Lock className="w-10 h-10 text-muted-foreground" />
             </div>
-            <h2 className="text-2xl font-bold">Step Locked</h2>
+            <h2 className="text-2xl font-bold text-foreground">Step Locked</h2>
             <p className="text-muted-foreground mt-2 max-w-md">
               Your interview hub will unlock once all required documents are verified and approved by our team.
             </p>
@@ -255,28 +255,28 @@ export default function InterviewPage() {
 
   return (
     <StudentLayout currentStep="interview" headerContent={interviewHeader}>
-      <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 text-foreground">
         <div className="grid lg:grid-cols-12 gap-8">
           <div className="lg:col-span-7 space-y-8">
             {!bookedInterview && (
-              <Card className="p-8 border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2rem] bg-white">
+              <Card className="p-8 border border-border shadow-sm rounded-[2rem] bg-card">
                 <div className="flex items-center justify-between mb-8">
                   <div>
-                    <h3 className="text-xl font-bold text-[#1A1A1A]">Schedule Your Slot</h3>
-                    <p className="text-sm text-[#666666] mt-1">Available interview times are synced directly from the backend.</p>
+                    <h3 className="text-xl font-bold text-foreground">Schedule Your Slot</h3>
+                    <p className="text-sm text-muted-foreground mt-1">Available interview times are synced directly from the backend.</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
-                      className="w-8 h-8 flex items-center justify-center text-[#1A1A1A] hover:bg-gray-100 rounded-full transition-colors"
+                      className="w-8 h-8 flex items-center justify-center text-foreground hover:bg-muted rounded-full transition-colors"
                       onClick={() => setCurrentMonth((current) => new Date(current.getFullYear(), current.getMonth() - 1, 1))}
                     >
                       <ChevronLeft className="w-5 h-5" />
                     </button>
-                    <div className="bg-[#F5F5F5] px-4 py-2 rounded-xl text-sm font-bold text-[#1A1A1A]">
+                    <div className="bg-muted px-4 py-2 rounded-xl text-sm font-bold text-foreground">
                       {format(currentMonth, 'MMMM yyyy')}
                     </div>
                     <button
-                      className="w-8 h-8 flex items-center justify-center text-[#1A1A1A] hover:bg-gray-100 rounded-full transition-colors"
+                      className="w-8 h-8 flex items-center justify-center text-foreground hover:bg-muted rounded-full transition-colors"
                       onClick={() => setCurrentMonth((current) => new Date(current.getFullYear(), current.getMonth() + 1, 1))}
                     >
                       <ChevronRight className="w-5 h-5" />
@@ -287,13 +287,13 @@ export default function InterviewPage() {
                 <div className="space-y-6">
                   <div className="grid grid-cols-7 text-center">
                     {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map((day) => (
-                      <div key={day} className="text-[10px] font-bold tracking-widest uppercase text-gray-400">
+                      <div key={day} className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">
                         {day}
                       </div>
                     ))}
                   </div>
 
-                  <div className="grid grid-cols-7 gap-y-6 text-center text-sm font-bold text-[#1A1A1A]">
+                  <div className="grid grid-cols-7 gap-y-6 text-center text-sm font-bold text-foreground">
                     {calendarDays.map((day) => {
                       const dayKey = format(day, 'yyyy-MM-dd')
                       const availableCount = slotCountByDate.get(dayKey) || 0
@@ -309,8 +309,8 @@ export default function InterviewPage() {
                             isSelected
                               ? 'bg-[#C6F16D] text-[#1A1A1A] shadow-lg shadow-[#C6F16D]/30'
                               : isSameMonth(day, currentMonth)
-                                ? 'text-[#1A1A1A] hover:bg-[#F5F5F5]'
-                                : 'text-gray-300'
+                                ? 'text-foreground hover:bg-muted'
+                                : 'text-muted-foreground/45'
                           }`}
                         >
                           <span>{format(day, 'd')}</span>
@@ -324,8 +324,8 @@ export default function InterviewPage() {
                   </div>
                 </div>
 
-                <div className="mt-10 pt-8 border-t border-gray-100">
-                  <p className="text-[10px] font-bold tracking-widest uppercase text-gray-400 mb-4">
+                <div className="mt-10 pt-8 border-t border-border">
+                  <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground mb-4">
                     AVAILABLE TIMES FOR {selectedDate ? format(selectedDate, 'MMM d') : 'SELECTED DATE'}
                   </p>
 
@@ -339,7 +339,7 @@ export default function InterviewPage() {
                           className={`px-6 py-2.5 rounded-full border text-sm font-bold transition-colors ${
                             selectedSlotId === slot.id
                               ? 'bg-[#C6F16D] border-[#C6F16D] text-[#1A1A1A] shadow-md shadow-[#C6F16D]/20'
-                              : 'border-gray-200 text-[#1A1A1A] hover:border-[#C6F16D]'
+                              : 'border-border text-foreground hover:border-[#C6F16D] hover:bg-muted'
                           }`}
                         >
                           {format(new Date(slot.startTime), 'h:mm a')}
@@ -347,7 +347,7 @@ export default function InterviewPage() {
                       ))}
                     </div>
                   ) : (
-                    <div className="rounded-2xl border border-dashed border-gray-200 px-4 py-6 text-sm text-gray-500">
+                    <div className="rounded-2xl border border-dashed border-border px-4 py-6 text-sm text-muted-foreground">
                       No interview slots are available for this date.
                     </div>
                   )}
@@ -356,32 +356,32 @@ export default function InterviewPage() {
             )}
 
             <div className="space-y-4">
-              <h3 className="text-xl font-bold text-[#1A1A1A] flex items-center gap-2">
+              <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
                 <CalendarIcon className="w-5 h-5 text-[#8B5CF6]" />
                 Booking History
               </h3>
 
               {bookedInterview ? (
-                <div className="flex items-center justify-between p-5 bg-[#F9F9F9] rounded-2xl">
+                <div className="flex items-center justify-between p-5 bg-muted rounded-2xl border border-border">
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
+                    <div className="w-10 h-10 rounded-full bg-card flex items-center justify-center shadow-sm">
                       <div className="w-4 h-4 rounded-full border-2 border-[#4D6B19] flex items-center justify-center">
                         <div className="w-1.5 h-1.5 bg-[#4D6B19] rounded-full" />
                       </div>
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-[#1A1A1A]">Interview Booked</p>
-                      <p className="text-[11px] text-[#666666] font-medium mt-0.5">
+                      <p className="text-sm font-bold text-foreground">Interview Booked</p>
+                      <p className="text-[11px] text-muted-foreground font-medium mt-0.5">
                         {resolvedStatus} • {format(new Date(bookedInterview.scheduledAt), 'MMM d, yyyy h:mm a')}
                       </p>
                     </div>
                   </div>
-                  <span className="bg-white px-3 py-1 rounded-full text-[9px] font-bold tracking-widest uppercase text-gray-500 shadow-sm border border-gray-100">
+                  <span className="bg-card px-3 py-1 rounded-full text-[9px] font-bold tracking-widest uppercase text-muted-foreground shadow-sm border border-border">
                     {resolvedStatus}
                   </span>
                 </div>
               ) : (
-                <div className="rounded-2xl border border-dashed border-gray-200 px-4 py-6 text-sm text-gray-500">
+                <div className="rounded-2xl border border-dashed border-border px-4 py-6 text-sm text-muted-foreground">
                   No interview has been scheduled yet. Select an available slot to reserve your interview.
                 </div>
               )}
@@ -389,7 +389,7 @@ export default function InterviewPage() {
           </div>
 
           <div className="lg:col-span-5 space-y-6">
-            <Card className="p-8 border-none shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-[2rem] bg-[#1A1A1A] text-white">
+            <Card className="p-8 border-none shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-[2rem] bg-zinc-900 text-white">
               <div className="flex items-center justify-between mb-8">
                 <span className="bg-[#C6F16D] text-[#1A1A1A] px-3 py-1 rounded-full text-[9px] font-bold tracking-widest uppercase">
                   {bookedInterview ? (resolvedStatus === 'COMPLETED' ? 'COMPLETED' : 'BOOKED') : 'UPCOMING'}
@@ -430,7 +430,7 @@ export default function InterviewPage() {
                 </div>
               </div>
 
-              <div className="bg-[#262626] rounded-2xl p-4 mb-6 border border-white/5">
+              <div className="bg-zinc-800 rounded-2xl p-4 mb-6 border border-white/5">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-[9px] font-bold tracking-widest uppercase text-[#C6F16D] mb-1">MEETING ACCESS</p>
@@ -454,38 +454,12 @@ export default function InterviewPage() {
               </Button>
             </Card>
 
-            {/* <Card className="p-8 border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2rem] bg-[#EADDFF]">
-              <h3 className="text-xl font-bold text-[#4F378B] mb-6">Prep Resources</h3>
-
-              <div className="space-y-6 mb-8">
-                <div className="flex gap-4">
-                  <FileText className="w-5 h-5 text-[#4F378B] shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-sm font-bold text-[#4F378B]">Technical Rubric</p>
-                    <p className="text-xs text-[#4F378B]/70 mt-0.5">Review what our engineers look for.</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <Code2 className="w-5 h-5 text-[#4F378B] shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-sm font-bold text-[#4F378B]">Sandboxed Environment</p>
-                    <p className="text-xs text-[#4F378B]/70 mt-0.5">Practice in our custom IDE.</p>
-                  </div>
-                </div>
-              </div>
-
-              <Button className="w-full bg-white/50 hover:bg-white text-[#4F378B] font-bold h-12 rounded-xl border-none">
-                View All Resources
-              </Button>
-            </Card> */}
-
-            <div className="bg-[#F9F9F9] rounded-2xl p-6 border-l-4 border-[#8B5CF6]">
+            <div className="bg-muted border border-border rounded-2xl p-6 border-l-4 border-l-[#8B5CF6]">
               <div className="flex gap-4">
                 <Lightbulb className="w-6 h-6 text-[#8B5CF6] shrink-0" />
                 <div>
-                  <p className="text-[10px] font-bold tracking-widest uppercase text-gray-500 mb-2">MENTOR TIP</p>
-                  <p className="text-sm text-[#1A1A1A] leading-relaxed font-medium">
+                  <p className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground mb-2">MENTOR TIP</p>
+                  <p className="text-sm text-foreground leading-relaxed font-medium">
                     &quot;Don&apos;t just solve the problem—explain your thought process aloud. We value how you think over the final answer.&quot;
                   </p>
                 </div>

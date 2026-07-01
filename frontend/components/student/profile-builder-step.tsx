@@ -355,12 +355,12 @@ export function ProfileBuilderStep({ application, onSubmit, submitting, pageCont
   return (
     <div className="w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="space-y-2 mb-8">
-        <h1 className="text-4xl font-extrabold tracking-tight text-[#1A1A1A]">{resolvedPageContent?.title || fallbackPageContent.title}</h1>
-        <p className="text-[#666666] text-lg">{resolvedPageContent?.subtitle || fallbackPageContent.subtitle}</p>
+        <h1 className="text-4xl font-extrabold tracking-tight text-foreground">{resolvedPageContent?.title || fallbackPageContent.title}</h1>
+        <p className="text-muted-foreground text-lg">{resolvedPageContent?.subtitle || fallbackPageContent.subtitle}</p>
 
         <div className="flex flex-wrap items-center gap-1.5 mt-6">
           {sectionProgress.map((sec: any, idx: number) => {
-            let barColor = 'bg-gray-200'
+            let barColor = 'bg-muted'
             if (idx < activeSectionIndex || sec.isCompleted) {
               barColor = 'bg-[#4D6B19]' // Completed
             } else if (idx === activeSectionIndex) {
@@ -386,7 +386,7 @@ export function ProfileBuilderStep({ application, onSubmit, submitting, pageCont
               key={sectionGroup.section}
               title={sectionGroup.section}
               icon={sectionGroup.section.includes('Academic') ? GraduationCap : User}
-              accentClass={sectionGroup.section.includes('Academic') ? 'bg-[#F9F9F9]' : 'bg-white'}
+              accentClass="bg-card border border-border/60"
               fields={sectionGroup.fields}
               formData={formData}
               onFieldChange={handleFieldChange}
@@ -403,7 +403,7 @@ export function ProfileBuilderStep({ application, onSubmit, submitting, pageCont
               key={sectionGroup.section}
               title={sectionGroup.section}
               icon={Briefcase}
-              accentClass="bg-white"
+              accentClass="bg-card border border-border/60"
               fields={sectionGroup.fields}
               formData={formData}
               onFieldChange={handleFieldChange}
@@ -415,8 +415,8 @@ export function ProfileBuilderStep({ application, onSubmit, submitting, pageCont
         </div>
       </div>
 
-      <div className="flex items-center justify-between pt-8 border-t border-gray-100">
-        <Button variant="ghost" className="text-[#666666] font-medium hover:bg-gray-100 rounded-xl" onClick={() => window.history.back()}>
+      <div className="flex items-center justify-between pt-8 border-t border-border">
+        <Button variant="ghost" className="text-muted-foreground font-medium hover:bg-muted rounded-xl" onClick={() => window.history.back()}>
           ← Save & Exit Journey
         </Button>
 
@@ -473,23 +473,23 @@ function SectionCard({ title, icon: Icon, accentClass, fields, formData, onField
   const wordCount = (formData.statementOfPurpose || '').trim().split(/\s+/).filter((word: string) => word.length > 0).length
 
   return (
-    <Card className={`p-8 border-none shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2rem] ${accentClass}`}>
-      <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
-        <Icon className={`w-5 h-5 ${title.includes('Academic') ? 'text-[#4D6B19]' : 'text-[#8B48F6]'}`} />
+    <Card className={`p-8 border border-border shadow-sm rounded-[2rem] ${accentClass}`}>
+      <h3 className="text-xl font-bold mb-6 flex items-center gap-3 text-foreground">
+        <Icon className={`w-5 h-5 ${title.includes('Academic') ? 'text-[#C6F16D] dark:text-[#C6F16D]' : 'text-[#8B48F6]'}`} />
         {title}
       </h3>
 
       <div className="space-y-6">
         {fields.map((field: any) => (
           <div key={field.id} className="space-y-2">
-            <label className="text-[10px] font-bold text-[#666666] tracking-widest uppercase">{field.label}</label>
+            <label className="text-[10px] font-bold text-muted-foreground tracking-widest uppercase">{field.label}</label>
 
             {field.type === 'user' && (
               <input
                 type="text"
                 value={resolveUserValue(field, application, sessionUser)}
                 disabled
-                className="w-full bg-[#F5F5F5] h-12 rounded-xl text-[#1A1A1A] font-medium px-4 border-none outline-none opacity-60 cursor-not-allowed"
+                className="w-full bg-muted border border-border h-12 rounded-xl text-foreground font-medium px-4 outline-none opacity-60 cursor-not-allowed"
               />
             )}
 
@@ -499,7 +499,7 @@ function SectionCard({ title, icon: Icon, accentClass, fields, formData, onField
                 value={formData[field.fieldKey] ?? ''}
                 onChange={(e) => onFieldChange(field, e.target.value)}
                 placeholder={field.placeholder}
-                className="w-full bg-[#F5F5F5] h-12 rounded-xl text-[#1A1A1A] font-medium px-4 border-none outline-none focus:bg-white focus:ring-2 focus:ring-[#C6F16D]/50 transition-colors placeholder:text-gray-400"
+                className="w-full bg-muted border border-border h-12 rounded-xl text-foreground font-medium px-4 outline-none focus:bg-background focus:ring-2 focus:ring-[#C6F16D]/50 transition-colors placeholder:text-muted-foreground"
               />
             )}
 
@@ -509,7 +509,7 @@ function SectionCard({ title, icon: Icon, accentClass, fields, formData, onField
                 value={formData[field.fieldKey] ?? ''}
                 onChange={(e) => onFieldChange(field, e.target.value)}
                 placeholder={field.placeholder}
-                className="w-full bg-[#F5F5F5] h-12 rounded-xl text-[#1A1A1A] font-medium px-4 border-none outline-none focus:bg-white focus:ring-2 focus:ring-[#C6F16D]/50 transition-colors placeholder:text-gray-400"
+                className="w-full bg-muted border border-border h-12 rounded-xl text-foreground font-medium px-4 outline-none focus:bg-background focus:ring-2 focus:ring-[#C6F16D]/50 transition-colors placeholder:text-muted-foreground"
               />
             )}
 
@@ -518,17 +518,17 @@ function SectionCard({ title, icon: Icon, accentClass, fields, formData, onField
                 type="date"
                 value={formData[field.fieldKey] ?? ''}
                 onChange={(e) => onFieldChange(field, e.target.value)}
-                className="w-full bg-[#F5F5F5] h-12 rounded-xl text-[#1A1A1A] font-medium px-4 border-none outline-none focus:bg-white focus:ring-2 focus:ring-[#C6F16D]/50 transition-colors"
+                className="w-full bg-muted border border-border h-12 rounded-xl text-foreground font-medium px-4 outline-none focus:bg-background focus:ring-2 focus:ring-[#C6F16D]/50 transition-colors"
               />
             )}
 
             {field.type === 'checkbox' && (
-              <label className="flex w-full items-center gap-3 rounded-xl bg-[#F5F5F5] px-4 py-3 text-sm text-[#1A1A1A] font-medium">
+              <label className="flex w-full items-center gap-3 rounded-xl bg-muted border border-border px-4 py-3 text-sm text-foreground font-medium cursor-pointer">
                 <input
                   type="checkbox"
                   checked={Boolean(formData[field.fieldKey])}
                   onChange={(e) => onFieldChange(field, e.target.checked)}
-                  className="h-4 w-4 rounded border-gray-300 text-[#4D6B19] focus:ring-[#C6F16D]"
+                  className="h-4 w-4 rounded border-border text-[#4D6B19] focus:ring-[#C6F16D] bg-background"
                 />
                 <span>{field.label}</span>
               </label>
@@ -537,14 +537,14 @@ function SectionCard({ title, icon: Icon, accentClass, fields, formData, onField
             {field.type === 'radio' && (
               <div className="space-y-2">
                 {(field.options || []).map((option: string) => (
-                  <label key={option} className="flex items-center gap-3 rounded-xl bg-[#F5F5F5] px-4 py-3 text-sm text-[#1A1A1A] font-medium">
+                  <label key={option} className="flex items-center gap-3 rounded-xl bg-muted border border-border px-4 py-3 text-sm text-foreground font-medium cursor-pointer">
                     <input
                       type="radio"
                       name={field.fieldKey}
                       value={option}
                       checked={formData[field.fieldKey] === option}
                       onChange={(e) => onFieldChange(field, e.target.value)}
-                      className="h-4 w-4 border-gray-300 text-[#4D6B19] focus:ring-[#C6F16D]"
+                      className="h-4 w-4 border-border text-[#4D6B19] focus:ring-[#C6F16D] bg-background"
                     />
                     <span>{option}</span>
                   </label>
@@ -556,11 +556,11 @@ function SectionCard({ title, icon: Icon, accentClass, fields, formData, onField
               <select
                 value={formData[field.fieldKey] ?? field.defaultValue ?? ''}
                 onChange={(e) => onFieldChange(field, e.target.value)}
-                className="w-full bg-[#F5F5F5] h-12 rounded-xl text-[#1A1A1A] font-medium px-4 border-none outline-none focus:ring-2 focus:ring-[#C6F16D]/50 transition-colors appearance-none cursor-pointer"
+                className="w-full bg-muted border border-border h-12 rounded-xl text-foreground font-medium px-4 outline-none focus:ring-2 focus:ring-[#C6F16D]/50 transition-colors cursor-pointer"
               >
-                <option value="">Select {field.label}</option>
+                <option value="" className="bg-background">Select {field.label}</option>
                 {(field.options || []).map((option: string) => (
-                  <option key={option} value={option}>{option}</option>
+                  <option key={option} value={option} className="bg-background">{option}</option>
                 ))}
               </select>
             )}
@@ -571,11 +571,11 @@ function SectionCard({ title, icon: Icon, accentClass, fields, formData, onField
                   value={formData[field.fieldKey] ?? ''}
                   onChange={(e) => onFieldChange(field, e.target.value)}
                   placeholder={field.placeholder}
-                  className="w-full bg-[#F5F5F5] rounded-xl resize-none text-[#1A1A1A] font-medium p-4 border-none outline-none focus:ring-2 focus:ring-[#C6F16D]/50 focus:bg-white transition-colors min-h-[200px] placeholder:text-gray-400"
+                  className="w-full bg-muted border border-border rounded-xl resize-none text-foreground font-medium p-4 outline-none focus:ring-2 focus:ring-[#C6F16D]/50 focus:bg-background transition-colors min-h-[200px] placeholder:text-muted-foreground"
                 />
                 <div className="flex justify-between items-center mt-2">
-                  <span className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">{field.description || 'MINIMALISM PREFERRED'}</span>
-                  <span className={`text-[10px] font-bold tracking-widest uppercase ${wordCount > (field.maxWords || 250) ? 'text-red-500' : 'text-gray-400'}`}>
+                  <span className="text-[10px] font-bold text-muted-foreground tracking-widest uppercase">{field.description || 'MINIMALISM PREFERRED'}</span>
+                  <span className={`text-[10px] font-bold tracking-widest uppercase ${wordCount > (field.maxWords || 250) ? 'text-red-500' : 'text-muted-foreground'}`}>
                     {wordCount} / {field.maxWords || 250} WORDS
                   </span>
                 </div>

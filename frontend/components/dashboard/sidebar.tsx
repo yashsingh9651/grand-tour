@@ -30,6 +30,7 @@ import {
 import { cn } from "@/lib/utils"
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { signOut, useSession } from "next-auth/react"
 import { permissionService } from "@/lib/services/api.service"
@@ -193,25 +194,18 @@ export function Sidebar() {
   return (
     <aside
       className="fixed top-0 left-0 w-56 h-screen flex flex-col"
-      style={{ backgroundColor: "#141414", borderRight: "1px solid #222" }}
+      style={{ backgroundColor: "#F5F5F0", borderRight: "1px solid #E8E8E2" }}
     >
       {/* Brand */}
-      <div className="px-5 pt-6 pb-4">
-        <Link href="/" className="block">
-          <p
-            className="text-xl font-bold tracking-tight leading-none"
-            style={{ color: "#CCFF00", fontFamily: "Gilroy, sans-serif" }}
-          >
-            Grand Tour
-          </p>
-          <p
-            className="text-[10px] tracking-widest uppercase mt-0.5"
-            style={{ color: "#555" }}
-          >
-            Command Center
-          </p>
-        </Link>
-      </div>
+      <Link href="/" className="py-2 px-3">
+        <Image
+          src="/logo.png"
+          alt="Grand Tour"
+          width={200}
+          height={200}
+          className="h-10 w-auto object-contain"
+        />
+      </Link>
 
       {/* Nav */}
       <div className="flex-1 overflow-y-auto no-scrollbar px-3 pb-4">
@@ -248,7 +242,7 @@ export function Sidebar() {
                               "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[11px] font-semibold tracking-widest uppercase transition-all duration-200 text-left outline-none",
                               activeState
                                 ? "text-black"
-                                : "hover:bg-white/5"
+                                : "hover:bg-black/5"
                             )}
                             style={
                               activeState
@@ -280,7 +274,7 @@ export function Sidebar() {
                               "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[11px] font-semibold tracking-widest uppercase transition-all duration-200",
                               activeState
                                 ? "text-black"
-                                : "hover:bg-white/5"
+                                : "hover:bg-black/5"
                             )}
                             style={
                               activeState
@@ -302,7 +296,7 @@ export function Sidebar() {
                         )}
 
                         {hasChildren && isOpen && (
-                          <div className="ml-4 space-y-0.5 border-l border-white/10 pl-3">
+                          <div className="ml-4 space-y-0.5 border-l border-black/10 pl-3">
                             {item.children?.map((child) => {
                               const childHref = child.href || ""
                               const childActive = pathname === childHref || (childHref !== "/admin" && (pathname.startsWith(childHref + "/") || pathname === childHref))
@@ -352,7 +346,7 @@ export function Sidebar() {
               href="/admin/settings"
               className={cn(
                 "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[11px] font-semibold tracking-widest uppercase transition-all duration-200",
-                pathname === "/admin/settings" ? "text-black" : "hover:bg-white/5"
+                pathname === "/admin/settings" ? "text-black" : "hover:bg-black/5"
               )}
               style={
                 pathname === "/admin/settings"
@@ -369,7 +363,7 @@ export function Sidebar() {
             href="/admin/help"
             className={cn(
               "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[11px] font-semibold tracking-widest uppercase transition-all duration-200",
-              pathname === "/admin/help" ? "text-black" : "hover:bg-white/5"
+              pathname === "/admin/help" ? "text-black" : "hover:bg-black/5"
             )}
             style={
               pathname === "/admin/help"
@@ -384,7 +378,7 @@ export function Sidebar() {
           {/* Sign out */}
           <button
             onClick={() => signOut({ callbackUrl: "/" })}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[11px] font-semibold tracking-widest uppercase transition-all duration-200 hover:bg-white/5 text-left"
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[11px] font-semibold tracking-widest uppercase transition-all duration-200 hover:bg-black/5 text-left"
             style={{ color: "#555" }}
           >
             <LogOut className="w-3.5 h-3.5 shrink-0" />

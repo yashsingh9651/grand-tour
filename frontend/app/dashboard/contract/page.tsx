@@ -107,18 +107,18 @@ export default function ContractPage() {
         </div>
 
         {isLocked ? (
-          <Card className="p-8 border-2 border-gray-200 bg-gray-50 rounded-2xl">
+          <Card className="p-8 border border-border bg-card text-foreground rounded-2xl">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
-                <Lock className="w-8 h-8 text-gray-500" />
+              <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center flex-shrink-0">
+                <Lock className="w-8 h-8 text-muted-foreground" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-gray-900">This Step is Locked</h2>
-                <p className="text-gray-600 mt-1">
+                <h2 className="text-xl font-bold text-foreground">This Step is Locked</h2>
+                <p className="text-muted-foreground mt-1">
                   Complete all previous stages to unlock contract signing.
                 </p>
                 <Button
-                  className="mt-4"
+                  className="mt-4 bg-primary text-[#1A1A1A] font-bold hover:bg-primary/90"
                   onClick={() => router.push(`/dashboard/${application?.currentStepId || 'application'}`)}
                 >
                   Return to Current Step
@@ -134,7 +134,7 @@ export default function ContractPage() {
             submitting={submitting}
           />
         ) : (
-          <Card className="p-12 text-center border-dashed space-y-4">
+          <Card className="p-12 text-center border border-dashed border-border bg-card text-foreground space-y-4">
             <h3 className="text-lg font-semibold text-muted-foreground">Not Configured Yet</h3>
             <p className="text-sm text-muted-foreground max-w-sm mx-auto">
               The admin has not configured the contract step yet. Please check back later.

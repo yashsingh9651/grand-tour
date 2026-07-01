@@ -115,6 +115,61 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+/* ── Student Panel Scoped Theme Tokens ───────────────────────────────── */
+/* These are applied via the .student-panel wrapper class. Toggle .dark on  */
+/* the wrapper div to switch theme without affecting the admin panel at all. */
+.student-panel {
+  --sp-bg:           #F5F5F0;
+  --sp-surface:      #FFFFFF;
+  --sp-surface-2:    #F0F0EB;
+  --sp-border:       #E8E8E2;
+  --sp-border-soft:  #EDEDE8;
+  --sp-text:         #111111;
+  --sp-text-muted:   #777777;
+  --sp-text-soft:    #999999;
+  --sp-accent:       #CCFF00;
+  --sp-accent-text:  #111111;
+  --sp-sidebar-bg:   #F5F5F0;
+  --sp-topbar-bg:    #F5F5F0;
+  --sp-hover:        rgba(0,0,0,0.05);
+  --sp-divider:      rgba(0,0,0,0.08);
+  /* shadcn CSS variable overrides */
+  --background:      oklch(0.97 0.005 120);
+  --foreground:      oklch(0.15 0.02 120);
+  --card:            oklch(1 0 0);
+  --card-foreground: oklch(0.15 0.02 120);
+  --muted:           oklch(0.95 0.01 120);
+  --muted-foreground:oklch(0.50 0.02 120);
+  --border:          oklch(0.90 0.01 120);
+  --input:           oklch(0.90 0.01 120);
+}
+
+.student-panel.dark {
+  --sp-bg:           #0F0F13;
+  --sp-surface:      #18181C;
+  --sp-surface-2:    #212126;
+  --sp-border:       #2A2A32;
+  --sp-border-soft:  #252530;
+  --sp-text:         #F0F0F4;
+  --sp-text-muted:   #A0A0AC;
+  --sp-text-soft:    #70707C;
+  --sp-accent:       #CCFF00;
+  --sp-accent-text:  #111111;
+  --sp-sidebar-bg:   #111115;
+  --sp-topbar-bg:    #111115;
+  --sp-hover:        rgba(255,255,255,0.06);
+  --sp-divider:      rgba(255,255,255,0.08);
+  /* shadcn CSS variable overrides for dark cards */
+  --background:      oklch(0.10 0.01 155);
+  --foreground:      oklch(0.96 0.005 155);
+  --card:            oklch(0.14 0.01 155);
+  --card-foreground: oklch(0.96 0.005 155);
+  --muted:           oklch(0.18 0.02 155);
+  --muted-foreground:oklch(0.60 0.02 155);
+  --border:          oklch(0.22 0.02 155);
+  --input:           oklch(0.22 0.02 155);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -125,6 +180,65 @@
 }
 
 /* Custom animations for smooth card interactions */
+/* Smooth transitions for student panel theme switch */
+.student-panel,
+.student-panel * {
+  transition: background-color 250ms ease, border-color 250ms ease, color 250ms ease;
+}
+/* Exclude animated elements from color transitions */
+.student-panel [class*='animate'],
+.student-panel [class*='spin'],
+.student-panel [class*='ping'],
+.student-panel [class*='bounce'] {
+  transition: none !important;
+}
+
+/* In dark mode, explicitly set common surface classes */
+.student-panel.dark [class~='bg-white'] {
+  background-color: var(--sp-surface) !important;
+}
+.student-panel.dark [class~='bg-slate-50'],
+.student-panel.dark [class~='bg-gray-50'],
+.student-panel.dark [class~='bg-slate-100'],
+.student-panel.dark [class~='bg-gray-100'] {
+  background-color: var(--sp-surface-2) !important;
+}
+.student-panel.dark [class~='text-slate-900'],
+.student-panel.dark [class~='text-gray-900'],
+.student-panel.dark [class~='text-foreground'] {
+  color: var(--sp-text) !important;
+}
+.student-panel.dark [class~='text-slate-700'],
+.student-panel.dark [class~='text-slate-600'],
+.student-panel.dark [class~='text-slate-800'] {
+  color: var(--sp-text-muted) !important;
+}
+.student-panel.dark [class~='text-slate-500'],
+.student-panel.dark [class~='text-slate-400'],
+.student-panel.dark [class~='text-muted-foreground'] {
+  color: var(--sp-text-soft) !important;
+}
+.student-panel.dark [class~='border-slate-200'],
+.student-panel.dark [class~='border-slate-100'],
+.student-panel.dark [class~='border-gray-200'] {
+  border-color: var(--sp-border) !important;
+}
+.student-panel.dark input,
+.student-panel.dark select,
+.student-panel.dark textarea {
+  background-color: var(--sp-surface) !important;
+  color: var(--sp-text) !important;
+  border-color: var(--sp-border) !important;
+}
+/* shadcn Card uses bg-card which maps to --card CSS var — already handled by .student-panel.dark */
+
+.bg-white-force {
+  background-color: #FFFFFF !important;
+}
+.text-black-force {
+  color: #111111 !important;
+}
+
 @keyframes float {
   0%,
   100% {

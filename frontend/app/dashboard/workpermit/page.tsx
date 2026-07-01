@@ -65,9 +65,9 @@ export default function WorkPermitPage() {
   if (!isUnlocked) {
     return (
       <StudentLayout currentStep="workpermit">
-        <div className="max-w-3xl rounded-3xl border-2 border-dashed border-gray-200 p-12 flex flex-col items-center text-center">
-          <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mb-6">
-            <Lock className="w-10 h-10 text-gray-400" />
+        <div className="max-w-3xl rounded-3xl border-2 border-dashed border-border bg-secondary/20 p-12 flex flex-col items-center text-center text-foreground mx-auto mt-10">
+          <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mb-6">
+            <Lock className="w-10 h-10 text-muted-foreground" />
           </div>
           <h2 className="text-2xl font-bold">Work Permit — Locked</h2>
           <p className="text-muted-foreground mt-2 max-w-md">
@@ -85,7 +85,7 @@ export default function WorkPermitPage() {
 
   return (
     <StudentLayout currentStep="workpermit">
-      <div className="max-w-4xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="max-w-4xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 text-foreground">
         {/* Header */}
         <div className="space-y-2">
           <div className="flex items-center gap-3">
@@ -101,27 +101,27 @@ export default function WorkPermitPage() {
 
         {/* Status Card */}
         {isIssued ? (
-          <Card className="p-0 overflow-hidden border-none shadow-xl">
+          <Card className="p-0 overflow-hidden border border-border shadow-md bg-card">
             {/* Green header */}
             <div className="h-2 bg-gradient-to-r from-green-400 to-emerald-500" />
             <div className="p-8">
               <div className="flex items-start gap-6">
-                <div className="w-16 h-16 rounded-2xl bg-green-50 flex items-center justify-center flex-shrink-0">
-                  <CheckCircle2 className="w-9 h-9 text-green-600" />
+                <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
+                  <CheckCircle2 className="w-9 h-9 text-emerald-500" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <h2 className="text-2xl font-bold">Work Permit Issued!</h2>
-                    <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full uppercase tracking-wider">ACTIVE</span>
+                    <span className="px-3 py-1 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-xs font-bold rounded-full uppercase tracking-wider">ACTIVE</span>
                   </div>
                   <p className="text-muted-foreground mb-6">
                     Your work permit has been issued and is ready for download. 
                     Please keep this document safe as it will be required during your internship.
                   </p>
                   {workPermit.notes && (
-                    <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl mb-6 flex items-start gap-3">
+                    <div className="p-4 bg-blue-500/10 border border-blue-500/25 rounded-xl mb-6 flex items-start gap-3">
                       <AlertCircle className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
-                      <p className="text-sm text-blue-700">{workPermit.notes}</p>
+                      <p className="text-sm text-blue-700 dark:text-blue-300">{workPermit.notes}</p>
                     </div>
                   )}
                   <div className="flex items-center gap-4">
@@ -140,7 +140,7 @@ export default function WorkPermitPage() {
                       size="lg" 
                       onClick={handleProceedToVisa} 
                       disabled={transitioning}
-                      className="gap-2"
+                      className="gap-2 border-border hover:bg-muted text-foreground"
                     >
                       {transitioning ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -154,18 +154,18 @@ export default function WorkPermitPage() {
             </div>
           </Card>
         ) : (
-          <Card className="p-0 overflow-hidden border-none shadow-xl">
+          <Card className="p-0 overflow-hidden border border-border shadow-md bg-card">
             <div className="h-2 bg-gradient-to-r from-amber-400 to-orange-400" />
             <div className="p-8">
               <div className="flex items-start gap-6">
-                <div className="w-16 h-16 rounded-2xl bg-amber-50 flex items-center justify-center flex-shrink-0 relative">
-                  <Clock className="w-9 h-9 text-amber-500" />
-                  <div className="absolute inset-0 rounded-2xl border-4 border-amber-200 border-t-amber-500 animate-spin" style={{ animationDuration: '3s' }} />
+                <div className="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center flex-shrink-0 relative">
+                  <Clock className="w-9 h-9 text-amber-500 animate-pulse" />
+                  <div className="absolute inset-0 rounded-2xl border-4 border-amber-500/20 border-t-amber-500 animate-spin" style={{ animationDuration: '3s' }} />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <h2 className="text-2xl font-bold">Work Permit Processing</h2>
-                    <span className="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-bold rounded-full uppercase tracking-wider animate-pulse">PROCESSING</span>
+                    <span className="px-3 py-1 bg-amber-500/15 text-amber-600 dark:text-amber-400 text-xs font-bold rounded-full uppercase tracking-wider animate-pulse">PROCESSING</span>
                   </div>
                   <p className="text-muted-foreground">
                     Our team is processing your work permit application. 
@@ -179,7 +179,7 @@ export default function WorkPermitPage() {
         )}
 
         {/* Progress Steps */}
-        <Card className="p-6 border-none bg-white shadow-sm">
+        <Card className="p-6 border border-border bg-card shadow-sm">
           <h3 className="font-bold mb-5 text-lg">Process Overview</h3>
           <div className="space-y-4">
             {[
@@ -189,8 +189,8 @@ export default function WorkPermitPage() {
               { label: 'Work Permit Issued', description: 'Document ready for download.', done: isIssued },
             ].map((step, i) => (
               <div key={i} className="flex items-start gap-4">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${step.done ? 'bg-green-100' : 'bg-gray-100'}`}>
-                  {step.done ? <CheckCircle2 className="w-4 h-4 text-green-600" /> : <div className="w-2 h-2 rounded-full bg-gray-400" />}
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${step.done ? 'bg-emerald-500/15' : 'bg-muted'}`}>
+                  {step.done ? <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> : <div className="w-2 h-2 rounded-full bg-muted-foreground" />}
                 </div>
                 <div>
                   <p className={`font-semibold ${step.done ? 'text-foreground' : 'text-muted-foreground'}`}>{step.label}</p>
@@ -202,7 +202,7 @@ export default function WorkPermitPage() {
         </Card>
 
         {/* Info box */}
-        <Card className="p-6 bg-secondary/10 border-none rounded-2xl">
+        <Card className="p-6 bg-muted border border-border rounded-2xl">
           <h3 className="font-bold mb-3 flex items-center gap-2">
             <AlertCircle className="w-5 h-5 text-primary" /> Important Notes
           </h3>

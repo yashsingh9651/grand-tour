@@ -80,7 +80,7 @@ export default function FAQPage() {
 
   return (
     <StudentLayout currentStep={application?.currentStepId}>
-      <div className="max-w-3xl space-y-6">
+      <div className="max-w-3xl space-y-6 text-foreground">
         <div className="space-y-2">
           <h1 className="text-3xl font-bold">Frequently Asked Questions</h1>
           <p className="text-muted-foreground">Find answers to common questions about our internship program</p>
@@ -98,7 +98,7 @@ export default function FAQPage() {
                   return (
                     <Card
                       key={qIndex}
-                      className="p-4 cursor-pointer hover:bg-secondary/50 transition-colors"
+                      className="p-4 border border-border bg-card cursor-pointer hover:bg-muted/50 transition-colors"
                       onClick={() => setOpenIndex(isOpen ? null : itemIndex)}
                     >
                       <div className="flex items-start justify-between gap-4">
@@ -122,14 +122,14 @@ export default function FAQPage() {
           ))}
         </div>
 
-        <Card className="p-6 bg-blue-50 border-blue-200">
-          <h3 className="font-semibold text-foreground mb-2">Didn't find your answer?</h3>
+        <Card className="p-6 bg-muted border border-border">
+          <h3 className="font-semibold text-foreground mb-2">Didn&apos;t find your answer?</h3>
           <p className="text-sm text-muted-foreground mb-4">
             Contact our support team for additional help
           </p>
-          <div className="flex gap-2">
-            <button className="text-sm font-medium text-primary hover:underline">Email Support</button>
-            <button className="text-sm font-medium text-primary hover:underline">WhatsApp Chat</button>
+          <div className="flex gap-4">
+            <button className="text-sm font-semibold text-primary hover:underline" onClick={() => window.open('mailto:support@luminaacademy.com')}>Email Support</button>
+            <button className="text-sm font-semibold text-primary hover:underline" onClick={() => window.open('https://wa.me/1234567890')}>WhatsApp Chat</button>
           </div>
         </Card>
       </div>

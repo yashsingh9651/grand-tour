@@ -48,9 +48,9 @@ export default function TravelPage() {
   if (!isUnlocked) {
     return (
       <StudentLayout currentStep="travel">
-        <div className="max-w-3xl rounded-3xl border-2 border-dashed border-gray-200 p-12 flex flex-col items-center text-center">
-          <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mb-6">
-            <Lock className="w-10 h-10 text-gray-400" />
+        <div className="max-w-3xl rounded-3xl border-2 border-dashed border-border bg-secondary/20 p-12 flex flex-col items-center text-center text-foreground mx-auto mt-10">
+          <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mb-6">
+            <Lock className="w-10 h-10 text-muted-foreground" />
           </div>
           <h2 className="text-2xl font-bold">Travel — Locked</h2>
           <p className="text-muted-foreground mt-2 max-w-md">
@@ -66,7 +66,7 @@ export default function TravelPage() {
 
   return (
     <StudentLayout currentStep="travel">
-      <div className="max-w-5xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="max-w-5xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 text-foreground">
         {/* 🎉 Congratulations Banner */}
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-violet-600 to-indigo-700 p-8 text-white">
           {/* Background decoration */}
@@ -109,36 +109,6 @@ export default function TravelPage() {
           </div>
         </div>
 
-        {/* Journey Milestones */}
-        {/* <Card className="p-6 border-none shadow-sm">
-          <h3 className="font-bold text-lg mb-5 flex items-center gap-2">
-            <CheckCircle2 className="w-5 h-5 text-green-500" /> Your Completed Journey
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { label: 'Application', icon: '📋' },
-              { label: 'Documents', icon: '📄' },
-              { label: 'Interview', icon: '🎤' },
-              { label: 'Payment 1', icon: '💳' },
-              { label: 'Hotel', icon: '🏨' },
-              { label: 'Payment 2', icon: '💳' },
-              { label: 'Contract', icon: '📝' },
-              { label: 'Payment 3', icon: '💳' },
-              { label: 'Work Permit', icon: '🪪' },
-              { label: 'Visa', icon: '🛂' },
-              { label: 'Travel', icon: '✈️' },
-            ].map((step, i) => (
-              <div key={i} className="flex items-center gap-2 p-3 rounded-xl bg-green-50 border border-green-100">
-                <span className="text-xl">{step.icon}</span>
-                <div>
-                  <p className="text-xs font-bold text-green-800">{step.label}</p>
-                  <p className="text-[10px] text-green-600 font-semibold">✓ Complete</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card> */}
-
         {/* Travel Documents */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -152,17 +122,17 @@ export default function TravelPage() {
           </div>
 
           {travelDocs.length === 0 ? (
-            <Card className="p-10 border-2 border-dashed text-center">
+            <Card className="p-10 border border-border border-dashed text-center bg-muted">
               <Plane className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-30" />
-              <h3 className="font-bold text-lg">Documents Coming Soon</h3>
+              <h3 className="font-bold text-lg text-foreground">Documents Coming Soon</h3>
               <p className="text-muted-foreground mt-1 text-sm">Our team is preparing your travel documents. They'll appear here shortly.</p>
             </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {travelDocs.map((doc) => (
-                <Card key={doc.id} className="p-5 border-none shadow-md hover:shadow-xl transition-all duration-300 group">
+                <Card key={doc.id} className="p-5 border border-border bg-card shadow-sm hover:shadow-md transition-all duration-300 group">
                   <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/10 to-violet-100 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/10 to-violet-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                       <FileDown className="w-7 h-7 text-primary" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -188,16 +158,16 @@ export default function TravelPage() {
         </div>
 
         {/* Next Steps */}
-        <Card className="p-6 bg-gradient-to-r from-primary/5 to-violet-50 border-none rounded-2xl">
-          <h3 className="font-bold mb-4">What to do next</h3>
+        <Card className="p-6 bg-muted border border-border rounded-2xl">
+          <h3 className="font-bold mb-4 text-foreground">What to do next</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
               { step: '1', title: 'Print Documents', desc: 'Print all downloaded documents and keep them safe.' },
               { step: '2', title: 'Pack & Prepare', desc: 'Prepare your luggage based on the travel itinerary.' },
               { step: '3', title: 'Stay Tuned', desc: 'Your coordinator will send final departure details soon.' },
             ].map((item) => (
-              <div key={item.step} className="flex items-start gap-3 p-4 bg-white rounded-xl shadow-sm">
-                <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-black flex-shrink-0">{item.step}</div>
+              <div key={item.step} className="flex items-start gap-3 p-4 bg-card border border-border rounded-xl shadow-sm text-foreground">
+                <div className="w-8 h-8 rounded-full bg-primary text-[#1A1A1A] flex items-center justify-center text-sm font-black flex-shrink-0">{item.step}</div>
                 <div>
                   <p className="font-bold text-sm">{item.title}</p>
                   <p className="text-xs text-muted-foreground mt-0.5">{item.desc}</p>
