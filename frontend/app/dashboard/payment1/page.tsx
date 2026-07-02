@@ -5,7 +5,7 @@ import { StudentLayout } from '@/components/student/student-layout'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { applicationService, workflowService, paymentService } from '@/lib/services/api.service'
+import { applicationService, workflowService, paymentService, documentTemplateService } from '@/lib/services/api.service'
 import UploadPopup from '@/components/UploadPopup'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
@@ -29,6 +29,8 @@ export default function Payment1Page() {
 
   const [viewingProofUrl, setViewingProofUrl] = useState<string | null>(null)
   const [viewingReceiptName, setViewingReceiptName] = useState<string>('')
+  const [paymentTemplate, setPaymentTemplate] = useState<any>(null)
+  const [generatingDoc, setGeneratingDoc] = useState(false)
 
   const fetchData = async () => {
     try {
@@ -39,6 +41,21 @@ export default function Payment1Page() {
       ])
       setApplication(appData)
       setWorkflow(wfData)
+
+      try {
+        const templates = await documentTemplateService.getAll()
+        const match = templates.find((t: any) =>
+          t.category === 'PAYMENT1_DOCUMENT' ||
+          t.category === 'payment1' ||
+          t.name.toLowerCase().includes('payment 1') ||
+          t.name.toLowerCase().includes('payment1')
+        )
+        if (match) {
+          setPaymentTemplate(match)
+        }
+      } catch (err) {
+        console.error('Failed to load document template:', err)
+      }
     } catch {
       toast.error('Failed to load financial details')
     } finally {
@@ -74,6 +91,117 @@ export default function Payment1Page() {
       toast.error(error.message || 'Failed to submit payment')
     } finally {
       setSubmittingPayment(false)
+    }
+  }
+
+  const handleDownloadFilledDocument = async () => {
+    if (!paymentTemplate) return
+    try {
+      setGeneratingDoc(true)
+      const response = await fetch(paymentTemplate.fileUrl)
+      if (!response.ok) throw new Error('Failed to fetch document template')
+      const arrayBuffer = await response.arrayBuffer()
+
+      const PizZip = (await import('pizzip')).default
+      const Docxtemplater = (await import('docxtemplater')).default
+
+      const zip = new PizZip(arrayBuffer)
+       const doc = new Docxtemplater(zip, {
+        paragraphLoop: true,
+        linebreaks: true,
+        delimiters: { start: '{{', end: '}}' },
+        parser: function (tag: string) {
+          return {
+            get: function (scope: any) {
+              const trimmed = tag.trim();
+              if (scope[trimmed] !== undefined) return scope[trimmed];
+              const withoutSpaces = trimmed.replace(/\s+/g, '');
+              if (scope[withoutSpaces] !== undefined) return scope[withoutSpaces];
+              if (scope[tag] !== undefined) return scope[tag];
+              return '';
+            }
+          };
+        }
+      })
+
+      const appData = application?.data || {}
+      const eduInfo = appData['Application Form']?.['Educational Information'] || {}
+      const personalInfo = appData['Application Form']?.['Personal Information'] || {}
+
+      const dateStr = new Date().toLocaleDateString('en-GB') // DD/MM/YYYY
+      const lastName = application.user?.lastName || personalInfo['Last Name'] || ''
+      const firstName = application.user?.firstName || personalInfo['First Name'] || ''
+      const instName = application.collegeName || eduInfo['College Name'] || application.educationalInstitution || ''
+      const instAddress = eduInfo['College Address'] || application.data?.educationalInstitutionAddress || application.data?.collegeAddress || 'Pune, India'
+      const principal = application.tpoName || eduInfo['TPO Name'] || application.data?.principalName || 'Dr. Principal'
+      const university = application.universityName || eduInfo['University'] || ''
+      
+      // Month and Year string formatting (e.g. "September 2026")
+      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      const currentDate = new Date();
+      const monthYear = `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+      const signatory = principal
+
+      const mapping = {
+        // CamelCase / Standard keys
+        LastName: lastName,
+        FirstName: firstName,
+        InstituteName: instName,
+        Date: dateStr,
+        InstituteAddress: instAddress,
+        Principal: principal,
+        University: university,
+        Institute: instName,
+        MonthYear: monthYear,
+        NameOfSignatory: signatory,
+
+        // Spaced keys (matching user Word document tags exactly)
+        'Last Name': lastName,
+        'First Name': firstName,
+        'Institute Name': instName,
+        'Institute Address': instAddress,
+        'Name of Principal': principal,
+        'Principal Name': principal,
+        'Month Year': monthYear,
+        'Name of Signatory': signatory,
+      }
+
+      doc.setData(mapping)
+
+      try {
+        doc.render()
+      } catch (renderError: any) {
+        console.error('Docxtemplater Render Error:', renderError)
+        // Extract raw docxtemplater error context
+        const errors = renderError?.properties?.errors || []
+        if (errors.length > 0) {
+          const detail = errors.map((e: any) => `${e.message} near "${e.properties?.xtag || ''}"`).join(', ')
+          throw new Error(`Template formatting error: ${detail}. Please open your Word document and re-type these tags manually.`)
+        }
+        throw new Error(renderError.message || 'Error compiling the Word template')
+      }
+
+      const outBlob = doc.getZip().generate({
+        type: 'blob',
+        mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      })
+
+      const url = window.URL.createObjectURL(outBlob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${paymentTemplate.name.replace(/\s+/g, '_')}_filled.docx`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      window.URL.revokeObjectURL(url)
+      
+      toast.success('Document filled and downloaded successfully!')
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to generate document', {
+        duration: 10000 // Give user enough time to read the detailed fix instructions
+      })
+    } finally {
+      setGeneratingDoc(false)
     }
   }
 
@@ -433,6 +561,40 @@ export default function Payment1Page() {
                 </div>
               )}
             </div>
+
+            {/* Dynamic Template Document */}
+            {paymentTemplate && (
+              <div className="space-y-3">
+                <h3 className="text-sm font-bold text-foreground">Attestation Form</h3>
+                <div className="p-4 bg-violet-500/10 border border-violet-500/20 rounded-2xl text-foreground">
+                  <div className="flex items-start gap-3">
+                    <FileText className="w-5 h-5 text-violet-500 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-wider text-violet-500">Auto-filled Template</p>
+                      <h4 className="text-sm font-bold mt-1 text-slate-800 dark:text-slate-100">{paymentTemplate.name}</h4>
+                      <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                        This document has been pre-filled with your name, educational institution, and current date.
+                      </p>
+                      <Button
+                        onClick={handleDownloadFilledDocument}
+                        disabled={generatingDoc}
+                        className="mt-3.5 w-full bg-violet-600 hover:bg-violet-750 text-white text-xs font-bold py-2 rounded-xl flex items-center justify-center gap-1.5"
+                      >
+                        {generatingDoc ? (
+                          <>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" /> Generating Attestation...
+                          </>
+                        ) : (
+                          <>
+                            <FileText className="w-3.5 h-3.5" /> Download Filled Document
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Documents List */}
             {(() => {

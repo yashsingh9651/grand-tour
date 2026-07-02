@@ -8,6 +8,7 @@ import {
   assignHotel, 
   getMyAssignment,
   respondToAssignment,
+  resendConfirmationEmail,
 } from '../controllers/hotel.controller';
 import { requireAuth, restrictTo } from '../middlewares/auth.middleware';
 
@@ -16,6 +17,7 @@ const router = Router();
 // Student routes
 router.get('/my-assignment', requireAuth, getMyAssignment);
 router.post('/respond', requireAuth, respondToAssignment);
+router.post('/resend-confirmation', requireAuth, resendConfirmationEmail);
 
 // Admin routes
 router.get('/', requireAuth, restrictTo('ADMIN', 'SUPER_ADMIN'), getHotels);

@@ -5,7 +5,7 @@ import { StudentLayout } from '@/components/student/student-layout'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { applicationService, workflowService, paymentService } from '@/lib/services/api.service'
+import { applicationService, workflowService, paymentService, hotelService } from '@/lib/services/api.service'
 import UploadPopup from '@/components/UploadPopup'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
@@ -30,6 +30,19 @@ export default function Payment2Page() {
   const [submittingPayment, setSubmittingPayment] = useState(false)
   const [viewingProofUrl, setViewingProofUrl] = useState<string | null>(null)
   const [viewingReceiptName, setViewingReceiptName] = useState<string>('')
+  const [resendingEmail, setResendingEmail] = useState(false)
+
+  const handleResendHotelEmail = async () => {
+    setResendingEmail(true)
+    try {
+      await hotelService.resendConfirmation()
+      toast.success('Confirmation email sent successfully!')
+    } catch {
+      toast.error('Failed to send confirmation email')
+    } finally {
+      setResendingEmail(false)
+    }
+  }
   const fetchData = async () => {
     try {
       setLoading(true)
@@ -161,6 +174,24 @@ export default function Payment2Page() {
         </div>
       }
     >
+      {/* Resend Hotel Confirmation Alert/Banner */}
+      <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm text-emerald-800 dark:text-emerald-300">
+        <div className="flex items-center gap-2">
+          <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+          <span>You have accepted the hotel allocation. A confirmation email has been sent.</span>
+        </div>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={handleResendHotelEmail} 
+          disabled={resendingEmail} 
+          className="bg-background hover:bg-muted text-foreground border-emerald-500/30 font-semibold self-start sm:self-center shrink-0"
+        >
+          {resendingEmail ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : null}
+          Resend Email
+        </Button>
+      </div>
+
       {/* Page Title */}
       <div className="mb-8">
         <p className="text-[10px] font-black tracking-[0.2em] text-muted-foreground uppercase mb-2">MANAGEMENT</p>

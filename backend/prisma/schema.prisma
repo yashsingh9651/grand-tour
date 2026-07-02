@@ -222,12 +222,19 @@ model Document {
 }
 
 model Hotel {
-  id          String   @id @default(uuid())
-  name        String
-  location    String
-  proposalPdf String   // URL to PDF
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id               String   @id @default(uuid())
+  name             String
+  location         String
+  representedBy    String?
+  position         String?
+  address          String?
+  phone            String?
+  email            String?
+  natureOfActivity String?
+  siretNo          String?
+  proposalPdf      String?  // URL to PDF
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   assignments HotelAssignment[]
 }

@@ -369,6 +369,10 @@ export const hotelService = {
     const res = await apiClient.post('/api/hotels/respond', { response, note });
     return res.data.data;
   },
+  resendConfirmation: async () => {
+    const response = await apiClient.post('/api/hotels/resend-confirmation');
+    return response.data;
+  },
 };
 
 export const workPermitService = {

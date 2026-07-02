@@ -54,6 +54,13 @@ export default function HotelsAdminPage() {
   const [newHotel, setNewHotel] = useState({
     name: '',
     location: '',
+    representedBy: '',
+    position: '',
+    address: '',
+    phone: '',
+    email: '',
+    natureOfActivity: '',
+    siretNo: '',
     proposalPdf: ''
   })
   const [uploading, setUploading] = useState(false)
@@ -88,8 +95,8 @@ export default function HotelsAdminPage() {
   }
 
   const handleCreateHotel = async () => {
-    if (!newHotel.name || !newHotel.location || !newHotel.proposalPdf) {
-      toast.error('Please fill all fields and upload proposal')
+    if (!newHotel.name || !newHotel.location) {
+      toast.error('Please fill name and location fields')
       return
     }
 
@@ -97,7 +104,18 @@ export default function HotelsAdminPage() {
       await hotelService.create(newHotel)
       toast.success('Hotel added successfully')
       setIsAddDialogOpen(false)
-      setNewHotel({ name: '', location: '', proposalPdf: '' })
+      setNewHotel({
+        name: '',
+        location: '',
+        representedBy: '',
+        position: '',
+        address: '',
+        phone: '',
+        email: '',
+        natureOfActivity: '',
+        siretNo: '',
+        proposalPdf: ''
+      })
       fetchData()
     } catch (error) {
       toast.error('Failed to add hotel')
@@ -205,13 +223,76 @@ export default function HotelsAdminPage() {
                         onChange={e => setNewHotel(prev => ({ ...prev, name: e.target.value }))}
                       />
                     </div>
-                    <div className="space-y-2">
+                     <div className="space-y-2">
                       <Label>Location</Label>
                       <Input 
                         placeholder="e.g. London, UK" 
                         value={newHotel.location}
                         onChange={e => setNewHotel(prev => ({ ...prev, location: e.target.value }))}
                       />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Represented By</Label>
+                        <Input 
+                          placeholder="e.g. Jean Dupont" 
+                          value={newHotel.representedBy}
+                          onChange={e => setNewHotel(prev => ({ ...prev, representedBy: e.target.value }))}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Position</Label>
+                        <Input 
+                          placeholder="e.g. General Manager" 
+                          value={newHotel.position}
+                          onChange={e => setNewHotel(prev => ({ ...prev, position: e.target.value }))}
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Address</Label>
+                      <Input 
+                        placeholder="e.g. 15 Rue de la Paix, Paris" 
+                        value={newHotel.address}
+                        onChange={e => setNewHotel(prev => ({ ...prev, address: e.target.value }))}
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Phone</Label>
+                        <Input 
+                          placeholder="e.g. +33 1 23 45 67 89" 
+                          value={newHotel.phone}
+                          onChange={e => setNewHotel(prev => ({ ...prev, phone: e.target.value }))}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Email</Label>
+                        <Input 
+                          type="email"
+                          placeholder="e.g. contact@hotel.com" 
+                          value={newHotel.email}
+                          onChange={e => setNewHotel(prev => ({ ...prev, email: e.target.value }))}
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Nature of Activity</Label>
+                        <Input 
+                          placeholder="e.g. Hospitality & Catering" 
+                          value={newHotel.natureOfActivity}
+                          onChange={e => setNewHotel(prev => ({ ...prev, natureOfActivity: e.target.value }))}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>SIRET No.</Label>
+                        <Input 
+                          placeholder="e.g. 123 456 789 00012" 
+                          value={newHotel.siretNo}
+                          onChange={e => setNewHotel(prev => ({ ...prev, siretNo: e.target.value }))}
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label>Proposal PDF</Label>
@@ -295,20 +376,62 @@ export default function HotelsAdminPage() {
                       <MapPin className="w-3.5 h-3.5" />
                       {hotel.location}
                     </div>
+
+                    <div className="mt-4 space-y-2 text-xs border-t pt-4">
+                      {hotel.representedBy && (
+                        <div className="flex justify-between gap-2">
+                          <span className="text-muted-foreground">Represented By:</span>
+                          <span className="font-semibold text-right">{hotel.representedBy} {hotel.position && `(${hotel.position})`}</span>
+                        </div>
+                      )}
+                      {hotel.address && (
+                        <div className="flex justify-between gap-2">
+                          <span className="text-muted-foreground">Address:</span>
+                          <span className="font-semibold text-right max-w-[160px] truncate" title={hotel.address}>{hotel.address}</span>
+                        </div>
+                      )}
+                      {hotel.phone && (
+                        <div className="flex justify-between gap-2">
+                          <span className="text-muted-foreground">Phone:</span>
+                          <span className="font-semibold text-right">{hotel.phone}</span>
+                        </div>
+                      )}
+                      {hotel.email && (
+                        <div className="flex justify-between gap-2">
+                          <span className="text-muted-foreground">Email:</span>
+                          <span className="font-semibold text-right">{hotel.email}</span>
+                        </div>
+                      )}
+                      {hotel.natureOfActivity && (
+                        <div className="flex justify-between gap-2">
+                          <span className="text-muted-foreground">Activity:</span>
+                          <span className="font-semibold text-right">{hotel.natureOfActivity}</span>
+                        </div>
+                      )}
+                      {hotel.siretNo && (
+                        <div className="flex justify-between gap-2">
+                          <span className="text-muted-foreground">SIRET No:</span>
+                          <span className="font-semibold text-right">{hotel.siretNo}</span>
+                        </div>
+                      )}
+                    </div>
+
                     <div className="mt-4 pt-4 border-t flex items-center justify-between">
                       <div className="flex items-center gap-2 text-xs font-medium bg-secondary/50 px-2 py-1 rounded-full">
                         <User className="w-3 h-3" />
                         {hotel._count?.assignments || 0} Assigned
                       </div>
-                      <a 
-                        href={hotel.proposalPdf} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-primary hover:underline text-xs flex items-center gap-1"
-                      >
-                        <FileText className="w-3 h-3" />
-                        View Proposal
-                      </a>
+                      {hotel.proposalPdf && (
+                        <a 
+                          href={hotel.proposalPdf} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-primary hover:underline text-xs flex items-center gap-1"
+                        >
+                          <FileText className="w-3 h-3" />
+                          View Proposal
+                        </a>
+                      )}
                     </div>
                   </Card>
                 ))}

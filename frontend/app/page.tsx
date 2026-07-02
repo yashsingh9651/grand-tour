@@ -5,6 +5,16 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { Menu, X, Award, Building, TrendingUp, Users } from "lucide-react";
+import dynamic from "next/dynamic";
+
+const PartnersCarousel = dynamic(() => import("@/components/PartnersCarousel"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-28 bg-slate-50 dark:bg-zinc-950 animate-pulse flex items-center justify-center text-xs text-slate-400 font-semibold uppercase tracking-wider">
+      Loading partners...
+    </div>
+  )
+});
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -19,8 +29,9 @@ export default function Home() {
       : "/dashboard";
 
   return (
-    /* ─── Full-screen hero wrapper ─── */
-    <div className="relative w-full h-screen overflow-hidden font-Gilroy">
+    <div className="relative w-full min-h-screen bg-white dark:bg-zinc-950 overflow-x-hidden font-Gilroy">
+      {/* ─── Full-screen hero wrapper ─── */}
+      <div className="relative w-full h-screen overflow-hidden shrink-0">
       <Image
         src="/hero.png"
         alt="Paris – Eiffel Tower street view"
@@ -292,6 +303,10 @@ export default function Home() {
       </div>
       {/* end content layer */}
 
+      </div>
+
+      {/* Moving Partners Carousel */}
+      <PartnersCarousel />
     </div>
   );
 }

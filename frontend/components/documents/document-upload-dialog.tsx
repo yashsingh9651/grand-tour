@@ -147,6 +147,19 @@ export default function DocumentUploadDialog({
       const doc = new Docxtemplater(zip, {
         paragraphLoop: true,
         linebreaks: true,
+        delimiters: { start: '{{', end: '}}' },
+        parser: function (tag: string) {
+          return {
+            get: function (scope: any) {
+              const trimmed = tag.trim();
+              if (scope[trimmed] !== undefined) return scope[trimmed];
+              const withoutSpaces = trimmed.replace(/\s+/g, '');
+              if (scope[withoutSpaces] !== undefined) return scope[withoutSpaces];
+              if (scope[tag] !== undefined) return scope[tag];
+              return '';
+            }
+          };
+        }
       })
 
       doc.setData(varValues)

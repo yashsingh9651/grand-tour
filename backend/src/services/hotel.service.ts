@@ -15,13 +15,35 @@ export class HotelService {
     });
   }
 
-  async createHotel(data: { name: string; location: string; proposalPdf: string }) {
+  async createHotel(data: {
+    name: string;
+    location: string;
+    representedBy?: string;
+    position?: string;
+    address?: string;
+    phone?: string;
+    email?: string;
+    natureOfActivity?: string;
+    siretNo?: string;
+    proposalPdf?: string;
+  }) {
     return prisma.hotel.create({
       data
     });
   }
 
-  async updateHotel(id: string, data: { name?: string; location?: string; proposalPdf?: string }) {
+  async updateHotel(id: string, data: {
+    name?: string;
+    location?: string;
+    representedBy?: string;
+    position?: string;
+    address?: string;
+    phone?: string;
+    email?: string;
+    natureOfActivity?: string;
+    siretNo?: string;
+    proposalPdf?: string;
+  }) {
     return prisma.hotel.update({
       where: { id },
       data

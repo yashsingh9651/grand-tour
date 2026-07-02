@@ -9,8 +9,19 @@ export const getHotels = async (req: Request, res: Response) => {
 };
 
 export const createHotel = async (req: Request, res: Response) => {
-  const { name, location, proposalPdf } = req.body;
-  const hotel = await hotelService.createHotel({ name, location, proposalPdf });
+  const { name, location, representedBy, position, address, phone, email, natureOfActivity, siretNo, proposalPdf } = req.body;
+  const hotel = await hotelService.createHotel({
+    name,
+    location,
+    representedBy,
+    position,
+    address,
+    phone,
+    email,
+    natureOfActivity,
+    siretNo,
+    proposalPdf
+  });
   res.status(201).json({ success: true, data: hotel });
 };
 
@@ -103,7 +114,7 @@ export const respondToAssignment = async (req: Request, res: Response) => {
       if (application.user?.email) {
         const studentName = `${application.user.firstName || ''} ${application.user.lastName || ''}`.trim() || 'Student';
         const hotelName = assignment.hotel?.name || 'Assigned Hotel';
-        const portalLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/hotel`;
+        const portalLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/payment2`;
         
         const emailService = (await import('../services/email.service')).default;
         await emailService.sendHotelConfirmationEmail(application.user.email, {
@@ -120,5 +131,48 @@ export const respondToAssignment = async (req: Request, res: Response) => {
   }
 
   res.status(200).json({ success: true, data: updated });
+};
+
+export const resendConfirmationEmail = async (req: Request, res: Response) => {
+  const userId = (req as any).user?.id;
+
+  const application = await applicationService.getApplicationByUserId(userId);
+  if (!application) {
+    return res.status(404).json({ success: false, message: 'Application not found' });
+  }
+
+  const { prisma } = await import('../config/db');
+  const assignment = await prisma.hotelAssignment.findUnique({
+    where: { applicationId: application.id },
+    include: { hotel: true }
+  });
+
+  if (!assignment) {
+    return res.status(404).json({ success: false, message: 'No hotel assignment found' });
+  }
+
+  if (assignment.studentResponse !== 'ACCEPTED') {
+    return res.status(400).json({ success: false, message: 'Hotel assignment has not been accepted' });
+  }
+
+  try {
+    if (application.user?.email) {
+      const studentName = `${application.user.firstName || ''} ${application.user.lastName || ''}`.trim() || 'Student';
+      const hotelName = assignment.hotel?.name || 'Assigned Hotel';
+      const portalLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/payment2`;
+      
+      const emailService = (await import('../services/email.service')).default;
+      await emailService.sendHotelConfirmationEmail(application.user.email, {
+        studentName,
+        hotelName,
+        portalLink
+      });
+    }
+  } catch (err) {
+    console.error('Failed to resend hotel confirmation email:', err);
+    return res.status(500).json({ success: false, message: 'Failed to send email' });
+  }
+
+  res.status(200).json({ success: true, message: 'Confirmation email sent successfully' });
 };
 

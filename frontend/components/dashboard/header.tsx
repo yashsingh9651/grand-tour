@@ -135,14 +135,14 @@ export function Header({ title, description, actions }: HeaderProps) {
           </button>
 
           {/* Dark mode toggle */}
-          <button
+          {/* <button
             id="admin-darkmode-btn"
             onClick={() => setDarkMode(!darkMode)}
             className="transition-all duration-200 hover:scale-110"
             style={{ color: "#555" }}
           >
             {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          </button>
+          </button> */}
 
           {/* Avatar */}
           {status === "loading" ? (

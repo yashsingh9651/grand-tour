@@ -31,12 +31,22 @@ const storage = new CloudinaryStorage({
       ? `${Date.now()}-${safeName}.${ext}` 
       : `${Date.now()}-${safeName}`;
     
-    return {
+    const isDocx = file.mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                || file.originalname.endsWith('.docx')
+                || file.originalname.endsWith('.doc');
+
+    const params: any = {
       folder: 'grand-tour/uploads',
       resource_type: resourceType,
-      allowed_formats: ['jpg', 'png', 'jpeg', 'pdf', 'mp4', 'mov', 'avi'],
       public_id: publicId,
     };
+
+    // Only restrict formats for image uploads; raw (docx, xlsx, etc.) pass through unrestricted
+    if (resourceType === 'image' && !isDocx) {
+      params.allowed_formats = ['jpg', 'png', 'jpeg', 'pdf'];
+    }
+
+    return params;
   },
 });
 

@@ -61,8 +61,8 @@ export default function HotelPage() {
     setResponding(true)
     try {
       await hotelService.respondToAssignment('ACCEPTED')
-      toast.success('Hotel accepted! Moving to Payment 2...')
-      setTimeout(() => { window.location.href = '/dashboard/payment2' }, 1500)
+      toast.success('Hotel accepted!')
+      window.location.href = '/dashboard/payment2'
     } catch {
       toast.error('Failed to respond')
     } finally {
@@ -185,20 +185,62 @@ export default function HotelPage() {
                 <MapPin className="w-4 h-4" /> {assignment.hotel.location}
               </p>
             </div>
-            <div className="p-6 bg-card grid grid-cols-2 gap-8 text-foreground">
-              <div className="space-y-1">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Check-in</p>
-                <div className="flex items-center gap-2">
-                  <CalendarIcon className="w-5 h-5 text-primary" />
-                  <p className="text-lg font-bold">{format(new Date(assignment.checkIn), 'PPP')}</p>
+            <div className="p-6 bg-card divide-y divide-border text-foreground space-y-4">
+              <div className="grid grid-cols-2 gap-8 pb-2">
+                <div className="space-y-1">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Check-in</p>
+                  <div className="flex items-center gap-2">
+                    <CalendarIcon className="w-5 h-5 text-primary" />
+                    <p className="text-lg font-bold">{format(new Date(assignment.checkIn), 'PPP')}</p>
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Check-out</p>
+                  <div className="flex items-center gap-2">
+                    <CalendarIcon className="w-5 h-5 text-primary" />
+                    <p className="text-lg font-bold">{format(new Date(assignment.checkOut), 'PPP')}</p>
+                  </div>
                 </div>
               </div>
-              <div className="space-y-1">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Check-out</p>
-                <div className="flex items-center gap-2">
-                  <CalendarIcon className="w-5 h-5 text-primary" />
-                  <p className="text-lg font-bold">{format(new Date(assignment.checkOut), 'PPP')}</p>
-                </div>
+
+              {/* Extended Hotel Details */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 pt-4 text-sm">
+                {assignment.hotel.representedBy && (
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Represented By</p>
+                    <p className="font-bold text-foreground">{assignment.hotel.representedBy} {assignment.hotel.position && `(${assignment.hotel.position})`}</p>
+                  </div>
+                )}
+                {assignment.hotel.address && (
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Address</p>
+                    <p className="font-bold text-foreground">{assignment.hotel.address}</p>
+                  </div>
+                )}
+                {assignment.hotel.phone && (
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Phone</p>
+                    <p className="font-bold text-foreground">{assignment.hotel.phone}</p>
+                  </div>
+                )}
+                {assignment.hotel.email && (
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Email</p>
+                    <p className="font-bold text-foreground">{assignment.hotel.email}</p>
+                  </div>
+                )}
+                {assignment.hotel.natureOfActivity && (
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Nature of Activity</p>
+                    <p className="font-bold text-foreground">{assignment.hotel.natureOfActivity}</p>
+                  </div>
+                )}
+                {assignment.hotel.siretNo && (
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">SIRET No.</p>
+                    <p className="font-bold text-foreground">{assignment.hotel.siretNo}</p>
+                  </div>
+                )}
               </div>
             </div>
           </Card>
