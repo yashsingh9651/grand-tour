@@ -19,6 +19,7 @@ import {
   ThumbsDown,
   AlertTriangle,
   X,
+  Mail,
 } from 'lucide-react'
 import { hotelService, applicationService } from '@/lib/services/api.service'
 import { format } from 'date-fns'
@@ -255,7 +256,25 @@ export default function HotelPage() {
             <div>
               <h3 className="font-bold text-emerald-600 dark:text-emerald-400">You've accepted this hotel allocation!</h3>
               <p className="text-sm text-muted-foreground mt-1">Your next step is <strong>Payment 2</strong>. Click below to proceed.</p>
-              <Link href="/dashboard/payment2"><Button className="mt-3 bg-green-600 hover:bg-green-700">Go to Payment 2 <ChevronRight className="w-4 h-4 ml-2" /></Button></Link>
+              <div className="flex flex-wrap gap-3 mt-3">
+                <Link href="/dashboard/payment2">
+                  <Button className="bg-green-600 hover:bg-green-700 text-white">
+                    Go to Payment 2 <ChevronRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </Link>
+                <Button 
+                  onClick={() => {
+                    const to = 'contact@grandtour.in';
+                    const subject = encodeURIComponent('Hotel Allocation Accepted');
+                    const body = encodeURIComponent('I have accepted the hotel allocation.');
+                    window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+                  }} 
+                  variant="outline" 
+                  className="border-emerald-500/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10 gap-2"
+                >
+                  <Mail className="w-4 h-4" /> Send Confirmation Mail
+                </Button>
+              </div>
             </div>
           </Card>
         )}

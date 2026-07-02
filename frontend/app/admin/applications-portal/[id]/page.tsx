@@ -346,6 +346,31 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
   const studentName = `${application.user?.firstName || ''} ${application.user?.lastName || ''}`.trim()
   const journeySteps = workflow?.steps || []
 
+  const handleSaveToContacts = () => {
+    if (!application) return;
+    const firstName = application.user?.firstName || '';
+    const lastName = application.user?.lastName || '';
+    const fullName = studentName || `${firstName} ${lastName}`.trim() || 'Student';
+    const email = application.user?.email || '';
+    const phone = application.phone || '';
+    const college = application.data?.educationalInstitution || application.educationalInstitution || application.collegeName || '';
+
+    const vcard = [
+      'BEGIN:VCARD',
+      'VERSION:3.0',
+      `FN:${fullName}`,
+      `N:${lastName};${firstName};;;`,
+      email ? `EMAIL;TYPE=INTERNET;TYPE=HOME:${email}` : '',
+      phone ? `TEL;TYPE=CELL:${phone}` : '',
+      college ? `ORG:${college}` : '',
+      'END:VCARD'
+    ].filter(Boolean).join('\r\n');
+
+    const dataUri = 'data:text/vcard;charset=utf-8,' + encodeURIComponent(vcard);
+    window.location.href = dataUri;
+    toast.success('Opening Contact Editor...');
+  };
+
   const getStepName = (stepId: string) => {
     const step = journeySteps.find((s: any) => s.id === stepId)
     return step ? step.name : stepId
@@ -1538,6 +1563,14 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
                       }`}>{application.status}</span>
                   </div>
                 </div>
+                <hr className="border-slate-100 mt-2" />
+                <Button
+                  onClick={handleSaveToContacts}
+                  variant="outline"
+                  className="w-full mt-2 text-xs font-semibold py-2 px-3 flex items-center justify-center gap-2 border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl"
+                >
+                  <Phone className="w-3.5 h-3.5 text-slate-500" /> Save to Contacts
+                </Button>
               </Card>
 
               {/* vertical stepper list */}

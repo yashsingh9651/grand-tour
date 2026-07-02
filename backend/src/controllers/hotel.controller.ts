@@ -78,6 +78,7 @@ export const respondToAssignment = async (req: Request, res: Response) => {
   const { prisma } = await import('../config/db');
   const assignment = await prisma.hotelAssignment.findUnique({
     where: { applicationId: application.id },
+    include: { hotel: true }
   });
 
   if (!assignment) {
@@ -96,6 +97,24 @@ export const respondToAssignment = async (req: Request, res: Response) => {
       data: { currentStepId: 'payment2' },
     });
     await activityService.log('Student accepted hotel allocation', 'HOTEL_ACCEPTED', application.id, userId);
+
+    // Send confirmation email
+    try {
+      if (application.user?.email) {
+        const studentName = `${application.user.firstName || ''} ${application.user.lastName || ''}`.trim() || 'Student';
+        const hotelName = assignment.hotel?.name || 'Assigned Hotel';
+        const portalLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/hotel`;
+        
+        const emailService = (await import('../services/email.service')).default;
+        await emailService.sendHotelConfirmationEmail(application.user.email, {
+          studentName,
+          hotelName,
+          portalLink
+        });
+      }
+    } catch (err) {
+      console.error('Failed to send hotel confirmation email:', err);
+    }
   } else {
     await activityService.log('Student declined hotel allocation', 'HOTEL_DECLINED', application.id, userId);
   }

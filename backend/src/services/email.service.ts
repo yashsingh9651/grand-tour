@@ -157,6 +157,18 @@ class EmailService {
     });
   }
 
+  async sendHotelConfirmationEmail(to: string, data: {
+    studentName: string,
+    hotelName: string,
+    portalLink: string
+  }) {
+    return this.sendEmail(to, 'HOTEL_CONFIRMATION', {
+      studentName: data.studentName,
+      hotelName: data.hotelName,
+      portalLink: data.portalLink
+    });
+  }
+
   async sendOtpEmail(to: string, otp: string) {
     try {
       const mailOptions = {

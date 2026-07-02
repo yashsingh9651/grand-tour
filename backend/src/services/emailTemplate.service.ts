@@ -89,6 +89,12 @@ class EmailTemplateService {
         subject: 'Interview Scheduled - Meeting Link Attached',
         body: '<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #1f2937;"> <h1 style="color: #8B48F6;">Interview Scheduled</h1> <p>Hi {{studentName}},</p> <p>Your interview has been scheduled successfully.</p> <p><strong>Date/Time:</strong> {{dateTime}}</p> <p><strong>Google Meet Link:</strong> <a href="{{meetLink}}">{{meetLink}}</a></p> <p>Please make sure to join the meeting on time.</p> </div>',
         variables: ['studentName', 'dateTime', 'meetLink']
+      },
+      {
+        name: 'HOTEL_CONFIRMATION',
+        subject: 'Hotel Allocation Confirmed - {{hotelName}}',
+        body: '<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #1f2937;"> <h1 style="color: #8B48F6;">Hotel Selection Confirmed</h1> <p>Hi {{studentName}},</p> <p>You have successfully accepted the hotel allocation for <strong>{{hotelName}}</strong>.</p> <p>Please log in to your dashboard to view the details: <a href="{{portalLink}}" style="display: inline-block; padding: 10px 20px; background-color: #CCFF00; color: #111; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 15px;">View Hotel Step</a></p> </div>',
+        variables: ['studentName', 'hotelName', 'portalLink']
       }
     ];
 
