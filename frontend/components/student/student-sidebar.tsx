@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
 import { applicationService } from '@/lib/services/api.service'
+import { toast } from 'sonner'
 import {
   Sparkles,
   Calendar,
@@ -178,6 +179,48 @@ export function StudentSidebar({ currentStep, darkMode }: { currentStep?: string
           <HelpCircle className="w-3.5 h-3.5 shrink-0" />
           <span>Support</span>
         </Link>
+
+        {/* FAQ Link - Unlocked when 1st Payment (payment1) is completed */}
+        {(() => {
+          const isPayment1Completed = currentStepOrder >= (WORKFLOW_STEP_ORDER['hotel'] ?? 4)
+          const isFaqActive = pathname === '/dashboard/faq-page'
+          return (
+            <Link
+              href={isPayment1Completed ? '/dashboard/faq-page' : '#'}
+              onClick={(e) => {
+                if (!isPayment1Completed) {
+                  e.preventDefault()
+                  toast.error('This section will unlock after you complete your 1st Payment.')
+                }
+              }}
+              className={cn(
+                "w-full flex items-center justify-between px-3 py-2 rounded-lg text-[11px] font-semibold tracking-widest uppercase transition-all duration-200",
+                !isPayment1Completed ? "opacity-40 cursor-not-allowed" : ""
+              )}
+              style={
+                isFaqActive
+                  ? { backgroundColor: 'var(--sp-accent)', color: 'var(--sp-accent-text)' }
+                  : !isPayment1Completed
+                    ? { color: 'var(--sp-text-soft)' }
+                    : { color: 'var(--sp-text-muted)' }
+              }
+              aria-disabled={!isPayment1Completed}
+            >
+              <div className="flex items-center gap-3">
+                <HelpCircle className="w-3.5 h-3.5 shrink-0" />
+                <span>FAQ</span>
+              </div>
+              {!isPayment1Completed && (
+                <span
+                  className="text-[8px] font-bold px-1.5 py-0.5 rounded-full"
+                  style={{ backgroundColor: 'var(--sp-surface-2)', color: 'var(--sp-text-soft)' }}
+                >
+                  LOCKED
+                </span>
+              )}
+            </Link>
+          )
+        })()}
 
         <button
           onClick={() => signOut({ callbackUrl: '/' })}
