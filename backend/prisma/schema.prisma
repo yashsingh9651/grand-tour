@@ -75,6 +75,7 @@ model Application {
   user          User              @relation(fields: [userId], references: [id])
   status        ApplicationStatus @default(PENDING)
   currentStepId String?
+  category      String            @default("STUDENT")
 
   passportNumber         String?
   educationalInstitution String?

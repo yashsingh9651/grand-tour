@@ -187,6 +187,10 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
   const [overridingStep, setOverridingStep] = useState(false)
   const [submittingAction, setSubmittingAction] = useState(false)
   const [pageContent, setPageContent] = useState<any>(null)
+  const [adminCategory, setAdminCategory] = useState<string>('STUDENT')
+  const [inst1, setInst1] = useState<string | number>('')
+  const [inst2, setInst2] = useState<string | number>('')
+  const [inst3, setInst3] = useState<string | number>('')
 
   const resolveFieldValue = (field: any) => {
     if (!application) return 'N/A'
@@ -293,6 +297,10 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
       if (appData) {
         // Set active step to current candidate step
         setActiveStepId(appData.currentStepId || 'application')
+        setAdminCategory(appData.category || 'STUDENT')
+        setInst1(appData.data?.customInstallments?.[0]?.amount || '')
+        setInst2(appData.data?.customInstallments?.[1]?.amount || '')
+        setInst3(appData.data?.customInstallments?.[2]?.amount || '')
       }
     } catch (error: any) {
       toast.error(error.message || 'Failed to load candidate details')
@@ -310,6 +318,12 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
     try {
       const appData = await applicationService.getById(applicationId)
       setApplication(appData)
+      if (appData) {
+        setAdminCategory(appData.category || 'STUDENT')
+        setInst1(appData.data?.customInstallments?.[0]?.amount || '')
+        setInst2(appData.data?.customInstallments?.[1]?.amount || '')
+        setInst3(appData.data?.customInstallments?.[2]?.amount || '')
+      }
     } catch {
       console.error('Failed to fetch silent updates')
     }
@@ -369,6 +383,32 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
     const dataUri = 'data:text/vcard;charset=utf-8,' + encodeURIComponent(vcard);
     window.location.href = dataUri;
     toast.success('Opening Contact Editor...');
+  };
+
+  const handleUpdateCategoryAndSchedule = async () => {
+    try {
+      setSubmittingAction(true);
+      
+      const payload = {
+        category: adminCategory,
+        data: {
+          ...(application.data || {}),
+          customInstallments: adminCategory === 'B2B' ? [
+            { name: 'First Installment', amount: Number(inst1) || 0 },
+            { name: 'Second Installment', amount: Number(inst2) || 0 },
+            { name: 'Third Installment', amount: Number(inst3) || 0 }
+          ] : null
+        }
+      };
+
+      const updated = await applicationService.update(application.id, payload);
+      setApplication(updated);
+      toast.success('Student category and payment schedule updated successfully!');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to update category and schedule');
+    } finally {
+      setSubmittingAction(false);
+    }
   };
 
   const getStepName = (stepId: string) => {
@@ -1570,6 +1610,67 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
                   className="w-full mt-2 text-xs font-semibold py-2 px-3 flex items-center justify-center gap-2 border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl"
                 >
                   <Phone className="w-3.5 h-3.5 text-slate-500" /> Save to Contacts
+                </Button>
+              </Card>
+
+              {/* Category & Schedule Card */}
+              <Card className="p-5 border border-slate-200 bg-white rounded-3xl shadow-sm space-y-4">
+                <div>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2 ml-1">Candidate Category</span>
+                  <select 
+                    value={adminCategory} 
+                    onChange={(e) => setAdminCategory(e.target.value)}
+                    className="w-full text-xs border border-slate-200 bg-slate-50 text-slate-700 px-3 py-2.5 rounded-xl font-semibold focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all"
+                  >
+                    <option value="STUDENT">Student (Standard)</option>
+                    <option value="B2B">B2B (Corporate Partnership)</option>
+                  </select>
+                </div>
+
+                {adminCategory === 'B2B' && (
+                  <div className="space-y-3 pt-1">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block ml-1">Custom Payment Installments</span>
+                    <div className="space-y-2">
+                      <div>
+                        <label className="text-[10px] text-slate-500 font-bold block mb-1">Installment 1 Amount</label>
+                        <Input 
+                          type="number" 
+                          value={inst1} 
+                          onChange={(e) => setInst1(e.target.value)} 
+                          placeholder="e.g. 15000" 
+                          className="h-9 text-xs rounded-xl"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[10px] text-slate-500 font-bold block mb-1">Installment 2 Amount</label>
+                        <Input 
+                          type="number" 
+                          value={inst2} 
+                          onChange={(e) => setInst2(e.target.value)} 
+                          placeholder="e.g. 10000" 
+                          className="h-9 text-xs rounded-xl"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[10px] text-slate-500 font-bold block mb-1">Installment 3 Amount</label>
+                        <Input 
+                          type="number" 
+                          value={inst3} 
+                          onChange={(e) => setInst3(e.target.value)} 
+                          placeholder="e.g. 8000" 
+                          className="h-9 text-xs rounded-xl"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <Button 
+                  onClick={handleUpdateCategoryAndSchedule} 
+                  disabled={submittingAction}
+                  className="w-full mt-2 text-xs font-semibold py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl flex items-center justify-center gap-2"
+                >
+                  {submittingAction ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Save Category & Schedule'}
                 </Button>
               </Card>
 

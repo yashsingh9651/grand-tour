@@ -135,7 +135,9 @@ export default function Payment1Page() {
   const gstAmount = (baseAmount - discountAmount) * (gstPercentage / 100)
   const totalPayable = baseAmount - discountAmount + gstAmount
 
-  const installmentsList = paymentConfig?.installments || []
+  const customInst = application?.data?.customInstallments
+  const hasCustomInst = Array.isArray(customInst) && customInst.some((inst: any) => Number(inst?.amount) > 0)
+  const installmentsList = hasCustomInst ? customInst : (paymentConfig?.installments || [])
   const hasAdminInstallments = Array.isArray(installmentsList) && installmentsList.length > 0
 
   const installmentAmount = hasAdminInstallments && installmentsList[0]?.amount

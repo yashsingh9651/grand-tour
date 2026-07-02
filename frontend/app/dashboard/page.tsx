@@ -81,16 +81,29 @@ export default function StudentDashboard() {
     : completedSteps.length
 
   // Map backend activities to timeline
-  const timeline = application.activities?.map((activity: any) => ({
-    date: new Date(activity.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }),
-    event: activity.description,
-    status: 'completed'
-  })) || []
+  const timeline = application.activities?.map((activity: any) => {
+    const d = new Date(activity.createdAt)
+    const datePart = d.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric' 
+    })
+    const timePart = d.toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit', 
+      hour12: true 
+    })
+    return {
+      date: `${datePart} • ${timePart}`,
+      event: activity.description,
+      status: 'completed'
+    }
+  }) || []
 
   // Add next steps to timeline
   if (currentStep) {
     timeline.push({
-      date: 'Next',
+      date: 'Pending Action',
       event: currentStep.title,
       status: 'pending'
     })
