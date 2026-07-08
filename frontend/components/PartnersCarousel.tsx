@@ -1,130 +1,82 @@
 'use client'
+
 import Image from 'next/image'
-import { useState } from 'react'
-
-const PARTNERS: { name: string; src: string }[] = [
-  { name: 'Marriott Bonvoy', src: '/hero.png' },
-  { name: 'Four Seasons', src: '/horizontal-frame.png' },
-  { name: 'Accor Hotels', src: '/logo.png' },
-  { name: 'Hyatt', src: '/hero.png' },
-  { name: 'Ritz-Carlton', src: '/vertical-frame.png' },
-  { name: 'InterContinental', src: '/hero.png' },
-  { name: 'Hilton', src: '/hero.png' },
-  { name: 'Radisson Blu', src: '/hero.png' },
-  { name: 'Sofitel', src: '/hero.png' },
-  { name: 'Pullman Hotels', src: '/hero.png' },
-  { name: 'Novotel', src: '/hero.png' },
-  { name: 'Sheraton', src: '/hero.png' },
-]
-
-const STRIPE = ['#2563EB', '#DC2626', '#16A34A', '#F9B302']
-
-function LogoTile({ name, src }: { name: string; src: string }) {
-  const [errored, setErrored] = useState(false)
-  const initial = name.charAt(0)
-
-  return (
-    <div className="group inline-flex items-center justify-center mx-8 shrink-0">
-      {errored ? (
-        /* ── Fallback: styled initial badge ── */
-        <div
-          className="h-28 w-80 rounded-xl bg-slate-100 flex items-center justify-center
-                     text-slate-400 font-black text-lg select-none
-                     group-hover:bg-slate-200 transition-colors duration-300"
-          title={name}
-        >
-          {initial}
-        </div>
-      ) : (
-        /* ── Actual logo image ── */
-        <div
-          className="relative h-28 w-80 rounded-xl overflow-hidden"
-          title={name}
-        >
-          <Image
-            src={src}
-            alt={name}
-            width={140}
-            height={40}
-            className="h-full w-full"
-            onError={() => setErrored(true)}
-            loading="lazy"
-          />
-        </div>
-      )}
-    </div>
-  )
-}
 
 export default function PartnersCarousel() {
-  // 4× duplication ensures seamless loop at any viewport width
-  const row = [...PARTNERS, ...PARTNERS, ...PARTNERS, ...PARTNERS]
-
   return (
-    <section className="w-full bg-white mb-7">
-
-      {/* ── Top 4-color stripe ── */}
-      <div className="flex h-[3px]">
-        {STRIPE.map((c) => <div key={c} className="flex-1" style={{ backgroundColor: c }} />)}
-      </div>
-
-      {/* ── Header ── */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center
-                      justify-between gap-3 px-8 md:px-14 py-8 border-b border-slate-100">
-        <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.22em] text-slate-400 mb-1">
-            Placement Network
-          </p>
-          <h2 className="text-2xl font-black text-slate-900 tracking-tight leading-none">
+    <section className="bg-white text-center space-y-8 py-16 px-4 sm:px-6 lg:px-8">
+        {/* Eyebrow Badge (using matched hero red #DC2626) */}
+        <div className="inline-flex items-center justify-center">
+          <span className="text-[10px] font-semibold tracking-[0.25em] text-[#DC2626] uppercase bg-[#FEF2F2] px-4 py-1 rounded-full animate-fade-in">
             Our Partners
+          </span>
+        </div>
+
+        {/* Heading & Subtitle (using matched hero colors: Green #16A34A and Yellow #F9B302) */}
+        <div className="space-y-3">
+          <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold tracking-wide text-[#141414] leading-[1.2] font-sans">
+            Working With The <span className="text-[#16A34A]">Best</span> In <span className="text-[#F9B302]">France</span>
           </h2>
-        </div>
-        <p className="text-xs text-slate-400 max-w-md leading-relaxed">
-          Students are placed at 200+ world-class hotels, restaurants
-          and hospitality brands across France and Europe.
-        </p>
-      </div>
-
-      {/* ── Continuous logo marquee ── */}
-      <div className="relative flex overflow-x-hidden py-10 border-b border-slate-100">
-
-        {/* Left fade */}
-        <div className="absolute left-0 top-0 bottom-0 w-24 z-10 pointer-events-none"
-          style={{ background: 'linear-gradient(90deg, white 40%, transparent)' }} />
-
-        {/* Scrolling track */}
-        <div className="flex items-center marquee-track">
-          {row.map((p, i) => (
-            <LogoTile key={i} name={p.name} src={p.src} />
-          ))}
+          <p className="text-xs sm:text-base text-gray-500 font-medium tracking-wide leading-relaxed">
+            Proudly connected with leading hotels and hospitality brands across France.
+          </p>
         </div>
 
-        {/* Right fade */}
-        <div className="absolute right-0 top-0 bottom-0 w-24 z-10 pointer-events-none"
-          style={{ background: 'linear-gradient(270deg, white 40%, transparent)' }} />
-      </div>
+        {/* Partners Grid (using matched background tints and borders) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {/* Card 1: Michelin Star (using Green #16A34A) */}
+          <div className="bg-[#16a34a1e] rounded-[20px] p-6 flex items-center justify-center min-h-[145px] transition-all hover:scale-[1.02] active:scale-[0.98] duration-300 shadow-sm border border-[#16A34A20]">
+            <div className="relative w-full h-[65px]">
+              <Image
+                src="/partners/michelin.png"
+                alt="Michelin Star Logo"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+          </div>
 
-      {/* ── Bottom 4-color stripe ── */}
-      <div className="flex h-[3px]">
-        {STRIPE.map((c) => <div key={c} className="flex-1" style={{ backgroundColor: c }} />)}
-      </div>
+          {/* Card 2: Relais & Chateaux (using Blue #2563EB) */}
+          <div className="bg-[#2564eb21] rounded-[20px] p-6 flex items-center justify-center min-h-[145px] transition-all hover:scale-[1.02] active:scale-[0.98] duration-300 shadow-sm border border-[#2563EB20]">
+            <div className="relative w-full h-[75px]">
+              <Image
+                src="/partners/relais.png"
+                alt="Relais & Chateaux Logo"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+          </div>
 
-      <style dangerouslySetInnerHTML={{
-        __html: `
-        @keyframes marquee-scroll {
-          from { transform: translateX(0); }
-          to   { transform: translateX(-50%); }
-        }
-        .marquee-track {
-          display: flex;
-          align-items: center;
-          white-space: nowrap;
-          animation: marquee-scroll 100s linear infinite;
-        }
-        .marquee-track:hover {
-          animation-play-state: paused;
-        }
-      `}} />
+          {/* Card 3: Campanile (using Yellow #F9B302) */}
+          <div className="bg-[#f9b3021c] rounded-[20px] p-6 flex items-center justify-center min-h-[145px] transition-all hover:scale-[1.02] active:scale-[0.98] duration-300 shadow-sm border border-[#F9B30220]">
+            <div className="relative w-full h-[50px]">
+              <Image
+                src="/partners/campanile.png"
+                alt="Campanile Logo"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+          </div>
+
+          {/* Card 4: Best Western (using Red #DC2626) */}
+          <div className="bg-[#dc26261f] rounded-[20px] p-6 flex items-center justify-center min-h-[145px] transition-all hover:scale-[1.02] active:scale-[0.98] duration-300 shadow-sm border border-[#DC262620]">
+            <div className="relative w-full h-[65px]">
+              <Image
+                src="/partners/bestwestern.png"
+                alt="Best Western Logo"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+          </div>
+
+        </div>
     </section>
   )
 }

@@ -15,6 +15,7 @@ const PartnersCarousel = dynamic(() => import("@/components/PartnersCarousel"), 
     </div>
   )
 });
+import WhyGrandTour from "@/components/WhyGrandTour";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -307,6 +308,9 @@ export default function Home() {
 
       {/* Moving Partners Carousel */}
       <PartnersCarousel />
+
+      {/* Why Grand Tour Section */}
+      <WhyGrandTour />
     </div>
   );
 }

@@ -11,8 +11,9 @@ import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import {
   Loader2, Check, Lock, UploadCloud, Eye, X, Copy,
-  ShieldCheck, Landmark, Clock, IndianRupee, CheckCircle2, Info, FileText, PartyPopper
+  ShieldCheck, Landmark, Clock, IndianRupee, CheckCircle2, Info, FileText, PartyPopper, FileDown
 } from 'lucide-react'
+import { usePaymentReceipt } from '@/components/PaymentReceiptPDF'
 
 export default function Payment1Page() {
   const { data: session } = useSession()
@@ -32,6 +33,21 @@ export default function Payment1Page() {
   const [paymentTemplate, setPaymentTemplate] = useState<any>(null)
   const [generatingDoc, setGeneratingDoc] = useState(false)
 
+  // Receipt download — only used when payment is COMPLETED
+  const [receiptPayment, setReceiptPayment] = useState<any>(null)
+  const receiptStudentName = application
+    ? `${application.user?.firstName || ''} ${application.user?.lastName || ''}`.trim()
+    : ''
+  const receiptHook = usePaymentReceipt({
+    studentName: receiptStudentName,
+    amount: receiptPayment?.amount || 0,
+    paymentDate: receiptPayment?.createdAt || new Date().toISOString(),
+    paymentId: receiptPayment?.id || '',
+    installmentNumber: 1,
+    description: 'France Internship',
+    utrNumber: receiptPayment?.utrNumber,
+  })
+
   const fetchData = async () => {
     try {
       setLoading(true)
@@ -41,6 +57,10 @@ export default function Payment1Page() {
       ])
       setApplication(appData)
       setWorkflow(wfData)
+
+      // Store latest completed payment for receipt
+      const completed = (appData?.payments || []).find((p: any) => p.status === 'COMPLETED')
+      if (completed) setReceiptPayment(completed)
 
       try {
         const templates = await documentTemplateService.getAll()
@@ -437,6 +457,14 @@ export default function Payment1Page() {
                   </Button>
                 </div>
               </div>
+              {/* Download PDF Receipt */}
+              <Button
+                onClick={() => receiptHook.handlePrint()}
+                className="w-full h-11 rounded-2xl font-bold text-sm gap-2 bg-green-600 hover:bg-green-700 text-white shadow-md shadow-green-500/20"
+              >
+                <FileDown className="w-4 h-4" />
+                Download Payment Receipt PDF
+              </Button>
             </Card>
           </>
         ) : latestPayment?.status === 'PENDING' ? (

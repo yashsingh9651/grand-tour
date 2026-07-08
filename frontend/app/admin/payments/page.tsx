@@ -19,12 +19,40 @@ import {
   ExternalLink, 
   Loader2,
   Search,
-  Filter
+  Filter,
+  FileDown,
 } from 'lucide-react'
 import { paymentService } from '@/lib/services/api.service'
 import { toast } from 'sonner'
 import { Input } from '@/components/ui/input'
 import { Sidebar } from '@/components/dashboard/sidebar'
+import { usePaymentReceipt } from '@/components/PaymentReceiptPDF'
+
+// ─── Per-row receipt downloader ───────────────────────────────────────────────
+function ReceiptDownloadButton({ payment }: { payment: any }) {
+  const installmentNum = (payment.description || '').toLowerCase().includes('2nd') ? 2
+    : (payment.description || '').toLowerCase().includes('3rd') ? 3 : 1
+  const { handlePrint } = usePaymentReceipt({
+    studentName: `${payment.user?.firstName || ''} ${payment.user?.lastName || ''}`.trim(),
+    amount: payment.amount || 0,
+    paymentDate: payment.createdAt,
+    paymentId: payment.id,
+    installmentNumber: installmentNum,
+    description: 'France Internship',
+    utrNumber: payment.utrNumber,
+  })
+  return (
+    <Button
+      size="sm"
+      variant="outline"
+      onClick={handlePrint}
+      className="h-8 gap-1.5 text-xs font-bold border-green-200 text-green-700 hover:bg-green-50"
+      title="Download PDF Receipt"
+    >
+      <FileDown className="w-3.5 h-3.5" /> Receipt
+    </Button>
+  )
+}
 
 export default function AdminPaymentsPage() {
   const [payments, setPayments] = useState<any[]>([])
@@ -205,7 +233,11 @@ export default function AdminPaymentsPage() {
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right">
-                          {p.status === 'PENDING' && (
+                          <div className="flex justify-end gap-2">
+                            {p.status === 'COMPLETED' && (
+                              <ReceiptDownloadButton payment={p} />
+                            )}
+                            {p.status === 'PENDING' && (
                             <div className="flex justify-end gap-2">
                               <Button 
                                 size="sm" 
@@ -223,7 +255,8 @@ export default function AdminPaymentsPage() {
                                 <CheckCircle2 className="w-4 h-4" />
                               </Button>
                             </div>
-                          )}
+                            )}
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))

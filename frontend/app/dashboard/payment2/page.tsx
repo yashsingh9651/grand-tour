@@ -11,8 +11,9 @@ import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import {
   Loader2, Check, Lock, UploadCloud, Eye, X, Copy,
-  Landmark, Clock, IndianRupee, CheckCircle2, Info
+  Landmark, Clock, IndianRupee, CheckCircle2, Info, FileDown
 } from 'lucide-react'
+import { usePaymentReceipt } from '@/components/PaymentReceiptPDF'
 
 const STEP_ID = 'payment2'
 const STEP_LABEL = 'Payment 2'
@@ -31,6 +32,21 @@ export default function Payment2Page() {
   const [viewingProofUrl, setViewingProofUrl] = useState<string | null>(null)
   const [viewingReceiptName, setViewingReceiptName] = useState<string>('')
   const [resendingEmail, setResendingEmail] = useState(false)
+
+  // Receipt download
+  const [receiptPayment, setReceiptPayment] = useState<any>(null)
+  const receiptStudentName = application
+    ? `${application.user?.firstName || ''} ${application.user?.lastName || ''}`.trim()
+    : ''
+  const receiptHook = usePaymentReceipt({
+    studentName: receiptStudentName,
+    amount: receiptPayment?.amount || 0,
+    paymentDate: receiptPayment?.createdAt || new Date().toISOString(),
+    paymentId: receiptPayment?.id || '',
+    installmentNumber: 2,
+    description: 'France Internship',
+    utrNumber: receiptPayment?.utrNumber,
+  })
 
   const handleResendHotelEmail = async () => {
     setResendingEmail(true)
@@ -52,6 +68,14 @@ export default function Payment2Page() {
       ])
       setApplication(appData)
       setWorkflow(wfData)
+
+      // Store latest completed payment (payment2) for receipt
+      const completed = (appData?.payments || []).find((p: any) =>
+        (p.description || '').toLowerCase().includes('payment2') ||
+        (p.description || '').toLowerCase().includes('2nd')
+        && p.status === 'COMPLETED'
+      )
+      if (completed) setReceiptPayment(completed)
     } catch {
       toast.error('Failed to load financial details')
     } finally {
@@ -322,6 +346,14 @@ export default function Payment2Page() {
                 </Button>
               </div>
             </div>
+            {/* Download PDF Receipt */}
+            <Button
+              onClick={() => receiptHook.handlePrint()}
+              className="w-full h-11 rounded-2xl font-bold text-sm gap-2 bg-green-600 hover:bg-green-700 text-white shadow-md shadow-green-500/20"
+            >
+              <FileDown className="w-4 h-4" />
+              Download Payment Receipt PDF
+            </Button>
           </Card>
         ) : latestPayment?.status === 'PENDING' ? (
           <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-center space-y-6 text-foreground">
