@@ -22,10 +22,10 @@ export default function WhyGrandTour() {
   ]
 
   return (
-    <section className="relative bg-white py-28 px-4 sm:px-6 lg:px-8">
+    <section className="relative bg-white py-20 px-4 sm:px-6 lg:px-8">
       {/* Radial gradient glowing spots (bleeds naturally across sections, parent page hides horizontal overflow) */}
-      <div className="absolute -top-[200px] -right-[150px] w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(249,179,2,0.15)_0%,rgba(249,179,2,0)_70%)] pointer-events-none select-none" />
-      <div className="absolute bottom-0 -left-[150px] w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(37,99,235,0.15)_0%,rgba(37,99,235,0)_70%)] pointer-events-none select-none" />
+      <div className="absolute -top-[200px] -right-[150px] w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(249,179,2,0.22)_0%,rgba(249,179,2,0)_70%)] pointer-events-none select-none" />
+      <div className="absolute bottom-0 -left-[150px] w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(37,99,235,0.22)_0%,rgba(37,99,235,0)_70%)] pointer-events-none select-none" />
 
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 items-center">
         {/* Left Column: Text Content */}
