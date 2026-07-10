@@ -458,3 +458,23 @@ export const travelService = {
   },
 };
 
+export const studentCategoryService = {
+  getAll: async () => {
+    const response = await apiClient.get('/api/student-categories');
+    return response.data.data;
+  },
+  create: async (data: { name: string; description?: string; color?: string; pricing?: { name: string; amount: number }[] | null }) => {
+    const response = await apiClient.post('/api/student-categories', data);
+    return response.data.data;
+  },
+  update: async (id: string, data: { name?: string; description?: string; color?: string; pricing?: { name: string; amount: number }[] | null; isActive?: boolean }) => {
+    const response = await apiClient.patch(`/api/student-categories/${id}`, data);
+    return response.data.data;
+  },
+  remove: async (id: string) => {
+    const response = await apiClient.delete(`/api/student-categories/${id}`);
+    return response.data;
+  },
+};
+
+

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Candidate, CandidateStatus, PaymentStatus } from '@/lib/candidate-data'
-import { applicationService, workflowService } from '@/lib/services/api.service'
+import { applicationService, workflowService, studentCategoryService } from '@/lib/services/api.service'
 import { toast } from 'sonner'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -17,9 +17,11 @@ interface CandidatesTableProps {
 export function CandidatesTable({ initialStatus = 'all', title }: CandidatesTableProps) {
   const [candidates, setCandidates] = useState<Candidate[]>([])
   const [workflow, setWorkflow] = useState<any>(null)
+  const [categories, setCategories] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterStatus, setFilterStatus] = useState<'all' | CandidateStatus>(initialStatus)
+  const [filterCategory, setFilterCategory] = useState<string>('all')
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null)
   const [showNotes, setShowNotes] = useState(false)
   const [notes, setNotes] = useState('')
@@ -32,12 +34,14 @@ export function CandidatesTable({ initialStatus = 'all', title }: CandidatesTabl
   const fetchData = async () => {
     try {
       setLoading(true)
-      const [appData, wfData] = await Promise.all([
+      const [appData, wfData, catData] = await Promise.all([
         applicationService.getAll(),
-        workflowService.get()
+        workflowService.get(),
+        studentCategoryService.getAll().catch(() => []),
       ])
       
       setWorkflow(wfData)
+      setCategories(catData || [])
       
       // Map backend data to frontend Candidate type
       const mappedCandidates: Candidate[] = appData.map((app: any) => {
@@ -89,6 +93,7 @@ export function CandidatesTable({ initialStatus = 'all', title }: CandidatesTabl
           enrollmentStatus: app.enrollmentStatus,
           preferredDepartment: app.preferredDepartment,
           statementOfPurpose: app.statementOfPurpose,
+          category: app.category,
           documents: app.documents,
         }
       })
@@ -162,8 +167,9 @@ export function CandidatesTable({ initialStatus = 'all', title }: CandidatesTabl
       c.program.toLowerCase().includes(searchTerm.toLowerCase())
 
     const matchesStatus = filterStatus === 'all' || c.status === filterStatus
+    const matchesCategory = filterCategory === 'all' || (c as any).category === filterCategory
 
-    return matchesSearch && matchesStatus
+    return matchesSearch && matchesStatus && matchesCategory
   })
 
   const getStatusColor = (status: CandidateStatus) => {
@@ -439,6 +445,20 @@ export function CandidatesTable({ initialStatus = 'all', title }: CandidatesTabl
             <option value="rejected">Rejected</option>
           </select>
 
+          {/* Category filter */}
+          {categories.length > 0 && (
+            <select
+              value={filterCategory}
+              onChange={(e) => setFilterCategory(e.target.value)}
+              className="px-3 py-2 border border-border rounded-lg text-sm text-foreground"
+            >
+              <option value="all">All Categories</option>
+              {categories.map((cat: any) => (
+                <option key={cat.id} value={cat.name}>{cat.name.replace(/_/g, ' ')}</option>
+              ))}
+            </select>
+          )}
+
           <p className="text-sm text-muted-foreground whitespace-nowrap">
             {filteredCandidates.length} candidate{filteredCandidates.length !== 1 ? 's' : ''}
           </p>
@@ -535,6 +555,22 @@ export function CandidatesTable({ initialStatus = 'all', title }: CandidatesTabl
                         candidate.paymentStatus.slice(1).replace(/_/g, ' ')}
                     </span>
                   </div>
+
+                  {/* Category badge */}
+                  {(candidate as any).category && (() => {
+                    const cat = categories.find((c: any) => c.name === (candidate as any).category)
+                    return (
+                      <div>
+                        <p className="text-muted-foreground mb-1">Category</p>
+                        <span
+                          className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider text-white"
+                          style={{ background: cat?.color || '#6366F1' }}
+                        >
+                          {((candidate as any).category as string).replace(/_/g, ' ')}
+                        </span>
+                      </div>
+                    )
+                  })()}
                 </div>
 
                 <div className="flex gap-2 pt-2 border-t border-border">

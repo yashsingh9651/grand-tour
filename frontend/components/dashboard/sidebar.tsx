@@ -26,6 +26,7 @@ import {
   Plane,
   ChevronDown,
   FileStack,
+  Tags,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useState, useEffect } from "react"
@@ -92,6 +93,7 @@ const MENU_SECTIONS: MenuSection[] = [
       { icon: ShieldCheck, label: "Role Access", href: "/admin/settings/roles", feature: "settings" },
       { icon: Mail, label: "Email Templates", href: "/admin/emails", feature: "emails" },
       { icon: FileStack, label: "Doc Templates", href: "/admin/document-templates", feature: "documents" },
+      { icon: Tags, label: "Student Categories", href: "/admin/student-categories", feature: "settings" },
       { icon: BarChart3, label: "Reports", href: "/admin/reports", feature: "reports" },
       { icon: Activity, label: "Audit Logs", href: "/admin/activity", feature: "activity", badge: "3" },
       { icon: Bell, label: "Notifications", href: "/admin/notifications", feature: "notifications" },

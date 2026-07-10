@@ -45,7 +45,6 @@ const SYSTEM_TEMPLATES = [
   { type: 'CONTRACT_EXTRA_1', label: 'Contract Additional Document 1', description: 'Predefined slot for additional document 1.' },
   { type: 'CONTRACT_EXTRA_2', label: 'Contract Additional Document 2', description: 'Predefined slot for additional document 2.' },
   { type: 'CONTRACT_EXTRA_3', label: 'Contract Additional Document 3', description: 'Predefined slot for additional document 3.' },
-  { type: 'PAYMENT1_DOCUMENT', label: 'Payment 1 Document Template', description: 'Predefined slot for documents sent in Installment 1.' },
   { type: 'PAYMENT2_DOCUMENT', label: 'Payment 2 Document Template', description: 'Predefined slot for documents sent in Installment 2.' },
   { type: 'PAYMENT3_DOCUMENT', label: 'Payment 3 Document Template', description: 'Predefined slot for documents sent in Installment 3.' },
 ]

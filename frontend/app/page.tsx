@@ -87,7 +87,7 @@ export default function Home() {
               <Link
                 href={isLoggedIn ? dashboardLink : "/login"}
                 id="btn-desktop-partner"
-                className="bg-[#2564ebdb] hover:bg-[#1d4ed8] active:scale-95 text-white text-xs font-medium px-6 py-3 rounded-full uppercase tracking-wider transition-all shadow-lg select-none"
+                className="bg-[#0055A5] hover:bg-[#1d4ed8] active:scale-95 text-white text-xs font-medium px-6 py-3 rounded-full uppercase tracking-wider transition-all shadow-lg select-none"
               >
                 {isLoggedIn ? "Go to Dashboard" : "Become a Partner"}
               </Link>
@@ -190,11 +190,11 @@ export default function Home() {
               className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold text-white leading-tight tracking-tight mb-5 whitespace-nowrap select-none"
             >
               Your{" "}
-              <span style={{ color: "#F9B302" }}>Journey</span>
+              <span style={{ color: "#0055A5" }}>Journey</span>
               {" "}Begins In{" "}
               <span
                 className="inline-flex items-center justify-center px-1 leading-none"
-                style={{ backgroundColor: "#16A34A", color: "#ffffff" }}
+                style={{ backgroundColor: "#E1000F", color: "#ffffff" }}
               >
                 France
               </span>
@@ -221,7 +221,7 @@ export default function Home() {
               <Link
                 href={isLoggedIn ? dashboardLink : "/login"}
                 id="btn-apply-now"
-                className="bg-[#DC2626] border border-[#DC2626] hover:bg-[#b91c1c] active:scale-95 text-white text-xs font-medium px-7 py-2.5 rounded-full tracking-widest transition-all shadow-lg select-none"
+                className="bg-[#E1000F] border border-[#E1000F] hover:bg-[#c5121e] active:scale-95 text-white text-xs font-medium px-7 py-2.5 rounded-full tracking-widest transition-all shadow-lg select-none"
               >
                 Apply Now
               </Link>
@@ -268,7 +268,7 @@ export default function Home() {
 
             {/* Pill 2 – Red (Placements Rate) */}
             <div className="flex items-center gap-3 border border-white/45 bg-white/25 rounded-full px-3 py-2.5 shadow-md select-none">
-              <div className="w-9 h-9 rounded-full bg-[#DC2626] flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-full bg-[#E1000F] flex items-center justify-center shrink-0">
                 <TrendingUp className="w-4 h-4 text-white" />
               </div>
               <div className="text-left">
@@ -279,7 +279,7 @@ export default function Home() {
 
             {/* Pill 3 – Green (Students Placed) */}
             <div className="flex items-center gap-3 border border-white/45 bg-white/25 rounded-full px-3 py-2.5 shadow-md select-none">
-              <div className="w-9 h-9 rounded-full bg-[#16A34A] flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-full bg-[#E1000F] flex items-center justify-center shrink-0">
                 <Users className="w-4 h-4 text-white" />
               </div>
               <div className="text-left">

@@ -19,7 +19,8 @@ import {
   travelService,
   uploadService,
   applicationPageContentService,
-  interviewService
+  interviewService,
+  studentCategoryService
 } from '@/lib/services/api.service'
 import { toast } from 'sonner'
 import {
@@ -188,6 +189,7 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
   const [submittingAction, setSubmittingAction] = useState(false)
   const [pageContent, setPageContent] = useState<any>(null)
   const [adminCategory, setAdminCategory] = useState<string>('STUDENT')
+  const [studentCategories, setStudentCategories] = useState<any[]>([])
   const [inst1, setInst1] = useState<string | number>('')
   const [inst2, setInst2] = useState<string | number>('')
   const [inst3, setInst3] = useState<string | number>('')
@@ -282,17 +284,19 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
   const fetchDetails = async () => {
     try {
       setLoading(true)
-      const [appData, wfData, hotelData, contentData] = await Promise.all([
+      const [appData, wfData, hotelData, contentData, catData] = await Promise.all([
         applicationService.getById(applicationId),
         workflowService.get(),
         hotelService.getAll(),
-        applicationPageContentService.get('application').catch(() => null)
+        applicationPageContentService.get('application').catch(() => null),
+        studentCategoryService.getAll().catch(() => []),
       ])
 
       setApplication(appData)
       setWorkflow(wfData)
       setHotels(hotelData || [])
       setPageContent(contentData)
+      setStudentCategories(catData || [])
 
       if (appData) {
         // Set active step to current candidate step
@@ -387,17 +391,25 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
 
   const handleUpdateCategoryAndSchedule = async () => {
     try {
-      setSubmittingAction(true);
+      setSubmittingAction(true)
       
+      // Find selected category's default pricing if not overridden
+      const selectedCat = studentCategories.find((c: any) => c.name === adminCategory)
+      const hasCatPricing = selectedCat?.pricing && Array.isArray(selectedCat.pricing) && selectedCat.pricing.length > 0
+
       const payload = {
         category: adminCategory,
         data: {
           ...(application.data || {}),
-          customInstallments: adminCategory === 'B2B' ? [
-            { name: 'First Installment', amount: Number(inst1) || 0 },
-            { name: 'Second Installment', amount: Number(inst2) || 0 },
-            { name: 'Third Installment', amount: Number(inst3) || 0 }
-          ] : null
+          customInstallments: (inst1 || inst2 || inst3)
+            ? [
+                { name: 'First Installment', amount: Number(inst1) || 0 },
+                { name: 'Second Installment', amount: Number(inst2) || 0 },
+                { name: 'Third Installment', amount: Number(inst3) || 0 }
+              ]
+            : hasCatPricing
+              ? selectedCat.pricing
+              : null
         }
       };
 
@@ -1619,51 +1631,81 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2 ml-1">Candidate Category</span>
                   <select 
                     value={adminCategory} 
-                    onChange={(e) => setAdminCategory(e.target.value)}
+                    onChange={(e) => {
+                      const val = e.target.value
+                      setAdminCategory(val)
+                      // Auto-fill installments from category default pricing
+                      const cat = studentCategories.find((c: any) => c.name === val)
+                      if (cat?.pricing && Array.isArray(cat.pricing) && cat.pricing.length >= 3) {
+                        setInst1(cat.pricing[0]?.amount ?? '')
+                        setInst2(cat.pricing[1]?.amount ?? '')
+                        setInst3(cat.pricing[2]?.amount ?? '')
+                      } else {
+                        setInst1('')
+                        setInst2('')
+                        setInst3('')
+                      }
+                    }}
                     className="w-full text-xs border border-slate-200 bg-slate-50 text-slate-700 px-3 py-2.5 rounded-xl font-semibold focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all"
                   >
-                    <option value="STUDENT">Student (Standard)</option>
-                    <option value="B2B">B2B (Corporate Partnership)</option>
+                    {studentCategories.length > 0 ? (
+                      studentCategories.map((cat: any) => (
+                        <option key={cat.id} value={cat.name}>{cat.name.replace(/_/g, ' ')}</option>
+                      ))
+                    ) : (
+                      // Fallback hardcoded options if categories not loaded yet
+                      <>
+                        <option value="STUDENT">STUDENT (Standard)</option>
+                        <option value="B2B">B2B (Corporate Partnership)</option>
+                      </>
+                    )}
                   </select>
                 </div>
 
-                {adminCategory === 'B2B' && (
-                  <div className="space-y-3 pt-1">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block ml-1">Custom Payment Installments</span>
-                    <div className="space-y-2">
-                      <div>
-                        <label className="text-[10px] text-slate-500 font-bold block mb-1">Installment 1 Amount</label>
-                        <Input 
-                          type="number" 
-                          value={inst1} 
-                          onChange={(e) => setInst1(e.target.value)} 
-                          placeholder="e.g. 15000" 
-                          className="h-9 text-xs rounded-xl"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[10px] text-slate-500 font-bold block mb-1">Installment 2 Amount</label>
-                        <Input 
-                          type="number" 
-                          value={inst2} 
-                          onChange={(e) => setInst2(e.target.value)} 
-                          placeholder="e.g. 10000" 
-                          className="h-9 text-xs rounded-xl"
-                        />
-                      </div>
-                      <div>
-                        <label className="text-[10px] text-slate-500 font-bold block mb-1">Installment 3 Amount</label>
-                        <Input 
-                          type="number" 
-                          value={inst3} 
-                          onChange={(e) => setInst3(e.target.value)} 
-                          placeholder="e.g. 8000" 
-                          className="h-9 text-xs rounded-xl"
-                        />
-                      </div>
+                {/* Always show installment fields — default pricing auto-fills, manual override always available */}
+                <div className="space-y-3 pt-1">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block ml-1">
+                    Payment Installments
+                    {(() => {
+                      const selectedCat = studentCategories.find((c: any) => c.name === adminCategory)
+                      return selectedCat?.pricing && Array.isArray(selectedCat.pricing) && selectedCat.pricing.length > 0
+                        ? <span className="ml-1.5 text-emerald-500 normal-case font-semibold">(auto-filled from category defaults)</span>
+                        : <span className="ml-1.5 text-slate-300 normal-case font-medium">(enter custom amounts below)</span>
+                    })()}
+                  </span>
+                  <div className="space-y-2">
+                    <div>
+                      <label className="text-[10px] text-slate-500 font-bold block mb-1">Installment 1 Amount</label>
+                      <Input
+                        type="number"
+                        value={inst1}
+                        onChange={(e) => setInst1(e.target.value)}
+                        placeholder="e.g. 15000"
+                        className="h-9 text-xs rounded-xl"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] text-slate-500 font-bold block mb-1">Installment 2 Amount</label>
+                      <Input
+                        type="number"
+                        value={inst2}
+                        onChange={(e) => setInst2(e.target.value)}
+                        placeholder="e.g. 10000"
+                        className="h-9 text-xs rounded-xl"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] text-slate-500 font-bold block mb-1">Installment 3 Amount</label>
+                      <Input
+                        type="number"
+                        value={inst3}
+                        onChange={(e) => setInst3(e.target.value)}
+                        placeholder="e.g. 8000"
+                        className="h-9 text-xs rounded-xl"
+                      />
                     </div>
                   </div>
-                )}
+                </div>
 
                 <Button 
                   onClick={handleUpdateCategoryAndSchedule} 

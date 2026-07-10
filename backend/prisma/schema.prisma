@@ -322,3 +322,15 @@ model ApplicationPageContent {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
+model StudentCategory {
+  id          String   @id @default(uuid())
+  name        String   @unique        // e.g. "STUDENT", "B2B", "University", "Individual"
+  description String?
+  color       String   @default("#6366F1") // Hex color for pill/tag display
+  pricing     Json?    // Default installments: [{ name: string, amount: number }, ...]
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+

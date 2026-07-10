@@ -25,6 +25,7 @@ import workpermitRoutes from './routes/workpermit.routes';
 import visaRoutes from './routes/visa.routes';
 import travelRoutes from './routes/travel.routes';
 import documentTemplateRoutes from './routes/documentTemplate.routes';
+import studentCategoryRoutes from './routes/studentCategory.routes';
 
 
 
@@ -67,6 +68,7 @@ app.use('/api/workpermit', workpermitRoutes);
 app.use('/api/visa', visaRoutes);
 app.use('/api/travel', travelRoutes);
 app.use('/api/document-templates', documentTemplateRoutes);
+app.use('/api/student-categories', studentCategoryRoutes);
 
 
 

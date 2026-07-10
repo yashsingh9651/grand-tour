@@ -32,6 +32,20 @@ export default function Payment1Page() {
   const [viewingReceiptName, setViewingReceiptName] = useState<string>('')
   const [paymentTemplate, setPaymentTemplate] = useState<any>(null)
   const [generatingDoc, setGeneratingDoc] = useState(false)
+  const [acceptedTerms, setAcceptedTerms] = useState(false)
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const accepted = localStorage.getItem('payment1_terms_accepted') === 'true'
+      setAcceptedTerms(accepted)
+    }
+  }, [])
+
+  const handleAcceptTerms = () => {
+    localStorage.setItem('payment1_terms_accepted', 'true')
+    setAcceptedTerms(true)
+    toast.success('Terms and conditions accepted successfully!')
+  }
 
   // Receipt download — only used when payment is COMPLETED
   const [receiptPayment, setReceiptPayment] = useState<any>(null)
@@ -61,21 +75,6 @@ export default function Payment1Page() {
       // Store latest completed payment for receipt
       const completed = (appData?.payments || []).find((p: any) => p.status === 'COMPLETED')
       if (completed) setReceiptPayment(completed)
-
-      try {
-        const templates = await documentTemplateService.getAll()
-        const match = templates.find((t: any) =>
-          t.category === 'PAYMENT1_DOCUMENT' ||
-          t.category === 'payment1' ||
-          t.name.toLowerCase().includes('payment 1') ||
-          t.name.toLowerCase().includes('payment1')
-        )
-        if (match) {
-          setPaymentTemplate(match)
-        }
-      } catch (err) {
-        console.error('Failed to load document template:', err)
-      }
     } catch {
       toast.error('Failed to load financial details')
     } finally {
@@ -504,8 +503,30 @@ export default function Payment1Page() {
             </div>
           </Card>
         ) : (
-          <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-foreground">
-            <div className="flex flex-col items-center text-center space-y-6">
+          <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-foreground relative overflow-hidden">
+            {!acceptedTerms && (
+              <div className="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 bg-card/65 backdrop-blur-[4px] transition-all duration-300">
+                <div className="bg-background/95 border border-border/80 p-6 rounded-[2rem] text-center space-y-4 max-w-xs shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+                  <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto shadow-inner">
+                    <Lock className="w-5 h-5 text-primary animate-pulse" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <h3 className="font-extrabold text-sm uppercase tracking-widest text-foreground">Unlock Payment Center</h3>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">
+                      Please accept the tuition payment policies, refund terms, and internship program timeline conditions to view details and proceed.
+                    </p>
+                  </div>
+                  <Button
+                    onClick={handleAcceptTerms}
+                    className="w-full bg-[#E1000F] hover:bg-[#c5121e] text-white py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider shadow-lg shadow-red-500/10 active:scale-95 transition-all"
+                  >
+                    Accept T&C & Unlock
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            <div className={`flex flex-col items-center text-center space-y-6 transition-all duration-300 ${!acceptedTerms ? 'filter blur-md pointer-events-none select-none' : ''}`}>
               <div className="space-y-1">
                 <h3 className="text-lg font-bold">Scan & Pay</h3>
                 <p className="text-sm text-muted-foreground">Scan this QR code using any UPI app</p>
@@ -590,39 +611,6 @@ export default function Payment1Page() {
               )}
             </div>
 
-            {/* Dynamic Template Document */}
-            {paymentTemplate && (
-              <div className="space-y-3">
-                <h3 className="text-sm font-bold text-foreground">Attestation Form</h3>
-                <div className="p-4 bg-violet-500/10 border border-violet-500/20 rounded-2xl text-foreground">
-                  <div className="flex items-start gap-3">
-                    <FileText className="w-5 h-5 text-violet-500 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="text-xs font-black uppercase tracking-wider text-violet-500">Auto-filled Template</p>
-                      <h4 className="text-sm font-bold mt-1 text-slate-800 dark:text-slate-100">{paymentTemplate.name}</h4>
-                      <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                        This document has been pre-filled with your name, educational institution, and current date.
-                      </p>
-                      <Button
-                        onClick={handleDownloadFilledDocument}
-                        disabled={generatingDoc}
-                        className="mt-3.5 w-full bg-violet-600 hover:bg-violet-750 text-white text-xs font-bold py-2 rounded-xl flex items-center justify-center gap-1.5"
-                      >
-                        {generatingDoc ? (
-                          <>
-                            <Loader2 className="w-3.5 h-3.5 animate-spin" /> Generating Attestation...
-                          </>
-                        ) : (
-                          <>
-                            <FileText className="w-3.5 h-3.5" /> Download Filled Document
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* Documents List */}
             {(() => {
