@@ -9,7 +9,7 @@ export default function HomeCTA() {
   const isLoggedIn = status === 'authenticated'
 
   return (
-    <section className="bg-[#fffcf7] py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <section className="bg-linear-to-b from-[#fffcf7] to-white py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
       {/* Outer Banner Wrapper */}
       <div className="max-w-7xl mx-auto relative rounded-[2.5rem] overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.15)] bg-slate-900 min-h-[420px] flex items-center justify-center">
         {/* Background Image with Dark Overlay */}

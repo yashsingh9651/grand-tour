@@ -20,6 +20,7 @@ import HowItWorks from "@/components/HowItWorks";
 import StudentLife from "@/components/StudentLife";
 import Testimonials from "@/components/Testimonials";
 import HomeCTA from "@/components/HomeCTA";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -327,6 +328,9 @@ export default function Home() {
 
       {/* CTA Section */}
       <HomeCTA />
+
+      {/* Footer Section */}
+      <Footer />
     </div>
   );
 }
