@@ -9,72 +9,78 @@ export default function HowItWorks() {
       title: 'Apply',
       desc: 'Submit your profile in minutes — no paperwork stress.',
       icon: ClipboardList,
-      iconBg: '#E1000F',
+      iconBg: 'bg-[#E1000F]',
+      iconShadow: 'shadow-[#E1000F]/30'
     },
     {
       num: 2,
       title: 'Interview',
       desc: 'Meet partner hotels through guided virtual interviews.',
       icon: MessageSquareMore,
-      iconBg: '#2563EB',
+      iconBg: 'bg-[#0055A5]',
+      iconShadow: 'shadow-[#0055A5]/30'
     },
     {
       num: 3,
       title: 'Process',
       desc: 'We prepare and verify every document for you.',
       icon: FileText,
-      iconBg: '#16A34A',
+      iconBg: 'bg-[#0b9940]',
+      iconShadow: 'shadow-[#0b9940]/30'
     },
     {
       num: 4,
       title: 'Visa',
       desc: 'Guided, guaranteed visa assistance start to finish.',
       icon: FileCheck,
-      iconBg: '#F9B302',
+      iconBg: 'bg-[#dea306]',
+      iconShadow: 'shadow-[#dea306]/30'
     },
     {
       num: 5,
       title: 'Fly to France',
       desc: 'Flights, transfers and arrival — fully supported.',
       icon: Plane,
-      iconBg: '#2563EB',
+      iconBg: 'bg-[#0055A5]',
+      iconShadow: 'shadow-[#0055A5]/30'
     },
     {
       num: 6,
       title: 'Start Internship',
       desc: 'Walk into your hotel and begin your career.',
       icon: Rocket,
-      iconBg: '#16A34A',
+      iconBg: 'bg-[#0b9940]',
+      iconShadow: 'shadow-[#0b9940]/30'
     },
   ]
   const positions = [
     { left: '0%',     top: '0px'   },  // 1 Apply
     { left: '20%',   top: '90px'  },  // 2 Interview  (zigzag down)
     { left: '38%',   top: '170px' },  // 3 Process    (continue down)
-    { left: '55%',   top: '40px'  },  // 4 Visa       (jump back up)
-    { left: '70%',   top: '200px' },  // 5 Fly        (back down)
-    { left: '88%',   top: '230px' },  // 6 Internship (settle at bottom-right)
+    { left: '53%',   top: '40px'  },  // 4 Visa       (jump back up)
+    { left: '67%',   top: '200px' },  // 5 Fly        (back down)
+    { left: '85%',   top: '230px' },  // 6 Internship (settle at bottom-right)
   ]
 
   return (
-    <section className="relative bg-white py-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
+    <section className="relative bg-white px-4 py-4 sm:px-6 lg:px-8">
 
       {/* ── Radial Background Glows ── */}
-      <div className="absolute top-1/4 left-20 w-[600px] h-[600px] bg-[radial-gradient(circle,rgba(37,99,235,0.15)_0%,rgba(37,99,235,0)_70%)] pointer-events-none select-none -translate-x-1/3" />
-      <div className="absolute bottom-1/4 right-20 w-[600px] h-[600px] bg-[radial-gradient(circle,rgba(22,163,74,0.15)_0%,rgba(22,163,74,0)_70%)] pointer-events-none select-none translate-x-1/3" />
+      <div className="absolute top-1/4 left-20 w-[600px] h-[600px] bg-[radial-gradient(circle,rgba(0,85,165,0.15)_0%,rgba(0,85,165,0)_70%)] pointer-events-none select-none -translate-x-1/3" />
+      <div className="absolute bottom-1/4 right-20 w-[600px] h-[600px] bg-[radial-gradient(circle,rgba(11,153,64,0.15)_0%,rgba(11,153,64,0)_70%)] pointer-events-none select-none translate-x-1/3" />
 
       <div className="relative z-10 text-center space-y-10">
 
         {/* Eyebrow Badge */}
         <div className="inline-flex items-center justify-center">
-          <span className="text-[11px] font-extrabold tracking-[0.2em] text-[#16A34A] uppercase bg-[#E6F7F0] border border-[#D1F2E2] px-4 py-1.5 rounded-full">
+          <span className="text-[11px] font-extrabold tracking-[0.2em] text-[#0b9940] uppercase bg-[#0b9940]/10 border border-[#0b9940]/20 px-4 py-1.5 rounded-full">
             The Journey
           </span>
         </div>
 
         {/* Heading & Subtitle */}
-        <div className="space-y-3 max-w-3xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-[#141414] leading-[1.2]">
+        <div className="space-y-3 max-w-4xl mx-auto">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight text-[#141414] leading-tight">
             How It Works
           </h2>
           <p className="text-xs sm:text-sm text-gray-500 font-semibold leading-relaxed">
@@ -139,23 +145,23 @@ export default function HowItWorks() {
                 className="absolute"
                 style={{ left: pos.left, top: pos.top }}
               >
-                <div className="bg-white rounded-2xl border border-slate-100 p-4 shadow-[0_8px_32px_rgba(0,0,0,0.07)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.12)] transition-all duration-300 hover:scale-[1.04] cursor-default text-left w-fit min-w-40 flex flex-col">
+                <div className="bg-white rounded-2xl border border-slate-100 p-4 shadow-[0_8px_32px_rgba(0,0,0,0.07)] hover:shadow-[0_16px_40px_rgba(0,0,0,0.12)] transition-all duration-300 hover:scale-[1.1] cursor-default text-left w-fit min-w-48 flex flex-col">
                   {/* Icon + Title in same row */}
                   <div className="flex items-center gap-2.5 mb-2.5 shrink-0">
-                    <div className={`relative w-9 h-9 flex items-center justify-center rounded shadow-lg shadow-[${s.iconBg}] shrink-0 bg-[${s.iconBg}]`}>
+                    <div className={`relative w-9 h-9 flex items-center justify-center rounded shadow-lg ${s.iconShadow} shrink-0 ${s.iconBg}`}>
                       <Icon className="w-4 h-4 text-white" />
                       {/* Step number dot */}
                       <div className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-[#141414] text-white font-black text-[9px] flex items-center justify-center border border-white">
                         {s.num}
                       </div>
                     </div>
-                    <h4 className="font-extrabold text-sm text-[#141414] whitespace-nowrap tracking-wider">
+                    <h4 className="font-extrabold text-[#141414] whitespace-nowrap tracking-wider">
                       {s.title}
                     </h4>
                   </div>
 
                   {/* Description */}
-                  <p className="text-[11px] text-gray-400 leading-relaxed font-medium w-0 min-w-full">
+                  <p className="text-xs text-gray-400 leading-relaxed font-medium w-0 min-w-full">
                     {s.desc}
                   </p>
                 </div>

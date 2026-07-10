@@ -9,38 +9,38 @@ export default function WhyGrandTour() {
   const features = [
     {
       text: 'End-to-end placement & documentation',
-      color: 'bg-[#16A34A]',
+      color: 'bg-[#0b9940]',
     },
     {
       text: 'Guaranteed visa assistance & housing',
-      color: 'bg-[#2563EB]',
+      color: 'bg-[#0055A5]',
     },
     {
       text: 'Career mentorship from day one',
-      color: 'bg-[#F9B302]',
+      color: 'bg-[#dea306]',
     },
   ]
 
   return (
     <section className="relative bg-white py-20 px-4 sm:px-6 lg:px-8">
-      {/* Radial gradient glowing spots (bleeds naturally across sections, parent page hides horizontal overflow) */}
-      <div className="absolute -top-[200px] -right-[150px] w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(249,179,2,0.22)_0%,rgba(249,179,2,0)_70%)] pointer-events-none select-none" />
-      <div className="absolute bottom-0 -left-[150px] w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(37,99,235,0.22)_0%,rgba(37,99,235,0)_70%)] pointer-events-none select-none" />
+      {/* Radial gradient glowing spots */}
+      <div className="absolute -top-[200px] -right-[150px] w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(222,163,6,0.22)_0%,rgba(222,163,6,0)_70%)] pointer-events-none select-none" />
+      <div className="absolute bottom-0 -left-[150px] w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(0,85,165,0.22)_0%,rgba(0,85,165,0)_70%)] pointer-events-none select-none" />
 
       <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 items-center">
         {/* Left Column: Text Content */}
         <div className="lg:col-span-1 space-y-6 text-left">
           {/* Eyebrow Badge */}
           <div className="inline-flex items-center">
-            <span className="text-xs font-semibold tracking-[0.25em] text-[#DC2626] uppercase bg-[#FEF2F2] px-4 py-2 rounded-full">
+            <span className="text-xs font-semibold tracking-[0.25em] text-[#E1000F] uppercase bg-[#E1000F]/10 px-4 py-2 rounded-full">
               Why Grand Tour
             </span>
           </div>
 
           {/* Heading */}
-          <h2 className="text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight text-[#141414] leading-[1.12] font-sans">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight text-[#141414] leading-tight font-sans">
             We handle everything.<br />
-            You live the <span className="text-[#16A34A]">experience.</span>
+            You live the <span className="text-[#0b9940]">experience.</span>
           </h2>
 
           {/* Subtitle */}
@@ -68,7 +68,7 @@ export default function WhyGrandTour() {
           <div className="pt-2">
             <Link
               href="/login"
-              className="inline-flex items-center justify-center px-8 py-3.5 rounded-full text-xs font-bold uppercase tracking-widest text-white bg-[#DC2626] hover:bg-[#B91C1C] active:scale-95 transition-all duration-200 shadow-xl shadow-red-500/20"
+              className="inline-flex items-center justify-center px-8 py-3.5 rounded-full text-xs font-bold uppercase tracking-widest text-white bg-[#E1000F] hover:bg-[#E1000F]/90 active:scale-95 transition-all duration-200 shadow-xl shadow-red-500/20"
             >
               Start Your Application
             </Link>
@@ -80,7 +80,7 @@ export default function WhyGrandTour() {
         <div className="lg:col-span-1 relative flex items-center justify-center lg:justify-end pt-10 lg:pt-0">
 
           {/* Soft background yellow glow */}
-          <div className="absolute -top-10 -right-10 w-72 h-72 rounded-full bg-gradient-to-tr from-transparent via-amber-500/5 to-[#F9B302]/10 blur-3xl pointer-events-none" />
+          <div className="absolute -top-10 -right-10 w-72 h-72 rounded-full bg-gradient-to-tr from-transparent via-amber-500/5 to-[#dea306]/10 blur-3xl pointer-events-none" />
 
           {/* Collage Container */}
           <div className="relative w-9/12">
@@ -97,7 +97,7 @@ export default function WhyGrandTour() {
 
               {/* Overlapping Bonjour sticker */}
               <div
-                className="absolute -top-5 left-1/2 bg-[#F9B302] text-black font-medium px-4 py-2 rounded-[6px] shadow-md -rotate-6 select-none font-serif italic flex items-center gap-1"
+                className="absolute -top-5 left-1/2 bg-[#dea306] text-black font-medium px-4 py-2 rounded-[6px] shadow-md -rotate-6 select-none font-serif italic flex items-center gap-1"
                 style={{ transformOrigin: 'center' }}
               >
                 Bonjour! 👋

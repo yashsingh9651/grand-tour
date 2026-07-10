@@ -17,6 +17,7 @@ const PartnersCarousel = dynamic(() => import("@/components/PartnersCarousel"), 
 });
 import WhyGrandTour from "@/components/WhyGrandTour";
 import HowItWorks from "@/components/HowItWorks";
+import StudentLife from "@/components/StudentLife";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -257,7 +258,7 @@ export default function Home() {
           <div className="flex flex-row flex-wrap justify-center gap-3 max-w-screen-xl mx-auto">
             {/* Pill 1 – Blue (Hotel Partners) */}
             <div className="flex items-center gap-3 border border-white/45 bg-white/25 rounded-full px-3 py-2.5 shadow-md select-none">
-              <div className="w-9 h-9 rounded-full bg-[#2563EB] flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-full bg-[#0055A5] flex items-center justify-center shrink-0">
                 <Building className="w-4 h-4 text-white" />
               </div>
               <div className="text-left">
@@ -279,7 +280,7 @@ export default function Home() {
 
             {/* Pill 3 – Green (Students Placed) */}
             <div className="flex items-center gap-3 border border-white/45 bg-white/25 rounded-full px-3 py-2.5 shadow-md select-none">
-              <div className="w-9 h-9 rounded-full bg-[#E1000F] flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-full bg-[#0b9940] flex items-center justify-center shrink-0">
                 <Users className="w-4 h-4 text-white" />
               </div>
               <div className="text-left">
@@ -290,7 +291,7 @@ export default function Home() {
 
             {/* Pill 4 – Yellow (Experience) */}
             <div className="flex items-center gap-3 border border-white/45 bg-white/25 rounded-full px-3 py-2.5 shadow-md select-none">
-              <div className="w-9 h-9 rounded-full bg-[#F9B302] flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-full bg-[#dea306] flex items-center justify-center shrink-0">
                 <Award className="w-4 h-4 text-white" />
               </div>
               <div className="text-left">
@@ -315,6 +316,9 @@ export default function Home() {
 
       {/* How It Works Section */}
       <HowItWorks />
+
+      {/* Student Life Section */}
+      <StudentLife />
     </div>
   );
 }
