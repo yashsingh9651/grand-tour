@@ -18,6 +18,7 @@ const PartnersCarousel = dynamic(() => import("@/components/PartnersCarousel"), 
 import WhyGrandTour from "@/components/WhyGrandTour";
 import HowItWorks from "@/components/HowItWorks";
 import StudentLife from "@/components/StudentLife";
+import Testimonials from "@/components/Testimonials";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -319,6 +320,9 @@ export default function Home() {
 
       {/* Student Life Section */}
       <StudentLife />
+
+      {/* Testimonials Section */}
+      <Testimonials />
     </div>
   );
 }
