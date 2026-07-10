@@ -14,6 +14,7 @@ import {
   Landmark, Clock, IndianRupee, CheckCircle2, Info, FileDown
 } from 'lucide-react'
 import { usePaymentReceipt } from '@/components/PaymentReceiptPDF'
+import PaymentPlaneAnimation from '@/components/PaymentPlaneAnimation'
 
 const STEP_ID = 'payment2'
 const STEP_LABEL = 'Payment 2'
@@ -88,8 +89,8 @@ export default function Payment2Page() {
     toast.success('Screenshot uploaded!')
   }
   const handlePaymentSubmit = async () => {
-    if (!utrNumber || !screenshotUrl) {
-      toast.error('Please provide UTR number and receipt screenshot')
+    if (!screenshotUrl) {
+      toast.error('Please upload your receipt screenshot')
       return
     }
     try {
@@ -98,7 +99,7 @@ export default function Payment2Page() {
       await paymentService.submit({
         amount: amountToSubmit,
         applicationId: application?.id,
-        utrNumber,
+        utrNumber: 'N/A',
         screenshotUrl,
         description: 'Payment2 - 2nd Installment'
       })
@@ -172,9 +173,9 @@ export default function Payment2Page() {
   const gstAmount = (baseAmount - discountAmount) * (gstPercentage / 100)
   const totalPayable = baseAmount - discountAmount + gstAmount
 
-  const customInst = application?.data?.customInstallments
-  const hasCustomInst = Array.isArray(customInst) && customInst.some((inst: any) => Number(inst?.amount) > 0)
-  const installmentsList = hasCustomInst ? customInst : (payment1Config?.installments || [])
+  const categoryPricing = application?.studentCategoryObj?.pricing
+  const hasCategoryPricing = Array.isArray(categoryPricing) && categoryPricing.some((inst: any) => Number(inst?.amount) > 0)
+  const installmentsList = hasCategoryPricing ? categoryPricing : (payment1Config?.installments || [])
   const hasAdminInstallments = Array.isArray(installmentsList) && installmentsList.length > 0
 
   const installmentAmount = hasAdminInstallments && installmentsList[1]?.amount
@@ -313,9 +314,7 @@ export default function Payment2Page() {
         {/* Right Column: QR and Submission states */}
         {latestPayment?.status === 'COMPLETED' ? (
           <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-center space-y-6 text-foreground">
-            <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mx-auto">
-              <Check className="w-10 h-10 text-green-600 animate-bounce" />
-            </div>
+            <PaymentPlaneAnimation status="COMPLETED" />
             <div className="space-y-2">
               <h2 className="text-2xl font-black text-green-600 dark:text-green-400">Payment Verified</h2>
               <p className="text-sm text-muted-foreground font-medium max-w-sm mx-auto">
@@ -357,9 +356,7 @@ export default function Payment2Page() {
           </Card>
         ) : latestPayment?.status === 'PENDING' ? (
           <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-center space-y-6 text-foreground">
-            <div className="w-20 h-20 bg-purple-500/10 rounded-full flex items-center justify-center mx-auto animate-pulse">
-              <Clock className="w-10 h-10 text-purple-600" />
-            </div>
+            <PaymentPlaneAnimation status="PENDING" />
             <div className="space-y-2">
               <h2 className="text-2xl font-black text-purple-600 dark:text-purple-400">Payment Under Review</h2>
               <p className="text-sm text-muted-foreground font-medium max-w-sm mx-auto">
@@ -392,64 +389,73 @@ export default function Payment2Page() {
             </div>
           </Card>
         ) : (
-          <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-foreground">
-            <div className="flex flex-col items-center text-center space-y-6">
-              <div className="space-y-1">
-                <h3 className="text-lg font-bold">Scan & Pay</h3>
-                <p className="text-sm text-muted-foreground">Scan this QR code using any UPI app</p>
-              </div>
+          <div className="space-y-6 w-full">
+            {latestPayment?.status === 'FAILED' && (
+              <Card className="p-8 border border-rose-500/20 bg-card rounded-[2.5rem] shadow-sm text-center space-y-6 text-foreground animate-in fade-in slide-in-from-top duration-300">
+                <PaymentPlaneAnimation status="FAILED" />
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-black text-rose-600 dark:text-rose-400">Payment Rejected</h2>
+                  <p className="text-sm text-muted-foreground font-medium max-w-sm mx-auto">
+                    Your 2nd installment payment submission was rejected. Please review the note and resubmit.
+                  </p>
+                  {latestPayment.notes && (
+                    <p className="text-xs text-rose-500 font-bold bg-rose-500/10 p-3 rounded-xl border border-rose-500/20 max-w-xs mx-auto">
+                      Reason: {latestPayment.notes}
+                    </p>
+                  )}
+                </div>
+              </Card>
+            )}
 
-              <div className="p-4 bg-white-force rounded-3xl border border-slate-200">
-                <img
-                  src={qrCodeUrl}
-                  alt="Payment QR Code"
-                  className="w-48 h-48"
-                />
-              </div>
+            <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-foreground">
+              <div className="flex flex-col items-center text-center space-y-6">
+                <div className="space-y-1">
+                  <h3 className="text-lg font-bold">Scan & Pay</h3>
+                  <p className="text-sm text-muted-foreground">Scan this QR code using any UPI app</p>
+                </div>
 
-              <div className="w-full space-y-4">
-                <div className="space-y-2 text-left">
-                  <label className="text-xs font-bold text-foreground ml-1">UTR / Transaction Number</label>
-                  <Input
-                    placeholder="Enter 12-digit UTR number"
-                    value={utrNumber}
-                    onChange={(e) => setUtrNumber(e.target.value)}
-                    className="h-12 rounded-xl border-border bg-muted text-foreground focus:ring-primary font-mono text-sm"
+                <div className="p-4 bg-white-force rounded-3xl border border-slate-200">
+                  <img
+                    src={qrCodeUrl}
+                    alt="Payment QR Code"
+                    className="w-48 h-48"
                   />
                 </div>
 
-                <div className="space-y-2 text-left">
-                  <label className="text-xs font-bold text-foreground ml-1">Payment Screenshot</label>
-                  {screenshotUrl ? (
-                    <div className="flex items-center gap-3 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-                      <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                      <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400 truncate flex-1">Receipt uploaded</span>
-                      <Button variant="ghost" size="sm" className="h-8 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-500/10" onClick={() => setIsUploadOpen(true)}>
-                        Change
+                <div className="w-full space-y-4">
+                  <div className="space-y-2 text-left">
+                    <label className="text-xs font-bold text-foreground ml-1">Payment Screenshot</label>
+                    {screenshotUrl ? (
+                      <div className="flex items-center gap-3 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                        <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                        <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400 truncate flex-1">Receipt uploaded</span>
+                        <Button variant="ghost" size="sm" className="h-8 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-500/10" onClick={() => setIsUploadOpen(true)}>
+                          Change
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsUploadOpen(true)}
+                        className="w-full h-12 rounded-xl border-dashed border-2 border-border text-muted-foreground hover:border-primary hover:text-primary transition-all gap-2"
+                      >
+                        <UploadCloud className="w-4 h-4" />
+                        Upload Receipt
                       </Button>
-                    </div>
-                  ) : (
-                    <Button
-                      variant="outline"
-                      onClick={() => setIsUploadOpen(true)}
-                      className="w-full h-12 rounded-xl border-dashed border-2 border-border text-muted-foreground hover:border-primary hover:text-primary transition-all gap-2"
-                    >
-                      <UploadCloud className="w-4 h-4" />
-                      Upload Receipt
-                    </Button>
-                  )}
-                </div>
+                    )}
+                  </div>
 
-                <Button
-                  onClick={handlePaymentSubmit}
-                  disabled={submittingPayment || !utrNumber || !screenshotUrl}
-                  className="w-full h-14 rounded-2xl font-black uppercase tracking-widest bg-primary text-[#1A1A1A] font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all mt-4"
-                >
-                  {submittingPayment ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Confirm Payment'}
-                </Button>
+                  <Button
+                    onClick={handlePaymentSubmit}
+                    disabled={submittingPayment || !screenshotUrl}
+                    className="w-full h-14 rounded-2xl font-black uppercase tracking-widest bg-primary text-[#1A1A1A] font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all mt-4"
+                  >
+                    {submittingPayment ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Confirm Payment'}
+                  </Button>
+                </div>
               </div>
-            </div>
-          </Card>
+            </Card>
+          </div>
         )}
       </div>
 

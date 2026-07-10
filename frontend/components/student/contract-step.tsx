@@ -29,11 +29,19 @@ export function ContractStep({ application, currentStepConfig, onSubmit, submitt
   const unsignedContractDoc = application?.documents?.find(
     (d: any) => d.type === 'UNSIGNED_CONTRACT'
   )
+  const signedContractDoc = application?.documents?.find(
+    (d: any) => d.type === 'SIGNED_CONTRACT'
+  )
 
   const extraDoc1 = application?.documents?.find((d: any) => d.type === 'CONTRACT_EXTRA_1')
   const extraDoc2 = application?.documents?.find((d: any) => d.type === 'CONTRACT_EXTRA_2')
   const extraDoc3 = application?.documents?.find((d: any) => d.type === 'CONTRACT_EXTRA_3')
-  const hasExtraDocs = extraDoc1 || extraDoc2 || extraDoc3
+  const extraDoc4 = application?.documents?.find((d: any) => d.type === 'CONTRACT_EXTRA_4')
+  const hasExtraDocs = extraDoc1 || extraDoc2 || extraDoc3 || extraDoc4
+
+  // Per extra-doc upload popup state
+  const [extraUploadOpen, setExtraUploadOpen] = useState<number | null>(null)
+  const extraDocs = [extraDoc1, extraDoc2, extraDoc3, extraDoc4]
 
   const handleDownload = async () => {
     if (unsignedContractDoc?.url) {
@@ -247,12 +255,44 @@ export function ContractStep({ application, currentStepConfig, onSubmit, submitt
               <p className="text-sm text-muted-foreground">Upload the scanned, signed pages as a single file.</p>
 
               {signedContractUrl ? (
-                <div className="flex items-center gap-2 p-2 bg-green-500/10 border border-green-500/20 rounded-xl">
-                  <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                  <span className="text-xs font-medium text-green-700 dark:text-green-400 truncate flex-1 font-bold">Signed Contract Uploaded</span>
-                  <Button variant="ghost" size="sm" className="h-7 text-green-600 dark:text-green-400 hover:text-green-750 hover:bg-green-500/15 text-xs font-bold" onClick={() => setIsUploadOpen(true)}>
-                    Change
-                  </Button>
+                <div className="space-y-2">
+                  <div className={`flex items-center gap-2 p-2 rounded-xl border ${
+                    signedContractDoc?.status === 'APPROVED'
+                      ? 'bg-green-500/10 border-green-500/20'
+                      : signedContractDoc?.status === 'REJECTED'
+                      ? 'bg-rose-500/10 border-rose-500/20'
+                      : 'bg-green-500/10 border-green-500/20'
+                  }`}>
+                    {signedContractDoc?.status === 'APPROVED' ? (
+                      <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    ) : signedContractDoc?.status === 'REJECTED' ? (
+                      <span className="text-rose-500 font-bold flex-shrink-0">✕</span>
+                    ) : (
+                      <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+                    )}
+                    <span className={`text-xs font-bold truncate flex-1 ${
+                      signedContractDoc?.status === 'REJECTED'
+                        ? 'text-rose-700 dark:text-rose-400'
+                        : 'text-green-700 dark:text-green-400'
+                    }`}>
+                      {signedContractDoc?.status === 'APPROVED'
+                        ? 'Contract Approved ✓'
+                        : signedContractDoc?.status === 'REJECTED'
+                        ? 'Contract Rejected'
+                        : 'Signed Contract Uploaded'}
+                    </span>
+                    {signedContractDoc?.status !== 'APPROVED' && (
+                      <Button variant="ghost" size="sm" className="h-7 text-xs font-bold hover:bg-green-500/15" onClick={() => setIsUploadOpen(true)}>
+                        Re-upload
+                      </Button>
+                    )}
+                  </div>
+                  {signedContractDoc?.status === 'REJECTED' && signedContractDoc?.remarks && (
+                    <div className="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-800 rounded-xl p-3">
+                      <p className="text-[10px] font-bold text-rose-600 uppercase mb-1">Rejection Reason from Admin</p>
+                      <p className="text-xs text-rose-700 dark:text-rose-300">{signedContractDoc.remarks}</p>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <Button
@@ -278,12 +318,16 @@ export function ContractStep({ application, currentStepConfig, onSubmit, submitt
               Additional Documents from Administration
             </h3>
             <p className="text-sm text-muted-foreground font-medium">
-              Please download and review these supplementary documents uploaded for you by the admin.
+              Download, sign and re-upload each of the documents below that were provided by the admin.
             </p>
           </div>
-          <div className="grid md:grid-cols-3 gap-4">
-            {[extraDoc1, extraDoc2, extraDoc3].map((doc, idx) => {
+          <div className="grid md:grid-cols-2 gap-4">
+            {extraDocs.map((doc, idx) => {
               if (!doc) return null;
+              const slotNum = idx + 1;
+              const signedExtraType = `SIGNED_CONTRACT_EXTRA_${slotNum}`
+              const signedExtraDoc = application?.documents?.find((d: any) => d.type === signedExtraType)
+              const customName = application?.data?.contractExtraLabels?.[`CONTRACT_EXTRA_${slotNum}`] || doc.fileName || `Document ${slotNum}`;
               return (
                 <Card key={doc.id} className="p-5 border border-border bg-muted/10 rounded-2xl flex flex-col justify-between gap-4 hover:shadow-md transition-shadow text-foreground">
                   <div className="flex items-start gap-3">
@@ -291,25 +335,81 @@ export function ContractStep({ application, currentStepConfig, onSubmit, submitt
                       <FileText className="w-5 h-5 text-primary" />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-bold text-foreground truncate" title={doc.fileName || `Document ${idx + 1}`}>
-                        {doc.fileName || `Document ${idx + 1}`}
+                      <p className="text-sm font-bold text-foreground truncate" title={customName}>
+                        {customName}
                       </p>
                       <p className="text-xs text-muted-foreground mt-0.5">
-                        {doc.size ? `${doc.size.toFixed(2)} MB` : 'Size unknown'}
+                        {doc.size ? `${doc.size.toFixed(2)} MB` : 'Admin document'}
                       </p>
                     </div>
                   </div>
-                  <a
-                    href={doc.url?.includes('cloudinary.com') ? doc.url.replace('/upload/', '/upload/fl_attachment/') : doc.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    download
-                    className="w-full"
-                  >
-                    <Button variant="outline" size="sm" className="w-full gap-2 rounded-xl h-10 border-border hover:bg-muted text-foreground">
-                      <Download className="w-4 h-4" /> Download File
-                    </Button>
-                  </a>
+
+                  <div className="flex flex-col gap-2">
+                    {/* Download admin's document */}
+                    <a
+                      href={doc.url?.includes('cloudinary.com') ? doc.url.replace('/upload/', '/upload/fl_attachment/') : doc.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      download
+                      className="w-full"
+                    >
+                      <Button variant="outline" size="sm" className="w-full gap-2 rounded-xl h-9 border-border hover:bg-muted text-foreground">
+                        <Download className="w-4 h-4" /> Download
+                      </Button>
+                    </a>
+
+                    {/* Student re-upload the signed version */}
+                    {signedExtraDoc ? (
+                      <div className="space-y-2">
+                        {/* Status badge */}
+                        <div className={`flex items-center gap-2 p-2 rounded-xl border ${
+                          signedExtraDoc.status === 'APPROVED'
+                            ? 'bg-green-500/10 border-green-500/20'
+                            : signedExtraDoc.status === 'REJECTED'
+                            ? 'bg-rose-500/10 border-rose-500/20'
+                            : 'bg-amber-500/10 border-amber-500/20'
+                        }`}>
+                          {signedExtraDoc.status === 'APPROVED' ? (
+                            <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
+                          ) : signedExtraDoc.status === 'REJECTED' ? (
+                            <span className="text-rose-500 text-xs flex-shrink-0">✕</span>
+                          ) : (
+                            <span className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0" />
+                          )}
+                          <span className={`text-[10px] font-bold flex-1 truncate ${
+                            signedExtraDoc.status === 'APPROVED'
+                              ? 'text-green-700 dark:text-green-400'
+                              : signedExtraDoc.status === 'REJECTED'
+                              ? 'text-rose-700 dark:text-rose-400'
+                              : 'text-amber-700 dark:text-amber-400'
+                          }`}>
+                            {signedExtraDoc.status === 'APPROVED' ? 'Approved' : signedExtraDoc.status === 'REJECTED' ? 'Rejected' : 'Under Review'}
+                          </span>
+                          {signedExtraDoc.status !== 'APPROVED' && (
+                            <Button variant="ghost" size="sm" className="h-6 text-[10px] font-bold px-2" onClick={() => setExtraUploadOpen(slotNum)}>
+                              Re-upload
+                            </Button>
+                          )}
+                        </div>
+                        {/* Rejection reason */}
+                        {signedExtraDoc.status === 'REJECTED' && signedExtraDoc.remarks && (
+                          <div className="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-800 rounded-xl p-2.5">
+                            <p className="text-[10px] font-bold text-rose-600 uppercase mb-0.5">Rejection Reason</p>
+                            <p className="text-xs text-rose-700 dark:text-rose-300">{signedExtraDoc.remarks}</p>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setExtraUploadOpen(slotNum)}
+                        className="w-full gap-2 rounded-xl h-9 border-amber-500/30 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10"
+                      >
+                        <Upload className="w-4 h-4" /> Upload Signed
+                      </Button>
+                    )}
+                  </div>
                 </Card>
               );
             })}
@@ -366,6 +466,23 @@ export function ContractStep({ application, currentStepConfig, onSubmit, submitt
         documentType="SIGNED_CONTRACT"
         documentName={`${application?.user?.firstName || 'Student'} - Signed Contract`}
       />
+
+      {/* Per extra-doc upload popups */}
+      {([1, 2, 3, 4] as const).map(slotNum => (
+        <UploadPopup
+          key={slotNum}
+          isOpen={extraUploadOpen === slotNum}
+          onClose={() => setExtraUploadOpen(null)}
+          onUploadComplete={(doc: any) => {
+            if (doc?.url) toast.success(`Document ${slotNum} signed copy uploaded!`)
+            setExtraUploadOpen(null)
+          }}
+          token={(session as any)?.backendToken || ''}
+          applicationId={application?.id}
+          documentType={`SIGNED_CONTRACT_EXTRA_${slotNum}`}
+          documentName={`${application?.user?.firstName || 'Student'} - Signed Extra Doc ${slotNum}`}
+        />
+      ))}
     </div>
   )
 }

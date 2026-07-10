@@ -31,6 +31,9 @@ export default function AdminContractsPage() {
   const [uploadDocType, setUploadDocType] = useState<string>('UNSIGNED_CONTRACT')
   const [uploadDocLabel, setUploadDocLabel] = useState<string>('Unsigned Contract')
 
+  // Extra document name labels keyed by appId + slotNumber
+  const [extraDocNames, setExtraDocNames] = useState<Record<string, string>>({})
+
   // Review Modal State
   const [selectedDocToReview, setSelectedDocToReview] = useState<any | null>(null)
   const [reviewRemarks, setReviewRemarks] = useState('')
@@ -220,6 +223,13 @@ export default function AdminContractsPage() {
               const extraDoc1 = app.documents?.find((d: any) => d.type === 'CONTRACT_EXTRA_1')
               const extraDoc2 = app.documents?.find((d: any) => d.type === 'CONTRACT_EXTRA_2')
               const extraDoc3 = app.documents?.find((d: any) => d.type === 'CONTRACT_EXTRA_3')
+              const extraDoc4 = app.documents?.find((d: any) => d.type === 'CONTRACT_EXTRA_4')
+
+              // Helper for per-app per-slot name keys
+              const nameKey = (slot: number) => `${app.id}_extra${slot}`
+              const getDocName = (slot: number, fallback: string) => extraDocNames[nameKey(slot)] ?? fallback
+              const setDocName = (slot: number, val: string) =>
+                setExtraDocNames(prev => ({ ...prev, [nameKey(slot)]: val }))
 
               return (
                 <Card key={app.id} className="p-6 bg-white border border-slate-200 hover:shadow-md transition-shadow rounded-3xl">
@@ -348,110 +358,87 @@ export default function AdminContractsPage() {
                   {/* Additional Contract Documents Row */}
                   <div className="mt-5 pt-4 border-t border-slate-100 space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Additional Documents (Max 3)</span>
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Additional Documents — Admin Upload (4 Slots)</span>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {/* Doc 1 Slot */}
-                      <div className="p-3 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-between gap-2">
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[10px] font-bold text-slate-500">Document 1</p>
-                          {extraDoc1 ? (
-                            <a href={extraDoc1.url} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-primary hover:underline truncate block mt-0.5">
-                              {extraDoc1.fileName || 'Document 1'}
-                            </a>
-                          ) : (
-                            <p className="text-xs text-slate-400 italic mt-0.5">Not uploaded</p>
-                          )}
-                        </div>
-                        <div className="flex gap-1 shrink-0">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 hover:bg-slate-200"
-                            onClick={() => handleOpenUpload(app.id, studentName, 'CONTRACT_EXTRA_1', 'Additional Document 1')}
-                          >
-                            <Upload className="w-3.5 h-3.5 text-slate-600" />
-                          </Button>
-                          {extraDoc1 && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 hover:bg-red-50 text-red-500"
-                              onClick={() => handleDeleteUnsigned(extraDoc1.id)}
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Doc 2 Slot */}
-                      <div className="p-3 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-between gap-2">
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[10px] font-bold text-slate-500">Document 2</p>
-                          {extraDoc2 ? (
-                            <a href={extraDoc2.url} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-primary hover:underline truncate block mt-0.5">
-                              {extraDoc2.fileName || 'Document 2'}
-                            </a>
-                          ) : (
-                            <p className="text-xs text-slate-400 italic mt-0.5">Not uploaded</p>
-                          )}
-                        </div>
-                        <div className="flex gap-1 shrink-0">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 hover:bg-slate-200"
-                            onClick={() => handleOpenUpload(app.id, studentName, 'CONTRACT_EXTRA_2', 'Additional Document 2')}
-                          >
-                            <Upload className="w-3.5 h-3.5 text-slate-600" />
-                          </Button>
-                          {extraDoc2 && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 hover:bg-red-50 text-red-500"
-                              onClick={() => handleDeleteUnsigned(extraDoc2.id)}
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Doc 3 Slot */}
-                      <div className="p-3 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-between gap-2">
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[10px] font-bold text-slate-500">Document 3</p>
-                          {extraDoc3 ? (
-                            <a href={extraDoc3.url} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-primary hover:underline truncate block mt-0.5">
-                              {extraDoc3.fileName || 'Document 3'}
-                            </a>
-                          ) : (
-                            <p className="text-xs text-slate-400 italic mt-0.5">Not uploaded</p>
-                          )}
-                        </div>
-                        <div className="flex gap-1 shrink-0">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 hover:bg-slate-200"
-                            onClick={() => handleOpenUpload(app.id, studentName, 'CONTRACT_EXTRA_3', 'Additional Document 3')}
-                          >
-                            <Upload className="w-3.5 h-3.5 text-slate-600" />
-                          </Button>
-                          {extraDoc3 && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 hover:bg-red-50 text-red-500"
-                              onClick={() => handleDeleteUnsigned(extraDoc3.id)}
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </Button>
-                          )}
-                        </div>
-                      </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                      {([1, 2, 3, 4] as const).map((slot) => {
+                        const extraDoc = [null, extraDoc1, extraDoc2, extraDoc3, extraDoc4][slot]
+                        const typeKey = `CONTRACT_EXTRA_${slot}`
+                        const defaultLabel = `Additional Document ${slot}`
+                        const savedLabel = app.data?.contractExtraLabels?.[typeKey] || defaultLabel
+                        const customName = extraDocNames[nameKey(slot)] !== undefined ? extraDocNames[nameKey(slot)] : savedLabel
+                        return (
+                          <div key={slot} className="p-3 bg-slate-50 border border-slate-100 rounded-2xl space-y-2">
+                            {/* Name input */}
+                            <div className="flex items-center gap-1.5">
+                              <Input
+                                value={customName}
+                                onChange={(e) => setDocName(slot, e.target.value)}
+                                placeholder={`Document ${slot} name...`}
+                                className="h-7 text-[10px] font-bold bg-white border-slate-200 rounded-lg px-2 flex-1"
+                              />
+                              {customName !== savedLabel && (
+                                <Button
+                                  size="sm"
+                                  className="h-7 px-2 text-[10px] font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shrink-0"
+                                  onClick={async () => {
+                                    try {
+                                      const currentLabels = app.data?.contractExtraLabels || {}
+                                      const updatedLabels = {
+                                        ...currentLabels,
+                                        [typeKey]: customName
+                                      }
+                                      const updatedData = {
+                                        ...app.data,
+                                        contractExtraLabels: updatedLabels
+                                      }
+                                      await applicationService.update(app.id, { data: updatedData })
+                                      toast.success('Document title updated!')
+                                      fetchData()
+                                    } catch (err: any) {
+                                      toast.error(err.message || 'Failed to update title')
+                                    }
+                                  }}
+                                >
+                                  Save
+                                </Button>
+                              )}
+                            </div>
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="min-w-0 flex-1">
+                                {extraDoc ? (
+                                  <a href={extraDoc.url} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-primary hover:underline truncate block">
+                                    {extraDoc.fileName || customName}
+                                  </a>
+                                ) : (
+                                  <p className="text-xs text-slate-400 italic">Not uploaded</p>
+                                )}
+                              </div>
+                              <div className="flex gap-1 shrink-0">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 hover:bg-slate-200"
+                                  title={`Upload ${customName}`}
+                                  onClick={() => handleOpenUpload(app.id, studentName, typeKey, customName)}
+                                >
+                                  <Upload className="w-3 h-3 text-slate-600" />
+                                </Button>
+                                {extraDoc && (
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-7 w-7 hover:bg-red-50 text-red-500"
+                                    onClick={() => handleDeleteUnsigned(extraDoc.id)}
+                                  >
+                                    <Trash2 className="w-3 h-3" />
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
                     </div>
                   </div>
                 </Card>

@@ -205,7 +205,7 @@ class ApplicationService {
   }
 
   async getApplicationByUserId(userId: string) {
-    return await prisma.application.findFirst({
+    const application = await prisma.application.findFirst({
       where: { userId },
       include: {
         user: true,
@@ -230,6 +230,14 @@ class ApplicationService {
         }
       }
     });
+
+    if (application) {
+      const categoryObj = await prisma.studentCategory.findUnique({
+        where: { name: application.category }
+      });
+      (application as any).studentCategoryObj = categoryObj;
+    }
+    return application;
   }
 
   async deleteApplication(id: string) {
@@ -239,7 +247,7 @@ class ApplicationService {
   }
 
   async getApplicationById(id: string) {
-    return await prisma.application.findUnique({
+    const application = await prisma.application.findUnique({
       where: { id },
       include: {
         user: true,
@@ -263,6 +271,14 @@ class ApplicationService {
         }
       }
     });
+
+    if (application) {
+      const categoryObj = await prisma.studentCategory.findUnique({
+        where: { name: application.category }
+      });
+      (application as any).studentCategoryObj = categoryObj;
+    }
+    return application;
   }
 }
 

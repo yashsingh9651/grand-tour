@@ -14,6 +14,7 @@ import {
   ShieldCheck, Landmark, Clock, IndianRupee, CheckCircle2, Info, FileText, PartyPopper, FileDown
 } from 'lucide-react'
 import { usePaymentReceipt } from '@/components/PaymentReceiptPDF'
+import PaymentPlaneAnimation from '@/components/PaymentPlaneAnimation'
 
 export default function Payment1Page() {
   const { data: session } = useSession()
@@ -282,9 +283,9 @@ export default function Payment1Page() {
   const gstAmount = (baseAmount - discountAmount) * (gstPercentage / 100)
   const totalPayable = baseAmount - discountAmount + gstAmount
 
-  const customInst = application?.data?.customInstallments
-  const hasCustomInst = Array.isArray(customInst) && customInst.some((inst: any) => Number(inst?.amount) > 0)
-  const installmentsList = hasCustomInst ? customInst : (paymentConfig?.installments || [])
+  const categoryPricing = application?.studentCategoryObj?.pricing
+  const hasCategoryPricing = Array.isArray(categoryPricing) && categoryPricing.some((inst: any) => Number(inst?.amount) > 0)
+  const installmentsList = hasCategoryPricing ? categoryPricing : (paymentConfig?.installments || [])
   const hasAdminInstallments = Array.isArray(installmentsList) && installmentsList.length > 0
 
   const installmentAmount = hasAdminInstallments && installmentsList[0]?.amount
@@ -415,14 +416,7 @@ export default function Payment1Page() {
               .ring-ping-2 { animation: ping-once 1.1s ease-out 0.4s both; }
             `}</style>
             <Card className="success-card-anim p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-center space-y-6 text-foreground">
-              <div className="relative w-20 h-20 mx-auto">
-                {/* Animated ping rings */}
-                <div className="ring-ping-1 absolute inset-0 rounded-full bg-green-400/30" />
-                <div className="ring-ping-2 absolute inset-0 rounded-full bg-green-400/20" />
-                <div className="relative w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center">
-                  <Check className="check-bounce w-10 h-10 text-green-600" />
-                </div>
-              </div>
+              <PaymentPlaneAnimation status="COMPLETED" />
               <div className="space-y-2">
                 <div className="flex items-center justify-center gap-2">
                   <h2 className="text-2xl font-black text-green-600 dark:text-green-400">Payment Verified</h2>
@@ -468,9 +462,7 @@ export default function Payment1Page() {
           </>
         ) : latestPayment?.status === 'PENDING' ? (
           <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-center space-y-6 text-foreground">
-            <div className="w-20 h-20 bg-purple-500/10 rounded-full flex items-center justify-center mx-auto animate-pulse">
-              <Clock className="w-10 h-10 text-purple-600" />
-            </div>
+            <PaymentPlaneAnimation status="PENDING" />
             <div className="space-y-2">
               <h2 className="text-2xl font-black text-purple-600 dark:text-purple-400">Payment Under Review</h2>
               <p className="text-sm text-muted-foreground font-medium max-w-sm mx-auto">
@@ -503,8 +495,26 @@ export default function Payment1Page() {
             </div>
           </Card>
         ) : (
-          <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-foreground relative overflow-hidden">
-            {!acceptedTerms && (
+          <div className="space-y-6 w-full">
+            {latestPayment?.status === 'FAILED' && (
+              <Card className="p-8 border border-rose-500/20 bg-card rounded-[2.5rem] shadow-sm text-center space-y-6 text-foreground animate-in fade-in slide-in-from-top duration-300">
+                <PaymentPlaneAnimation status="FAILED" />
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-black text-rose-600 dark:text-rose-400">Payment Rejected</h2>
+                  <p className="text-sm text-muted-foreground font-medium max-w-sm mx-auto">
+                    Your 1st installment payment submission was rejected. Please review the note and upload a new receipt.
+                  </p>
+                  {latestPayment.notes && (
+                    <p className="text-xs text-rose-500 font-bold bg-rose-500/10 p-3 rounded-xl border border-rose-500/20 max-w-xs mx-auto">
+                      Reason: {latestPayment.notes}
+                    </p>
+                  )}
+                </div>
+              </Card>
+            )}
+
+            <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-foreground relative overflow-hidden">
+              {!acceptedTerms && (
               <div className="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 bg-card/65 backdrop-blur-[4px] transition-all duration-300">
                 <div className="bg-background/95 border border-border/80 p-6 rounded-[2rem] text-center space-y-4 max-w-xs shadow-2xl animate-in fade-in zoom-in-95 duration-200">
                   <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto shadow-inner">
@@ -573,9 +583,10 @@ export default function Payment1Page() {
               </div>
             </div>
           </Card>
-        )}
-        {/* Third Column: Instructions & Attachments */}
-        <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-foreground">
+        </div>
+      )}
+      {/* Third Column: Instructions & Attachments */}
+      <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-foreground">
           <div className="space-y-6">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center">

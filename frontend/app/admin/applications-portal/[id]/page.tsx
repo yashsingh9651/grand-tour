@@ -190,9 +190,8 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
   const [pageContent, setPageContent] = useState<any>(null)
   const [adminCategory, setAdminCategory] = useState<string>('STUDENT')
   const [studentCategories, setStudentCategories] = useState<any[]>([])
-  const [inst1, setInst1] = useState<string | number>('')
-  const [inst2, setInst2] = useState<string | number>('')
-  const [inst3, setInst3] = useState<string | number>('')
+  const [docReviewRemarks, setDocReviewRemarks] = useState<Record<string, string>>({})
+  const [extraDocNames, setExtraDocNames] = useState<Record<string, string>>({})
 
   const resolveFieldValue = (field: any) => {
     if (!application) return 'N/A'
@@ -255,9 +254,6 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
     return 'N/A'
   }
 
-  // Document review remarks state
-  const [docReviewRemarks, setDocReviewRemarks] = useState<Record<string, string>>({})
-
   // Hotel assignment form state
   const [selectedHotelId, setSelectedHotelId] = useState('')
   const [checkInDate, setCheckInDate] = useState('')
@@ -302,9 +298,6 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
         // Set active step to current candidate step
         setActiveStepId(appData.currentStepId || 'application')
         setAdminCategory(appData.category || 'STUDENT')
-        setInst1(appData.data?.customInstallments?.[0]?.amount || '')
-        setInst2(appData.data?.customInstallments?.[1]?.amount || '')
-        setInst3(appData.data?.customInstallments?.[2]?.amount || '')
       }
     } catch (error: any) {
       toast.error(error.message || 'Failed to load candidate details')
@@ -324,9 +317,6 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
       setApplication(appData)
       if (appData) {
         setAdminCategory(appData.category || 'STUDENT')
-        setInst1(appData.data?.customInstallments?.[0]?.amount || '')
-        setInst2(appData.data?.customInstallments?.[1]?.amount || '')
-        setInst3(appData.data?.customInstallments?.[2]?.amount || '')
       }
     } catch {
       console.error('Failed to fetch silent updates')
@@ -389,35 +379,19 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
     toast.success('Opening Contact Editor...');
   };
 
-  const handleUpdateCategoryAndSchedule = async () => {
+  const handleUpdateCategory = async () => {
     try {
       setSubmittingAction(true)
       
-      // Find selected category's default pricing if not overridden
-      const selectedCat = studentCategories.find((c: any) => c.name === adminCategory)
-      const hasCatPricing = selectedCat?.pricing && Array.isArray(selectedCat.pricing) && selectedCat.pricing.length > 0
-
       const payload = {
         category: adminCategory,
-        data: {
-          ...(application.data || {}),
-          customInstallments: (inst1 || inst2 || inst3)
-            ? [
-                { name: 'First Installment', amount: Number(inst1) || 0 },
-                { name: 'Second Installment', amount: Number(inst2) || 0 },
-                { name: 'Third Installment', amount: Number(inst3) || 0 }
-              ]
-            : hasCatPricing
-              ? selectedCat.pricing
-              : null
-        }
       };
 
       const updated = await applicationService.update(application.id, payload);
       setApplication(updated);
-      toast.success('Student category and payment schedule updated successfully!');
+      toast.success('Student category updated successfully!');
     } catch (err: any) {
-      toast.error(err.message || 'Failed to update category and schedule');
+      toast.error(err.message || 'Failed to update category');
     } finally {
       setSubmittingAction(false);
     }
@@ -1149,6 +1123,77 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
           const extraDoc1 = documentsList.find((d: any) => d.type === 'CONTRACT_EXTRA_1')
           const extraDoc2 = documentsList.find((d: any) => d.type === 'CONTRACT_EXTRA_2')
           const extraDoc3 = documentsList.find((d: any) => d.type === 'CONTRACT_EXTRA_3')
+          const extraDoc4 = documentsList.find((d: any) => d.type === 'CONTRACT_EXTRA_4')
+          const signedExtra1 = documentsList.find((d: any) => d.type === 'SIGNED_CONTRACT_EXTRA_1')
+          const signedExtra2 = documentsList.find((d: any) => d.type === 'SIGNED_CONTRACT_EXTRA_2')
+          const signedExtra3 = documentsList.find((d: any) => d.type === 'SIGNED_CONTRACT_EXTRA_3')
+          const signedExtra4 = documentsList.find((d: any) => d.type === 'SIGNED_CONTRACT_EXTRA_4')
+
+          // Helper to render a review card for any signed document
+          const renderSignedDocReview = (label: string, doc: any) => {
+            if (!doc) return (
+              <div className="p-3 bg-slate-50 border border-slate-100 rounded-2xl text-center">
+                <p className="text-[10px] font-bold text-slate-400 uppercase mb-1">{label}</p>
+                <p className="text-xs text-slate-400 italic">Not submitted yet</p>
+              </div>
+            )
+            const statusColor = doc.status === 'APPROVED'
+              ? 'bg-emerald-100 text-emerald-700'
+              : doc.status === 'REJECTED'
+              ? 'bg-rose-100 text-rose-700'
+              : 'bg-amber-100 text-amber-700'
+
+            return (
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+                <div className="flex items-center justify-between">
+                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{label}</p>
+                  <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full uppercase ${statusColor}`}>{doc.status}</span>
+                </div>
+                <div className="flex items-center justify-between text-xs bg-white p-2.5 rounded-xl border">
+                  <span className="font-semibold text-slate-700 truncate flex-1">{doc.fileName || 'Signed Document'}</span>
+                  <Button size="sm" variant="outline" className="h-7 rounded-lg text-xs ml-2 flex-shrink-0" onClick={() => openLightbox(doc.url, `${label} Review`)}>
+                    View
+                  </Button>
+                </div>
+                {doc.status === 'REJECTED' && doc.remarks && (
+                  <div className="bg-rose-50 border border-rose-100 rounded-xl p-2.5">
+                    <p className="text-[10px] font-bold text-rose-600 uppercase">Rejection Reason</p>
+                    <p className="text-xs text-rose-700 mt-0.5">{doc.remarks}</p>
+                  </div>
+                )}
+                {doc.status === 'PENDING' && (
+                  <div className="space-y-2">
+                    <textarea
+                      value={docReviewRemarks[doc.id] || ''}
+                      onChange={(e) => setDocReviewRemarks(prev => ({ ...prev, [doc.id]: e.target.value }))}
+                      placeholder="Rejection reason (required if rejecting)..."
+                      rows={2}
+                      className="w-full text-xs p-2 border rounded-xl bg-white resize-none focus:ring-primary focus:border-primary"
+                    />
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={() => handleDocReview(doc.id, 'REJECTED')}
+                        disabled={submittingAction}
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 text-rose-600 border-rose-200 h-8 rounded-lg text-xs"
+                      >
+                        Reject
+                      </Button>
+                      <Button
+                        onClick={() => handleDocReview(doc.id, 'APPROVED')}
+                        disabled={submittingAction}
+                        size="sm"
+                        className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white h-8 rounded-lg text-xs"
+                      >
+                        Approve
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )
+          }
 
           return (
             <div className="space-y-6">
@@ -1207,25 +1252,41 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
                         <Button size="sm" variant="outline" className="h-8 rounded-lg" onClick={() => openLightbox(signedContract.url, 'Signed Contract Review')}>View</Button>
                       </div>
 
+                      {signedContract.status === 'REJECTED' && signedContract.remarks && (
+                        <div className="bg-rose-50 border border-rose-100 rounded-xl p-2.5">
+                          <p className="text-[10px] font-bold text-rose-600 uppercase">Rejection Reason</p>
+                          <p className="text-xs text-rose-700 mt-0.5">{signedContract.remarks}</p>
+                        </div>
+                      )}
+
                       {signedContract.status === 'PENDING' && (
-                        <div className="flex gap-2 pt-2">
-                          <Button
-                            onClick={() => handleDocReview(signedContract.id, 'REJECTED')}
-                            disabled={submittingAction}
-                            variant="outline"
-                            size="sm"
-                            className="flex-1 text-rose-600 border-rose-200 h-9 rounded-lg"
-                          >
-                            Reject
-                          </Button>
-                          <Button
-                            onClick={() => handleDocReview(signedContract.id, 'APPROVED')}
-                            disabled={submittingAction}
-                            size="sm"
-                            className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white h-9 rounded-lg"
-                          >
-                            Approve
-                          </Button>
+                        <div className="space-y-2">
+                          <textarea
+                            value={docReviewRemarks[signedContract.id] || ''}
+                            onChange={(e) => setDocReviewRemarks(prev => ({ ...prev, [signedContract.id]: e.target.value }))}
+                            placeholder="Rejection reason (required if rejecting)..."
+                            rows={2}
+                            className="w-full text-xs p-2 border rounded-xl bg-white resize-none focus:ring-primary focus:border-primary"
+                          />
+                          <div className="flex gap-2 pt-1">
+                            <Button
+                              onClick={() => handleDocReview(signedContract.id, 'REJECTED')}
+                              disabled={submittingAction}
+                              variant="outline"
+                              size="sm"
+                              className="flex-1 text-rose-600 border-rose-200 h-9 rounded-lg"
+                            >
+                              Reject
+                            </Button>
+                            <Button
+                              onClick={() => handleDocReview(signedContract.id, 'APPROVED')}
+                              disabled={submittingAction}
+                              size="sm"
+                              className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white h-9 rounded-lg"
+                            >
+                              Approve
+                            </Button>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -1235,38 +1296,94 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
                 </Card>
               </div>
 
+              {/* Student Signed Extra Documents */}
+              {(signedExtra1 || signedExtra2 || signedExtra3 || signedExtra4) && (
+                <Card className="p-5 border border-slate-200 bg-white rounded-3xl space-y-4">
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Student Signed — Extra Attachments</span>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {renderSignedDocReview('Attachment 1', signedExtra1)}
+                    {renderSignedDocReview('Attachment 2', signedExtra2)}
+                    {renderSignedDocReview('Attachment 3', signedExtra3)}
+                    {renderSignedDocReview('Attachment 4', signedExtra4)}
+                  </div>
+                </Card>
+              )}
+
               {/* Extra Documents upload slots */}
               <Card className="p-5 border border-slate-200 bg-white rounded-3xl space-y-3">
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Extra Contract Attachments</span>
-                <div className="grid md:grid-cols-3 gap-3">
-                  {[
-                    { key: 'CONTRACT_EXTRA_1', doc: extraDoc1, label: 'Document 1' },
-                    { key: 'CONTRACT_EXTRA_2', doc: extraDoc2, label: 'Document 2' },
-                    { key: 'CONTRACT_EXTRA_3', doc: extraDoc3, label: 'Document 3' },
-                  ].map((item, idx) => (
-                    <div key={item.key} className="p-3 bg-slate-50 border border-slate-100 rounded-2xl flex flex-col justify-between h-24">
-                      <div className="min-w-0">
-                        <p className="text-[10px] font-bold text-slate-500">{item.label}</p>
-                        {item.doc ? (
-                          <a href={item.doc.url} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-primary hover:underline truncate block mt-1">
-                            {item.doc.fileName || `Contract File ${idx + 1}`}
-                          </a>
-                        ) : (
-                          <p className="text-xs text-slate-400 italic mt-1">Not uploaded</p>
-                        )}
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Extra Contract Attachments (4 Slots)</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {([
+                    { key: 'CONTRACT_EXTRA_1', doc: extraDoc1, slot: 1 },
+                    { key: 'CONTRACT_EXTRA_2', doc: extraDoc2, slot: 2 },
+                    { key: 'CONTRACT_EXTRA_3', doc: extraDoc3, slot: 3 },
+                    { key: 'CONTRACT_EXTRA_4', doc: extraDoc4, slot: 4 },
+                  ] as const).map((item) => {
+                    const defaultLabel = `Additional Document ${item.slot}`
+                    const savedLabel = application.data?.contractExtraLabels?.[item.key] || defaultLabel
+                    const customName = extraDocNames[item.key] !== undefined ? extraDocNames[item.key] : savedLabel
+
+                    return (
+                      <div key={item.key} className="p-3 bg-slate-50 border border-slate-100 rounded-2xl flex flex-col gap-2">
+                        {/* Editable name input */}
+                        <div className="flex items-center gap-1.5">
+                          <Input
+                            value={customName}
+                            onChange={(e) => setExtraDocNames(prev => ({ ...prev, [item.key]: e.target.value }))}
+                            placeholder={`Document ${item.slot} name...`}
+                            className="h-7 text-[10px] font-bold bg-white border-slate-200 rounded-lg px-2 flex-1"
+                          />
+                          {customName !== savedLabel && (
+                            <Button
+                              size="sm"
+                              className="h-7 px-2 text-[10px] font-bold bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shrink-0"
+                              onClick={async () => {
+                                try {
+                                  const currentLabels = application.data?.contractExtraLabels || {}
+                                  const updatedLabels = {
+                                    ...currentLabels,
+                                    [item.key]: customName
+                                  }
+                                  const updatedData = {
+                                    ...application.data,
+                                    contractExtraLabels: updatedLabels
+                                  }
+                                  const updatedApp = await applicationService.update(application.id, { data: updatedData })
+                                  setApplication(updatedApp)
+                                  toast.success('Document title updated!')
+                                } catch (err: any) {
+                                  toast.error(err.message || 'Failed to update title')
+                                }
+                              }}
+                            >
+                              Save
+                            </Button>
+                          )}
+                        </div>
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="min-w-0 flex-1">
+                            {item.doc ? (
+                              <a href={item.doc.url} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-primary hover:underline truncate block">
+                                {item.doc.fileName || customName}
+                              </a>
+                            ) : (
+                              <p className="text-xs text-slate-400 italic">Not uploaded</p>
+                            )}
+                          </div>
+                          <div className="flex gap-1 shrink-0">
+                            <Button size="icon" variant="ghost" className="h-7 w-7 hover:bg-slate-200" onClick={() => handleOpenUpload(item.key, customName)}>
+                              <Upload className="w-3 h-3 text-slate-600" />
+                            </Button>
+                            {item.doc && (
+                              <Button size="icon" variant="ghost" className="h-7 w-7 text-rose-500 hover:bg-rose-50" onClick={() => handleDocReview(item.doc.id, 'REJECTED')}>
+                                <X className="w-3 h-3" />
+                              </Button>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                      <div className="flex justify-end gap-1">
-                        <Button size="icon" variant="ghost" className="h-7 w-7 hover:bg-slate-200" onClick={() => handleOpenUpload(item.key, `Additional Document ${idx + 1}`)}>
-                          <Upload className="w-3.5 h-3.5 text-slate-600" />
-                        </Button>
-                        {item.doc && (
-                          <Button size="icon" variant="ghost" className="h-7 w-7 text-rose-500 hover:bg-rose-50" onClick={() => handleDocReview(item.doc.id, 'REJECTED')}>
-                            <X className="w-3.5 h-3.5" />
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               </Card>
             </div>
@@ -1644,21 +1761,7 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-2 ml-1">Candidate Category</span>
                   <select 
                     value={adminCategory} 
-                    onChange={(e) => {
-                      const val = e.target.value
-                      setAdminCategory(val)
-                      // Auto-fill installments from category default pricing
-                      const cat = studentCategories.find((c: any) => c.name === val)
-                      if (cat?.pricing && Array.isArray(cat.pricing) && cat.pricing.length >= 3) {
-                        setInst1(cat.pricing[0]?.amount ?? '')
-                        setInst2(cat.pricing[1]?.amount ?? '')
-                        setInst3(cat.pricing[2]?.amount ?? '')
-                      } else {
-                        setInst1('')
-                        setInst2('')
-                        setInst3('')
-                      }
-                    }}
+                    onChange={(e) => setAdminCategory(e.target.value)}
                     className="w-full text-xs border border-slate-200 bg-slate-50 text-slate-700 px-3 py-2.5 rounded-xl font-semibold focus:outline-none focus:ring-2 focus:ring-slate-200 transition-all"
                   >
                     {studentCategories.length > 0 ? (
@@ -1675,57 +1778,12 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
                   </select>
                 </div>
 
-                {/* Always show installment fields — default pricing auto-fills, manual override always available */}
-                <div className="space-y-3 pt-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block ml-1">
-                    Payment Installments
-                    {(() => {
-                      const selectedCat = studentCategories.find((c: any) => c.name === adminCategory)
-                      return selectedCat?.pricing && Array.isArray(selectedCat.pricing) && selectedCat.pricing.length > 0
-                        ? <span className="ml-1.5 text-emerald-500 normal-case font-semibold">(auto-filled from category defaults)</span>
-                        : <span className="ml-1.5 text-slate-300 normal-case font-medium">(enter custom amounts below)</span>
-                    })()}
-                  </span>
-                  <div className="space-y-2">
-                    <div>
-                      <label className="text-[10px] text-slate-500 font-bold block mb-1">Installment 1 Amount</label>
-                      <Input
-                        type="number"
-                        value={inst1}
-                        onChange={(e) => setInst1(e.target.value)}
-                        placeholder="e.g. 15000"
-                        className="h-9 text-xs rounded-xl"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] text-slate-500 font-bold block mb-1">Installment 2 Amount</label>
-                      <Input
-                        type="number"
-                        value={inst2}
-                        onChange={(e) => setInst2(e.target.value)}
-                        placeholder="e.g. 10000"
-                        className="h-9 text-xs rounded-xl"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] text-slate-500 font-bold block mb-1">Installment 3 Amount</label>
-                      <Input
-                        type="number"
-                        value={inst3}
-                        onChange={(e) => setInst3(e.target.value)}
-                        placeholder="e.g. 8000"
-                        className="h-9 text-xs rounded-xl"
-                      />
-                    </div>
-                  </div>
-                </div>
-
                 <Button 
-                  onClick={handleUpdateCategoryAndSchedule} 
+                  onClick={handleUpdateCategory} 
                   disabled={submittingAction}
                   className="w-full mt-2 text-xs font-semibold py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl flex items-center justify-center gap-2"
                 >
-                  {submittingAction ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Save Category & Schedule'}
+                  {submittingAction ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : 'Save Category'}
                 </Button>
               </Card>
 

@@ -375,23 +375,67 @@ export default function StudentCategoriesPage() {
 
               {/* Installment Pricing */}
               {form.hasPricing && (
-                <div className="space-y-3 bg-slate-50 rounded-2xl p-4 border border-slate-100">
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
-                    <DollarSign className="w-3 h-3" />
-                    Installment Amounts (₹)
-                  </span>
-                  {form.installments.map((inst, idx) => (
-                    <div key={idx} className="space-y-1">
-                      <label className="text-[10px] font-semibold text-slate-500 block">{inst.name}</label>
-                      <Input
-                        type="number"
-                        value={inst.amount || ''}
-                        onChange={e => updateInstallment(idx, 'amount', e.target.value)}
-                        placeholder="e.g. 15000"
-                        className="h-8 text-xs rounded-xl"
-                      />
+                <div className="space-y-4 bg-slate-50 rounded-2xl p-4 border border-slate-100">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                      <DollarSign className="w-3 h-3" />
+                      Installment Plan
+                    </span>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setForm(p => ({
+                        ...p,
+                        installments: [...p.installments, { name: `Installment ${p.installments.length + 1}`, amount: 0 }]
+                      }))}
+                      className="h-7 text-[10px] font-bold uppercase tracking-wider rounded-lg px-2 border-slate-200 bg-white"
+                    >
+                      + Add Row
+                    </Button>
+                  </div>
+
+                  {form.installments.length === 0 ? (
+                    <p className="text-[11px] text-slate-400 italic text-center py-2">No installments added yet. Click "+ Add Row" above.</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {form.installments.map((inst, idx) => (
+                        <div key={idx} className="flex gap-2 items-end">
+                          <div className="flex-1 space-y-1">
+                            <label className="text-[9px] font-bold text-slate-400 uppercase">Label</label>
+                            <Input
+                              value={inst.name}
+                              onChange={e => updateInstallment(idx, 'name', e.target.value)}
+                              placeholder="e.g. First Installment"
+                              className="h-8 text-xs rounded-xl"
+                            />
+                          </div>
+                          <div className="w-32 space-y-1">
+                            <label className="text-[9px] font-bold text-slate-400 uppercase">Amount (₹)</label>
+                            <Input
+                              type="number"
+                              value={inst.amount || ''}
+                              onChange={e => updateInstallment(idx, 'amount', e.target.value)}
+                              placeholder="0"
+                              className="h-8 text-xs rounded-xl font-mono font-bold"
+                            />
+                          </div>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setForm(p => ({
+                              ...p,
+                              installments: p.installments.filter((_, i) => i !== idx)
+                            }))}
+                            className="h-8 w-8 text-rose-500 hover:text-rose-600 hover:bg-rose-50 rounded-xl"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </Button>
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  )}
                 </div>
               )}
             </div>

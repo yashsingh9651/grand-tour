@@ -13,6 +13,7 @@ import {
   Loader2, Check, Lock, UploadCloud, Eye, X, Copy,
   Landmark, Clock, IndianRupee, CheckCircle2, Info, ChevronRight, AlertCircle
 } from 'lucide-react'
+import PaymentPlaneAnimation from '@/components/PaymentPlaneAnimation'
 
 const STEP_ID = 'visapayments'
 const STEP_LABEL = 'Visa Payments'
@@ -267,7 +268,8 @@ export default function VisaPaymentsPage() {
 
     if (paymentObj?.status === 'COMPLETED') {
       return (
-        <Card className="p-6 border border-border bg-card rounded-[2rem] shadow-sm flex flex-col justify-between h-full text-foreground">
+        <Card className="p-6 border border-border bg-card rounded-[2rem] shadow-sm flex flex-col justify-between h-full text-foreground space-y-4">
+          <PaymentPlaneAnimation status="COMPLETED" />
           <div className="space-y-4">
             <div className="flex justify-between items-start">
               <span className="text-xs font-bold text-emerald-600 bg-emerald-500/10 px-3 py-1 rounded-full uppercase tracking-wider">Verified</span>
@@ -303,7 +305,8 @@ export default function VisaPaymentsPage() {
 
     if (paymentObj?.status === 'PENDING') {
       return (
-        <Card className="p-6 border border-border bg-card rounded-[2rem] shadow-sm flex flex-col justify-between h-full text-foreground">
+        <Card className="p-6 border border-border bg-card rounded-[2rem] shadow-sm flex flex-col justify-between h-full text-foreground space-y-4">
+          <PaymentPlaneAnimation status="PENDING" />
           <div className="space-y-4">
             <div className="flex justify-between items-start">
               <span className="text-xs font-bold text-amber-600 bg-amber-500/10 px-3 py-1 rounded-full uppercase tracking-wider animate-pulse">Under Review</span>
@@ -335,6 +338,9 @@ export default function VisaPaymentsPage() {
 
     return (
       <Card className="p-6 border border-border bg-card rounded-[2rem] shadow-sm flex flex-col justify-between h-full space-y-5 text-foreground">
+        {paymentObj?.status === 'FAILED' && (
+          <PaymentPlaneAnimation status="FAILED" />
+        )}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-bold text-foreground">{title}</h3>
