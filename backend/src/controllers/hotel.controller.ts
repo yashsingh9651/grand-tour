@@ -101,31 +101,9 @@ export const respondToAssignment = async (req: Request, res: Response) => {
     data: { studentResponse: response, responseNote: note || null },
   });
 
-  // If accepted, move to payment2 step
+  // If accepted, log activity and send initial alert (step is unlocked only when confirmation email is sent)
   if (response === 'ACCEPTED') {
-    await prisma.application.update({
-      where: { id: application.id },
-      data: { currentStepId: 'payment2' },
-    });
     await activityService.log('Student accepted hotel allocation', 'HOTEL_ACCEPTED', application.id, userId);
-
-    // Send confirmation email
-    try {
-      if (application.user?.email) {
-        const studentName = `${application.user.firstName || ''} ${application.user.lastName || ''}`.trim() || 'Student';
-        const hotelName = assignment.hotel?.name || 'Assigned Hotel';
-        const portalLink = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/payment2`;
-        
-        const emailService = (await import('../services/email.service')).default;
-        await emailService.sendHotelConfirmationEmail(application.user.email, {
-          studentName,
-          hotelName,
-          portalLink
-        });
-      }
-    } catch (err) {
-      console.error('Failed to send hotel confirmation email:', err);
-    }
   } else {
     await activityService.log('Student declined hotel allocation', 'HOTEL_DECLINED', application.id, userId);
   }
@@ -155,6 +133,12 @@ export const resendConfirmationEmail = async (req: Request, res: Response) => {
     return res.status(400).json({ success: false, message: 'Hotel assignment has not been accepted' });
   }
 
+  // Advance application step to payment2
+  await prisma.application.update({
+    where: { id: application.id },
+    data: { currentStepId: 'payment2' },
+  });
+
   try {
     if (application.user?.email) {
       const studentName = `${application.user.firstName || ''} ${application.user.lastName || ''}`.trim() || 'Student';
@@ -169,10 +153,10 @@ export const resendConfirmationEmail = async (req: Request, res: Response) => {
       });
     }
   } catch (err) {
-    console.error('Failed to resend hotel confirmation email:', err);
+    console.error('Failed to send hotel confirmation email:', err);
     return res.status(500).json({ success: false, message: 'Failed to send email' });
   }
 
-  res.status(200).json({ success: true, message: 'Confirmation email sent successfully' });
+  res.status(200).json({ success: true, message: 'Confirmation email sent and next step unlocked' });
 };
 

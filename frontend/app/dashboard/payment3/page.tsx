@@ -82,8 +82,8 @@ export default function Payment3Page() {
   }
 
   const handlePaymentSubmit = async () => {
-    if (!utrNumber || !screenshotUrl) {
-      toast.error('Please provide UTR number and receipt screenshot')
+    if (!screenshotUrl) {
+      toast.error('Please upload your receipt screenshot')
       return
     }
     try {
@@ -92,7 +92,7 @@ export default function Payment3Page() {
       await paymentService.submit({
         amount: amountToSubmit,
         applicationId: application?.id,
-        utrNumber,
+        utrNumber: 'N/A',
         screenshotUrl,
         description: 'Payment3 - 3rd Installment'
       })
@@ -220,20 +220,70 @@ export default function Payment3Page() {
           </div>
         </Card>
       ) : (
-        <div className="grid lg:grid-cols-3 gap-6 items-start mb-8">
+        <div className="grid lg:grid-cols-3 gap-6 items-stretch mb-8">
+          {/* France Work Permit Ready Card */}
+          <Card className="relative overflow-hidden border border-border bg-gradient-to-b from-blue-500/10 via-background to-red-500/10 rounded-[2.5rem] shadow-md p-6 flex flex-col justify-between h-full space-y-6">
+            {/* Tricolore Top Bar */}
+            <div className="absolute top-0 left-0 right-0 h-[6px] flex">
+              <div className="flex-1 bg-[#002395]" />
+              <div className="flex-1 bg-white" />
+              <div className="flex-1 bg-[#ED2939]" />
+            </div>
 
-        {/* Left Column: Payment details */}
-        <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-foreground md:col-span-2">
-          <div className="space-y-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center">
-                <IndianRupee className="w-6 h-6 text-primary" />
+            <div className="space-y-4 text-center md:text-left">
+              <div className="w-16 h-16 rounded-2xl bg-card border border-border flex flex-col items-center justify-center shadow-sm relative overflow-hidden mx-auto md:mx-0 shrink-0">
+                {/* Micro France Flag Backdrop inside Icon */}
+                <div className="absolute inset-0 flex opacity-10">
+                  <div className="flex-1 bg-[#002395]" />
+                  <div className="flex-1 bg-white" />
+                  <div className="flex-1 bg-[#ED2939]" />
+                </div>
+                <span className="text-3xl relative z-10">🇫🇷</span>
               </div>
-              <div>
-                <h2 className="text-xl font-black">Base Amount</h2>
-                <p className="text-3xl font-black text-primary">{currencySymbol}{baseAmount.toLocaleString()}</p>
+              <div className="space-y-1">
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-1.5">
+                  <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-blue-600/10 text-blue-600 border border-blue-200/20">
+                    Visa Ready Status
+                  </span>
+                  <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-red-600/10 text-red-600 border border-red-200/20">
+                    France
+                  </span>
+                </div>
+                <h3 className="text-lg font-extrabold text-foreground tracking-tight mt-1">
+                  Félicitations! Your Work Permit is Ready
+                </h3>
+                <p className="text-[11px] text-muted-foreground leading-relaxed font-medium">
+                  Your official French work permit (Autorisation de travail) has been approved and issued by the French Ministry of Labour.
+                </p>
               </div>
             </div>
+
+            {application?.workPermit?.documentUrl && (
+              <a
+                href={application.workPermit.documentUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full mt-auto"
+              >
+                <Button className="w-full bg-[#002395] hover:bg-[#001c75] text-white border border-[#002395] rounded-2xl font-bold h-12 flex items-center justify-center gap-2 shadow-lg shadow-blue-500/10 transition-all hover:scale-[1.02] active:scale-[0.98]">
+                  <FileDown className="w-4 h-4" /> Download Permit
+                </Button>
+              </a>
+            )}
+          </Card>
+
+          {/* Left Column: Payment details */}
+          <Card className="p-6 border border-border bg-card rounded-[2.5rem] shadow-sm text-foreground flex flex-col justify-between h-full space-y-4">
+            <div className="space-y-4">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center">
+                  <IndianRupee className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h2 className="text-base font-black">Base Amount</h2>
+                  <p className="text-2xl font-black text-primary">{currencySymbol}{baseAmount.toLocaleString()}</p>
+                </div>
+              </div>
 
             <div className="space-y-4">
               <div className="space-y-2 text-sm bg-muted p-4 rounded-xl border border-border">
@@ -402,16 +452,6 @@ export default function Payment3Page() {
 
               <div className="w-full space-y-4">
                 <div className="space-y-2 text-left">
-                  <label className="text-xs font-bold text-foreground ml-1">UTR / Transaction Number</label>
-                  <Input
-                    placeholder="Enter 12-digit UTR number"
-                    value={utrNumber}
-                    onChange={(e) => setUtrNumber(e.target.value)}
-                    className="h-12 rounded-xl border-border bg-muted text-foreground focus:ring-primary font-mono text-sm"
-                  />
-                </div>
-
-                <div className="space-y-2 text-left">
                   <label className="text-xs font-bold text-foreground ml-1">Payment Screenshot</label>
                   {screenshotUrl ? (
                     <div className="flex items-center gap-3 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
@@ -435,7 +475,7 @@ export default function Payment3Page() {
 
                 <Button
                   onClick={handlePaymentSubmit}
-                  disabled={submittingPayment || !utrNumber || !screenshotUrl}
+                  disabled={submittingPayment || !screenshotUrl}
                   className="w-full h-14 rounded-2xl font-black uppercase tracking-widest bg-primary text-[#1A1A1A] font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all mt-4"
                 >
                   {submittingPayment ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Confirm Payment'}

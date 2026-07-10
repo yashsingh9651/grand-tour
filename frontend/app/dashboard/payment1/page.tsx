@@ -90,8 +90,8 @@ export default function Payment1Page() {
   }
 
   const handlePaymentSubmit = async () => {
-    if (!utrNumber || !screenshotUrl) {
-      toast.error('Please provide UTR number and receipt screenshot')
+    if (!screenshotUrl) {
+      toast.error('Please upload your receipt screenshot')
       return
     }
     try {
@@ -100,7 +100,7 @@ export default function Payment1Page() {
       await paymentService.submit({
         amount: amountToSubmit,
         applicationId: application?.id,
-        utrNumber,
+        utrNumber: 'N/A',
         screenshotUrl,
         description: '1st Installment'
       })
@@ -542,16 +542,6 @@ export default function Payment1Page() {
 
               <div className="w-full space-y-4">
                 <div className="space-y-2 text-left">
-                  <label className="text-xs font-bold text-foreground ml-1">UTR / Transaction Number</label>
-                  <Input
-                    placeholder="Enter 12-digit UTR number"
-                    value={utrNumber}
-                    onChange={(e) => setUtrNumber(e.target.value)}
-                    className="h-12 rounded-xl border-border bg-muted text-foreground focus:ring-primary font-mono text-sm"
-                  />
-                </div>
-
-                <div className="space-y-2 text-left">
                   <label className="text-xs font-bold text-foreground ml-1">Payment Screenshot</label>
                   {screenshotUrl ? (
                     <div className="flex items-center gap-3 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
@@ -575,7 +565,7 @@ export default function Payment1Page() {
 
                 <Button
                   onClick={handlePaymentSubmit}
-                  disabled={submittingPayment || !utrNumber || !screenshotUrl}
+                  disabled={submittingPayment || !screenshotUrl}
                   className="w-full h-14 rounded-2xl font-black uppercase tracking-widest bg-primary text-[#1A1A1A] font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all mt-4"
                 >
                   {submittingPayment ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Confirm Payment'}

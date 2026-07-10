@@ -1353,14 +1353,27 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
           const sName = (amounts.sevisFeeName || 'sevis fee').toLowerCase()
           const mName = (amounts.miscFeeName || 'misc fee').toLowerCase()
 
-          const getVisaPaymentDetail = (keyMatch: string) => {
-            const matched = paymentsList.filter((p: any) => (p.description || '').toLowerCase().includes(keyMatch))
+          const getVisaPaymentDetail = (keyMatch: string, type: 'visa' | 'sevis' | 'misc') => {
+            const matched = paymentsList.filter((p: any) => {
+              const desc = (p.description || '').toLowerCase()
+              const target = keyMatch.toLowerCase()
+              if (type === 'visa') {
+                return desc.includes(target) || desc.includes('visa')
+              }
+              if (type === 'sevis') {
+                return desc.includes(target) || desc.includes('sevis')
+              }
+              if (type === 'misc') {
+                return desc.includes(target) || desc.includes('misc') || desc.includes('courier') || desc.includes('miscellaneous')
+              }
+              return desc.includes(target)
+            })
             return [...matched].sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
           }
 
-          const visaFeePay = getVisaPaymentDetail(vName)
-          const sevisFeePay = getVisaPaymentDetail(sName)
-          const miscFeePay = getVisaPaymentDetail(mName) || getVisaPaymentDetail('miscellaneous fee')
+          const visaFeePay = getVisaPaymentDetail(vName, 'visa')
+          const sevisFeePay = getVisaPaymentDetail(sName, 'sevis')
+          const miscFeePay = getVisaPaymentDetail(mName, 'misc')
 
           const renderVisaPaymentRow = (title: string, paymentObj: any) => (
             <Card className="p-4 border border-slate-200 bg-white rounded-2xl flex flex-col justify-between h-full space-y-4 shadow-sm">

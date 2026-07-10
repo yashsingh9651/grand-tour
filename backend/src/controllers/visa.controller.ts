@@ -53,7 +53,7 @@ const generateMeetLink = async (slot: { id: string; startTime: Date; endTime: Da
 
 // Admin: Create a visa slot
 export const createVisaSlot = async (req: Request, res: Response) => {
-  const { startTime, endTime, capacity, documentUrl, notes } = req.body;
+  const { startTime, endTime, capacity, documentUrl, notes, location } = req.body;
   const slot = await prisma.visaSlot.create({
     data: {
       startTime: new Date(startTime),
@@ -61,6 +61,7 @@ export const createVisaSlot = async (req: Request, res: Response) => {
       capacity: capacity || 1,
       documentUrl: documentUrl || null,
       notes: notes || null,
+      meetLink: location || null,
     },
   });
   res.status(201).json({ success: true, data: slot });
@@ -68,7 +69,7 @@ export const createVisaSlot = async (req: Request, res: Response) => {
 
 // Admin: Generate visa slots in bulk
 export const generateVisaSlots = async (req: Request, res: Response) => {
-  const { startDate, endDate, bufferTime = 0, availability = [] } = req.body;
+  const { startDate, endDate, bufferTime = 0, availability = [], location } = req.body;
 
   try {
     if (!availability || availability.length === 0) {
@@ -135,6 +136,7 @@ export const generateVisaSlots = async (req: Request, res: Response) => {
               startTime: new Date(current),
               endTime: new Date(slotEnd),
               capacity: dayAvail.capacity || 1,
+              meetLink: location || null,
             });
           }
         }
@@ -222,13 +224,7 @@ export const bookVisaSlot = async (req: Request, res: Response) => {
     data: { isBooked: true, applicationId: application.id },
   });
 
-  let meetLink = updated.meetLink;
-  if (!meetLink) {
-    meetLink = await generateMeetLink({ id: updated.id, startTime: updated.startTime, endTime: updated.endTime });
-    if (meetLink) {
-      await prisma.visaSlot.update({ where: { id: slotId }, data: { meetLink } });
-    }
-  }
+  const meetLink = updated.meetLink; // We treat this database field as the Location address
 
   await activityService.log('Visa appointment booked', 'VISA_BOOKED', application.id, userId);
 
@@ -239,14 +235,14 @@ export const bookVisaSlot = async (req: Request, res: Response) => {
       await emailService.sendVisaSlotBookedEmail(user.email, {
         studentName: `${user.firstName} ${user.lastName}`,
         dateTime: updated.startTime.toLocaleString(),
-        meetLink: meetLink || 'Link will be provided soon'
+        meetLink: meetLink || 'Location will be shared soon'
       });
     } catch (error) {
       logger.error('Failed to send visa booking email notification:', error);
     }
   }
 
-  res.status(200).json({ success: true, data: { ...updated, meetLink } });
+  res.status(200).json({ success: true, data: updated });
 };
 
 // Student: Get my visa slot booking

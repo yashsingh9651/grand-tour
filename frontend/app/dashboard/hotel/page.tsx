@@ -34,6 +34,7 @@ export default function HotelPage() {
   const [responding, setResponding] = useState(false)
   const [showDeclineModal, setShowDeclineModal] = useState(false)
   const [declineNote, setDeclineNote] = useState('')
+  const [sendingEmail, setSendingEmail] = useState(false)
 
   useEffect(() => {
     fetchData()
@@ -61,12 +62,27 @@ export default function HotelPage() {
     setResponding(true)
     try {
       await hotelService.respondToAssignment('ACCEPTED')
-      toast.success('Hotel accepted!')
-      window.location.href = '/dashboard/payment2'
+      toast.success('Hotel allocation accepted!')
+      await fetchData()
     } catch {
       toast.error('Failed to respond')
     } finally {
       setResponding(false)
+    }
+  }
+
+  const handleSendConfirmationMail = async () => {
+    setSendingEmail(true)
+    try {
+      await hotelService.resendConfirmation()
+      toast.success('Confirmation email sent successfully! Next step unlocked.')
+      await fetchData()
+      // Redirect to Payment 2
+      window.location.href = '/dashboard/payment2'
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to send confirmation email')
+    } finally {
+      setSendingEmail(false)
     }
   }
 
@@ -297,26 +313,44 @@ export default function HotelPage() {
             <CheckCircle2 className="w-10 h-10 text-emerald-600 flex-shrink-0" />
             <div>
               <h3 className="font-bold text-emerald-600 dark:text-emerald-400">You've accepted this hotel allocation!</h3>
-              <p className="text-sm text-muted-foreground mt-1">Your next step is <strong>Payment 2</strong>. Click below to proceed.</p>
-              <div className="flex flex-wrap gap-3 mt-3">
-                <Link href="/dashboard/payment2">
-                  <Button className="bg-green-600 hover:bg-green-700 text-white">
-                    Go to Payment 2 <ChevronRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </Link>
-                <Button 
-                  onClick={() => {
-                    const to = 'contact@grandtour.in';
-                    const subject = encodeURIComponent('Hotel Allocation Accepted');
-                    const body = encodeURIComponent('I have accepted the hotel allocation.');
-                    window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
-                  }} 
-                  variant="outline" 
-                  className="border-emerald-500/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10 gap-2"
-                >
-                  <Mail className="w-4 h-4" /> Send Confirmation Mail
-                </Button>
-              </div>
+              
+              {application?.currentStepId === 'hotel' ? (
+                <>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    To unlock the next step (<strong>Payment 2</strong>), you must send the official confirmation email to our team. Click below to send the email and unlock your dashboard.
+                  </p>
+                  <div className="flex flex-wrap gap-3 mt-3">
+                    <Button 
+                      onClick={handleSendConfirmationMail} 
+                      disabled={sendingEmail}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 shadow-md shadow-emerald-500/10"
+                    >
+                      {sendingEmail ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
+                      Send Confirmation Email & Unlock Step
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm text-muted-foreground mt-1">Your confirmation email was sent and <strong>Payment 2</strong> is unlocked. Click below to proceed.</p>
+                  <div className="flex flex-wrap gap-3 mt-3">
+                    <Link href="/dashboard/payment2">
+                      <Button className="bg-green-600 hover:bg-green-700 text-white">
+                        Go to Payment 2 <ChevronRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </Link>
+                    <Button 
+                      onClick={handleSendConfirmationMail} 
+                      disabled={sendingEmail}
+                      variant="outline" 
+                      className="border-emerald-500/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/10 gap-2"
+                    >
+                      {sendingEmail ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
+                      Resend Confirmation Mail
+                    </Button>
+                  </div>
+                </>
+              )}
             </div>
           </Card>
         )}

@@ -408,69 +408,59 @@ export default function DynamicStepPage({ params }: { params: Promise<{ stepId: 
                     />
                   </div>
 
-                  <div className="w-full space-y-4">
-                    <div className="space-y-2 text-left">
-                      <label className="text-sm font-bold text-slate-700 ml-1">UTR / Transaction Number</label>
-                      <Input 
-                        placeholder="Enter 12-digit UTR number" 
-                        value={utrNumber}
-                        onChange={(e) => setUtrNumber(e.target.value)}
-                        className="h-12 rounded-xl border-slate-200 focus:ring-primary font-mono"
-                      />
-                    </div>
-
-                    <div className="space-y-2 text-left">
-                      <label className="text-sm font-bold text-slate-700 ml-1">Payment Screenshot</label>
-                      {screenshotUrl ? (
-                        <div className="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-xl">
-                          <CheckCircle2 className="w-5 h-5 text-green-500" />
-                          <span className="text-sm font-medium text-green-700 truncate flex-1">Receipt uploaded</span>
-                          <Button variant="ghost" size="sm" className="h-8 text-green-600 hover:text-green-700 hover:bg-green-100" onClick={() => setIsUploadOpen(true)}>
-                            Change
+                    <div className="w-full space-y-4">
+                      <div className="space-y-2 text-left">
+                        <label className="text-sm font-bold text-slate-700 ml-1">Payment Screenshot</label>
+                        {screenshotUrl ? (
+                          <div className="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-xl">
+                            <CheckCircle2 className="w-5 h-5 text-green-500" />
+                            <span className="text-sm font-medium text-green-700 truncate flex-1">Receipt uploaded</span>
+                            <Button variant="ghost" size="sm" className="h-8 text-green-600 hover:text-green-700 hover:bg-green-100" onClick={() => setIsUploadOpen(true)}>
+                              Change
+                            </Button>
+                          </div>
+                        ) : (
+                          <Button 
+                            variant="outline" 
+                            onClick={() => setIsUploadOpen(true)}
+                            className="w-full h-12 rounded-xl border-dashed border-2 border-slate-300 text-slate-500 hover:border-primary hover:text-primary transition-all gap-2"
+                          >
+                            <Upload className="w-4 h-4" />
+                            Upload Receipt
                           </Button>
-                        </div>
-                      ) : (
-                        <Button 
-                          variant="outline" 
-                          onClick={() => setIsUploadOpen(true)}
-                          className="w-full h-12 rounded-xl border-dashed border-2 border-slate-300 text-slate-500 hover:border-primary hover:text-primary transition-all gap-2"
-                        >
-                          <Upload className="w-4 h-4" />
-                          Upload Receipt
-                        </Button>
-                      )}
-                    </div>
+                        )}
+                      </div>
 
-                    <Button 
-                      onClick={async () => {
-                        if (!utrNumber || !screenshotUrl) {
-                          toast.error('Please provide UTR number and screenshot')
-                          return
-                        }
-                        try {
-                          setSubmitting(true)
-                          let payment = await paymentService.submit({
-                            amount: currentStepConfig.amount,
-                            applicationId: application?.id,
-                            utrNumber,
-                            screenshotUrl,
-                            description: `Payment for ${currentStepConfig.name}`
-                          })
-                          const updatedApp = { ...application, payment1: payment }
-                          setApplication(updatedApp)
-                          await applicationService.update(updatedApp.id, updatedApp)
-                          toast.success('Payment submitted for verification!')
-                          // Advance step or show pending state
-                          await handleSubmit({ paymentSubmitted: true }, updatedApp)
-                        } catch (error) {
-                          toast.error('Failed to submit payment')
-                        } finally {
-                          setSubmitting(false)
-                        }
-                      }}
-                      disabled={submitting || !utrNumber || !screenshotUrl}
-                      className="w-full h-14 rounded-2xl font-black uppercase tracking-widest bg-primary shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all mt-4"
-                    >
+                      <Button 
+                        onClick={async () => {
+                          if (!screenshotUrl) {
+                            toast.error('Please upload your receipt screenshot')
+                            return
+                          }
+                          try {
+                            setSubmitting(true)
+                            let payment = await paymentService.submit({
+                              amount: currentStepConfig.amount,
+                              applicationId: application?.id,
+                              utrNumber: 'N/A',
+                              screenshotUrl,
+                              description: `Payment for ${currentStepConfig.name}`
+                            })
+                            const updatedApp = { ...application, payment1: payment }
+                            setApplication(updatedApp)
+                            await applicationService.update(updatedApp.id, updatedApp)
+                            toast.success('Payment submitted for verification!')
+                            // Advance step or show pending state
+                            await handleSubmit({ paymentSubmitted: true }, updatedApp)
+                          } catch (error) {
+                            toast.error('Failed to submit payment')
+                          } finally {
+                            setSubmitting(false)
+                          }
+                        }}
+                        disabled={submitting || !screenshotUrl}
+                        className="w-full h-14 rounded-2xl font-black uppercase tracking-widest bg-primary shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all mt-4"
+                      >
                       {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Confirm Payment'}
                     </Button>
                   </div>

@@ -15,7 +15,7 @@ import { Calendar } from '@/components/ui/calendar'
 import {
   Plus, Trash2, Clock, CheckCircle2, Loader2,
   Video, X, Calendar as CalendarIcon, Upload, FileText,
-  Search, Info, Zap, Save, CalendarDays, ExternalLink, Settings, List
+  Search, Info, Zap, Save, CalendarDays, ExternalLink, Settings, List, MapPin
 } from 'lucide-react'
 import { visaService, uploadService } from '@/lib/services/api.service'
 import { toast } from 'sonner'
@@ -42,7 +42,8 @@ export default function AdminVisaPage() {
   const [searchQuery, setSearchQuery] = useState('')
 
   // Slot creation states
-  const [newSlot, setNewSlot] = useState({ date: new Date(), startTime: '10:00', endTime: '10:30', capacity: 1 })
+  const [newSlot, setNewSlot] = useState({ date: new Date(), startTime: '10:00', endTime: '10:30', capacity: 1, location: '' })
+  const [bulkLocation, setBulkLocation] = useState('')
   const [docUrl, setDocUrl] = useState('')
   const [docSlotId, setDocSlotId] = useState<string | null>(null)
 
@@ -105,12 +106,13 @@ export default function AdminVisaPage() {
       await visaService.createSlot({
         startTime: start.toISOString(),
         endTime: end.toISOString(),
-        capacity: newSlot.capacity
+        capacity: newSlot.capacity,
+        location: newSlot.location
       })
 
       toast.success('Visa slot created successfully')
       setShowCreateModal(false)
-      setNewSlot({ date: new Date(), startTime: '10:00', endTime: '10:30', capacity: 1 })
+      setNewSlot({ date: new Date(), startTime: '10:00', endTime: '10:30', capacity: 1, location: '' })
       fetchData()
     } catch {
       toast.error('Failed to create slot')
@@ -217,9 +219,11 @@ export default function AdminVisaPage() {
         dateRange.from.toISOString(),
         dateRange.to.toISOString(),
         0, // bufferTime
-        availability
+        availability,
+        bulkLocation
       )
       toast.success(res.message || 'Visa slots generated successfully')
+      setBulkLocation('')
       fetchData()
     } catch (err: any) {
       toast.error(err?.response?.data?.error || 'Failed to generate visa slots')
@@ -376,11 +380,10 @@ export default function AdminVisaPage() {
 
                               <div className="flex items-center gap-1.5">
                                 {slot.meetLink && (
-                                  <Button variant="ghost" size="icon" className="h-8 w-8 text-primary hover:bg-slate-50 rounded-lg" asChild>
-                                    <a href={slot.meetLink} target="_blank" rel="noopener noreferrer">
-                                      <Video className="w-4 h-4 text-emerald-600" />
-                                    </a>
-                                  </Button>
+                                  <div className="flex items-center gap-1 bg-slate-50 border border-slate-100 px-2 py-1 rounded-lg text-xs font-semibold text-slate-600">
+                                    <MapPin className="w-3 h-3 text-primary shrink-0" />
+                                    <span className="truncate max-w-[120px]">{slot.meetLink}</span>
+                                  </div>
                                 )}
                                 <Button size="icon" variant="ghost" className="h-8 w-8 text-slate-400 hover:text-slate-900 hover:bg-slate-50 rounded-lg" onClick={() => { setDocSlotId(slot.id); setShowDocModal(true); }}>
                                   <FileText className="w-4 h-4" />
@@ -653,8 +656,18 @@ export default function AdminVisaPage() {
                             />
                           </PopoverContent>
                         </Popover>
-                      </div>
                     </div>
+
+                    <div className="space-y-1.5">
+                      <Label className="text-[10px] font-black text-slate-400 uppercase tracking-wider">Default Location / Venue</Label>
+                      <Input 
+                        placeholder="e.g. VFS Global Delhi, Mumbai, etc." 
+                        className="h-11 rounded-xl border-slate-200" 
+                        value={bulkLocation} 
+                        onChange={e => setBulkLocation(e.target.value)} 
+                      />
+                    </div>
+                  </div>
 
                     <Button
                       onClick={handleGenerateSlots}
@@ -713,6 +726,10 @@ export default function AdminVisaPage() {
               <div className="space-y-1">
                 <Label className="text-[10px] uppercase font-black text-slate-400 tracking-wider">Capacity</Label>
                 <Input type="number" min={1} className="h-10 rounded-xl" value={newSlot.capacity} onChange={e => setNewSlot(p => ({ ...p, capacity: Number(e.target.value) }))} />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-[10px] uppercase font-black text-slate-400 tracking-wider">Location / Venue</Label>
+                <Input placeholder="e.g. VFS Global Delhi, or Consulate Office" className="h-10 rounded-xl" value={newSlot.location} onChange={e => setNewSlot(p => ({ ...p, location: e.target.value }))} />
               </div>
             </div>
             <div className="flex justify-end gap-3 pt-2">

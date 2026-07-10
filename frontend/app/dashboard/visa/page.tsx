@@ -9,7 +9,7 @@ import { toast } from 'sonner'
 import { format } from 'date-fns'
 import {
   Loader2, Lock, Stamp, Calendar, Clock, Video, Download,
-  ChevronRight, CheckCircle2, FileDown, AlertCircle, Globe, ExternalLink
+  ChevronRight, CheckCircle2, FileDown, AlertCircle, Globe, ExternalLink, MapPin
 } from 'lucide-react'
 import Link from 'next/link'
 
@@ -137,31 +137,13 @@ export default function VisaPage() {
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Format</p>
+                  <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Location / Venue</p>
                   <div className="flex items-center gap-2">
-                    <Video className="w-5 h-5 text-primary" />
-                    <p className="text-xl font-bold">Google Meet</p>
+                    <MapPin className="w-5 h-5 text-primary" />
+                    <p className="text-xl font-bold">{mySlot.meetLink || 'VFS Center / Consulate'}</p>
                   </div>
                 </div>
               </div>
-
-              {/* Meet Link */}
-              {mySlot.meetLink && (
-                <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/25 rounded-2xl flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-card border border-border flex items-center justify-center shadow-sm flex-shrink-0">
-                    <Video className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-bold text-blue-600 dark:text-blue-400">Join Meeting Link</p>
-                    <p className="text-sm text-muted-foreground truncate">{mySlot.meetLink}</p>
-                  </div>
-                  <a href={mySlot.meetLink} target="_blank" rel="noopener noreferrer">
-                    <Button className="bg-blue-600 hover:bg-blue-700 text-white gap-2">
-                      <ExternalLink className="w-4 h-4" /> Join
-                    </Button>
-                  </a>
-                </div>
-              )}
 
               {/* Document download if available */}
               {mySlot.documentUrl && (

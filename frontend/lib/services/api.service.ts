@@ -408,7 +408,7 @@ export const visaService = {
     const response = await apiClient.get('/api/visa');
     return response.data.data;
   },
-  createSlot: async (data: { startTime: string; endTime: string; capacity?: number; documentUrl?: string; notes?: string }) => {
+  createSlot: async (data: { startTime: string; endTime: string; capacity?: number; documentUrl?: string; notes?: string; location?: string }) => {
     const response = await apiClient.post('/api/visa', data);
     return response.data.data;
   },
@@ -428,8 +428,8 @@ export const visaService = {
     const response = await apiClient.delete(`/api/visa/${id}`);
     return response.data;
   },
-  generateSlots: async (startDate: string, endDate: string, bufferTime: number, availability: any[]) => {
-    const response = await apiClient.post('/api/visa/slots/generate', { startDate, endDate, bufferTime, availability });
+  generateSlots: async (startDate: string, endDate: string, bufferTime: number, availability: any[], location?: string) => {
+    const response = await apiClient.post('/api/visa/slots/generate', { startDate, endDate, bufferTime, availability, location });
     return response.data;
   },
 };

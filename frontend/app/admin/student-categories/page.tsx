@@ -210,7 +210,7 @@ export default function StudentCategoriesPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {categories.map(cat => (
-              <Card key={cat.id} className="relative p-5 border border-slate-100 bg-white rounded-3xl shadow-sm hover:shadow-md transition-all group">
+              <Card key={cat.id} className="relative p-5 overflow-hidden border border-slate-100 bg-white rounded-3xl shadow-sm hover:shadow-md transition-all group">
                 {/* Color accent bar */}
                 <div className="absolute top-0 left-0 right-0 h-1 rounded-t-3xl" style={{ background: cat.color }} />
 

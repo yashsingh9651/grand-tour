@@ -124,8 +124,8 @@ export default function VisaPaymentsPage() {
       setSubmitting = setSubmittingMisc
     }
 
-    if (!utr || !screenshot) {
-      toast.error('Please provide UTR number and receipt screenshot')
+    if (!screenshot) {
+      toast.error('Please upload your receipt screenshot')
       return
     }
 
@@ -134,7 +134,7 @@ export default function VisaPaymentsPage() {
       await paymentService.submit({
         amount,
         applicationId: application?.id,
-        utrNumber: utr,
+        utrNumber: 'N/A',
         screenshotUrl: screenshot,
         description
       })
@@ -208,17 +208,28 @@ export default function VisaPaymentsPage() {
   // Parse candidate payments to find status for each slot
   const candidatePayments = application?.payments || []
   
-  const getPaymentStatus = (descMatch: string) => {
-    const matches = candidatePayments.filter((p: any) => 
-      (p.description || '').toLowerCase().includes(descMatch.toLowerCase())
-    )
+  const getPaymentStatus = (descMatch: string, type: 'visa' | 'sevis' | 'misc') => {
+    const matches = candidatePayments.filter((p: any) => {
+      const desc = (p.description || '').toLowerCase()
+      const target = descMatch.toLowerCase()
+      if (type === 'visa') {
+        return desc.includes(target) || desc.includes('visa')
+      }
+      if (type === 'sevis') {
+        return desc.includes(target) || desc.includes('sevis')
+      }
+      if (type === 'misc') {
+        return desc.includes(target) || desc.includes('misc') || desc.includes('courier') || desc.includes('miscellaneous')
+      }
+      return desc.includes(target)
+    })
     const sorted = [...matches].sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     return sorted[0] // Return the latest submission
   }
 
-  const visaPayment = getPaymentStatus(amountsConfig.visaFeeName || 'visa fee')
-  const sevisPayment = getPaymentStatus(amountsConfig.sevisFeeName || 'sevis fee')
-  const miscPayment = getPaymentStatus(amountsConfig.miscFeeName || 'misc fee') || getPaymentStatus('miscellaneous fee')
+  const visaPayment = getPaymentStatus(amountsConfig.visaFeeName || 'visa fee', 'visa')
+  const sevisPayment = getPaymentStatus(amountsConfig.sevisFeeName || 'sevis fee', 'sevis')
+  const miscPayment = getPaymentStatus(amountsConfig.miscFeeName || 'misc fee', 'misc')
 
   const allPaymentsApproved = 
     visaPayment?.status === 'COMPLETED' && 
@@ -346,15 +357,6 @@ export default function VisaPaymentsPage() {
 
           <div className="space-y-3 text-left">
             <div>
-              <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block mb-1">UTR Number</label>
-              <Input
-                placeholder="Enter 12-digit UTR"
-                value={utrVal}
-                onChange={(e) => setUtrVal(e.target.value)}
-                className="h-10 rounded-xl border-border bg-muted text-foreground text-sm font-mono"
-              />
-            </div>
-            <div>
               <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block mb-1">Transfer Receipt</label>
               {screenshotVal ? (
                 <div className="flex items-center justify-between p-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-xs">
@@ -376,7 +378,7 @@ export default function VisaPaymentsPage() {
 
         <Button
           onClick={() => handlePaymentSubmit(typeKey)}
-          disabled={submittingVal || !utrVal || !screenshotVal}
+          disabled={submittingVal || !screenshotVal}
           className="w-full h-11 bg-primary text-[#1A1A1A] font-bold hover:opacity-90 rounded-xl text-xs font-bold uppercase tracking-wider mt-4"
         >
           {submittingVal ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Confirm Payment'}

@@ -273,6 +273,7 @@ model VisaSlot {
   applicationId String?     @unique
   application   Application? @relation(fields: [applicationId], references: [id])
   meetLink      String?
+  location      String?
   documentUrl   String?     // Admin-uploaded document for this slot
   notes         String?
   createdAt     DateTime    @default(now())
