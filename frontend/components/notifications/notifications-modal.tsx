@@ -172,8 +172,7 @@ export function NotificationsModal({ isOpen, onClose, onUpdate }: NotificationsM
       setNotifications(notifications.map((n) => (n.id === notification.id ? { ...n, isRead: true } : n)))
       onUpdate?.()
     }
-    const step = meta.stepKey || ''
-    const url = `/admin/applications/${meta.applicationId}?step=${step}`
+    const url = `/admin/applications-portal/${meta.applicationId}`
     router.push(url)
     onClose()
   }

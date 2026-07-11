@@ -1,12 +1,14 @@
 "use client"
 import { useState, useEffect } from "react"
-import { analyticsService, activityService, workflowService } from "@/lib/services/api.service"
+import { analyticsService, activityService, workflowService, notificationService } from "@/lib/services/api.service"
 import { toast } from "sonner"
 import { Loader2, TrendingUp, Users, Clock, ArrowUpRight, AlertTriangle, CheckCircle2 } from "lucide-react"
+import Link from "next/link"
 
 export function CRMDashboard() {
   const [data, setData] = useState<any>(null)
   const [activities, setActivities] = useState<any[]>([])
+  const [notifications, setNotifications] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -18,12 +20,14 @@ export function CRMDashboard() {
     try {
       setLoading(true)
       setError(null)
-      const [statsData, actData] = await Promise.all([
+      const [statsData, actData, noteData] = await Promise.all([
         analyticsService.getDashboard(),
         activityService.getRecent(),
+        notificationService.getAll().catch(() => []),
       ])
       setData(statsData)
       setActivities(actData)
+      setNotifications(noteData || [])
     } catch (err: any) {
       const errMsg = err.response?.data?.message || err.message || "Failed to load dashboard metrics"
       setError(errMsg)
@@ -88,7 +92,7 @@ export function CRMDashboard() {
     { x: 100, y: 20 },
   ]
 
-  const toPath = (pts: {x: number; y: number}[]) =>
+  const toPath = (pts: { x: number; y: number }[]) =>
     pts
       .map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`)
       .join(" ")
@@ -178,14 +182,19 @@ export function CRMDashboard() {
             Total Revenue
           </p>
           <p className="text-4xl font-bold tracking-tight" style={{ color: "#FFF", fontFamily: "Gilroy, sans-serif" }}>
-            ${(totalRevenue / 1000000).toFixed(1)}M
+            {totalRevenue.toLocaleString('en-IN', {
+              style: 'currency',
+              currency: 'INR',
+              maximumFractionDigits: 0,
+              minimumFractionDigits: 0
+            })}
           </p>
-          <div className="flex items-center gap-1.5 mt-3">
+          {/* <div className="flex items-center gap-1.5 mt-3">
             <ArrowUpRight className="w-3 h-3" style={{ color: "#CCFF00" }} />
             <span className="text-[10px]" style={{ color: "#CCFF00" }}>
               +1.6% from last quarter
             </span>
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -314,39 +323,75 @@ export function CRMDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
         {/* System Alerts */}
         <div className="lg:col-span-2 space-y-3">
-          <p className="text-[10px] tracking-widest uppercase font-bold" style={{ color: "#999" }}>
-            System Alerts
-          </p>
-
-          <div
-            className="p-4 rounded-xl border-l-4"
-            style={{ backgroundColor: "#FFF8F6", borderLeftColor: "#FF6B6B" }}
-          >
-            <div className="flex items-center gap-2 mb-1">
-              <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#FF6B6B" }} />
-              <p className="text-[11px] font-bold" style={{ color: "#CC2200" }}>
-                Financial Discrepancy
-              </p>
-            </div>
-            <p className="text-[10px] pl-5" style={{ color: "#AA5555" }}>
-              Batch #402 requires manual reconciliation.
+          <div className="flex items-center justify-between">
+            <p className="text-[10px] tracking-widest uppercase font-bold" style={{ color: "#999" }}>
+              Latest Alerts
             </p>
+            <Link
+              href="/admin/notifications"
+              className="text-[9px] font-bold tracking-widest uppercase"
+              style={{ color: "#0055A5" }}
+            >
+              View All
+            </Link>
           </div>
 
-          <div
-            className="p-4 rounded-xl border-l-4"
-            style={{ backgroundColor: "#FFFBF0", borderLeftColor: "#F59E0B" }}
-          >
-            <div className="flex items-center gap-2 mb-1">
-              <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#F59E0B" }} />
-              <p className="text-[11px] font-bold" style={{ color: "#92400E" }}>
-                High Volume Warning
-              </p>
+          {notifications.slice(0, 3).map((n: any) => {
+            const isError = n.type === 'ERROR'
+            const isWarning = n.type === 'WARNING'
+            const isSuccess = n.type === 'SUCCESS'
+
+            let bg = '#F4F7FB'
+            let border = '#0055A5'
+            let text = '#0055A5'
+
+            if (isError) {
+              bg = '#FFF8F6'
+              border = '#E1000F'
+              text = '#E1000F'
+            } else if (isWarning) {
+              bg = '#FFFBF0'
+              border = '#dea306'
+              text = '#9a7004'
+            } else if (isSuccess) {
+              bg = '#F5FBF7'
+              border = '#0b9940'
+              text = '#0b9940'
+            }
+
+            const hasLink = !!n.metadata?.applicationId
+
+            return (
+              <div
+                key={n.id}
+                className={`p-3.5 rounded-xl border border-[#EEEEEA] border-l-4 transition-all duration-200 ${hasLink ? 'hover:shadow-md cursor-pointer hover:border-slate-300' : ''}`}
+                style={{ backgroundColor: bg, borderLeftColor: border }}
+                onClick={() => {
+                  if (hasLink) {
+                    window.location.href = `/admin/applications-portal/${n.metadata.applicationId}`
+                  }
+                }}
+              >
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <p className="text-[11px] font-bold truncate flex-1" style={{ color: text }}>
+                    {n.title}
+                  </p>
+                  <span className="text-[9px] text-[#AAA] shrink-0 font-medium">
+                    {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+                <p className="text-[10px]" style={{ color: '#555', lineHeight: '1.4' }}>
+                  {n.message}
+                </p>
+              </div>
+            )
+          })}
+
+          {notifications.length === 0 && (
+            <div className="p-8 text-center border border-dashed rounded-xl bg-white">
+              <p className="text-xs text-muted-foreground italic">No new alerts</p>
             </div>
-            <p className="text-[10px] pl-5" style={{ color: "#AA8855" }}>
-              Interview queue exceeded threshold.
-            </p>
-          </div>
+          )}
         </div>
 
         {/* Recent Candidate Movements */}

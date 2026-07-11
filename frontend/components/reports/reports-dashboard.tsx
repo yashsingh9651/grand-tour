@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { analyticsService } from '@/lib/services/api.service'
 import { Card } from '@/components/ui/card'
-import { Loader2, TrendingUp, Users, DollarSign, Target } from 'lucide-react'
+import { Loader2, TrendingUp, Users, DollarSign, Target, IndianRupee } from 'lucide-react'
 import { BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { toast } from 'sonner'
 
@@ -24,7 +24,7 @@ export function ReportsDashboard() {
         analyticsService.getWorkflow()
       ])
       setData(dashData)
-      
+
       // Map workflow stats for Pie chart
       const mappedWfStats = wfStats.map((s: any) => ({
         name: s.status,
@@ -82,11 +82,16 @@ export function ReportsDashboard() {
         <Card className="p-5 border-l-4 border-l-green-500 hover:shadow-lg transition-all">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-green-50 rounded-lg">
-              <DollarSign className="w-5 h-5 text-green-500" />
+              <IndianRupee className="w-5 h-5 text-green-500" />
             </div>
             <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Total Revenue</p>
           </div>
-          <p className="text-3xl font-bold text-foreground">${stats.totalRevenue.toLocaleString()}</p>
+          <p className="text-3xl font-bold text-foreground">{stats.totalRevenue.toLocaleString('en-IN', {
+            style: 'currency',
+            currency: 'INR',
+            maximumFractionDigits: 0,
+            minimumFractionDigits: 0
+          })}</p>
           <p className="text-[10px] text-green-600 mt-2 font-bold">From completed payments</p>
         </Card>
 
@@ -128,10 +133,10 @@ export function ReportsDashboard() {
                       <Cell key={`cell-${index}`} fill={entry.fill} stroke="transparent" />
                     ))}
                   </Pie>
-                  <Tooltip 
+                  <Tooltip
                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
                   />
-                  <Legend verticalAlign="bottom" height={36}/>
+                  <Legend verticalAlign="bottom" height={36} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -162,7 +167,7 @@ export function ReportsDashboard() {
                 <div className="bg-primary rounded-full h-3 transition-all duration-1000 shadow-sm" style={{ width: `${Math.min(100, stats.conversionRate * 1.2)}%` }} />
               </div>
             </div>
-            
+
             <div>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-xs font-bold text-muted-foreground uppercase">Interview Turnaround</span>

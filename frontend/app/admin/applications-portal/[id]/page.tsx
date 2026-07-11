@@ -295,8 +295,16 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
       setStudentCategories(catData || [])
 
       if (appData) {
-        // Set active step to current candidate step
-        setActiveStepId(appData.currentStepId || 'application')
+        // Set active step to query parameter step or current candidate step
+        let targetStep = appData.currentStepId || 'application'
+        if (typeof window !== 'undefined') {
+          const searchParams = new URLSearchParams(window.location.search)
+          const stepParam = searchParams.get('step')
+          if (stepParam) {
+            targetStep = stepParam
+          }
+        }
+        setActiveStepId(targetStep)
         setAdminCategory(appData.category || 'STUDENT')
       }
     } catch (error: any) {

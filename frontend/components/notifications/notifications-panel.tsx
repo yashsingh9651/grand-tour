@@ -109,7 +109,7 @@ export function NotificationsPanel() {
       await notificationService.markRead(notification.id).catch(() => {})
       setNotifications(notifications.map((n) => (n.id === notification.id ? { ...n, isRead: true } : n)))
     }
-    router.push(`/admin/applications/${meta.applicationId}?step=${meta.stepKey || ''}`)
+    router.push(`/admin/applications-portal/${meta.applicationId}`)
   }
 
   const formatTime = (dateString: string) => {
