@@ -258,6 +258,7 @@ model WorkPermit {
   applicationId String      @unique
   application   Application @relation(fields: [applicationId], references: [id])
   documentUrl   String?
+  documentUrl2  String?
   status        String      @default("PENDING") // PENDING | ISSUED
   notes         String?
   createdAt     DateTime    @default(now())

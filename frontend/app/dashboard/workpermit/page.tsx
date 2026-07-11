@@ -101,58 +101,103 @@ export default function WorkPermitPage() {
 
         {/* Status Card */}
         {isIssued ? (
-          <Card className="p-0 overflow-hidden border border-border shadow-md bg-card">
-            {/* Green header */}
-            <div className="h-2 bg-gradient-to-r from-green-400 to-emerald-500" />
-            <div className="p-8">
-              <div className="flex items-start gap-6">
-                <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
-                  <CheckCircle2 className="w-9 h-9 text-emerald-500" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h2 className="text-2xl font-bold">Work Permit Issued!</h2>
-                    <span className="px-3 py-1 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-xs font-bold rounded-full uppercase tracking-wider">ACTIVE</span>
+          <div className="space-y-6">
+            <Card className="p-0 overflow-hidden border border-border shadow-md bg-card">
+              {/* Green header */}
+              <div className="h-2 bg-gradient-to-r from-green-400 to-emerald-500" />
+              <div className="p-8">
+                <div className="flex items-start gap-6">
+                  <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
+                    <CheckCircle2 className="w-9 h-9 text-emerald-500" />
                   </div>
-                  <p className="text-muted-foreground mb-6">
-                    Your work permit has been issued and is ready for download. 
-                    Please keep this document safe as it will be required during your internship.
-                  </p>
-                  {workPermit.notes && (
-                    <div className="p-4 bg-blue-500/10 border border-blue-500/25 rounded-xl mb-6 flex items-start gap-3">
-                      <AlertCircle className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
-                      <p className="text-sm text-blue-700 dark:text-blue-300">{workPermit.notes}</p>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h2 className="text-2xl font-bold">Work Permit Issued!</h2>
+                      <span className="px-3 py-1 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-xs font-bold rounded-full uppercase tracking-wider">ACTIVE</span>
                     </div>
-                  )}
-                  <div className="flex items-center gap-4">
-                    <a 
-                      href={workPermit.documentUrl?.includes('cloudinary.com') ? workPermit.documentUrl.replace('/upload/', '/upload/fl_attachment/') : workPermit.documentUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                    >
-                      <Button size="lg" className="gap-3 bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/20">
-                        <FileDown className="w-5 h-5" />
-                        Download Work Permit
+                    <p className="text-muted-foreground mb-6">
+                      Your work permit documents have been issued and are ready for download below. 
+                      Please keep these documents safe as they will be required during your internship.
+                    </p>
+                    {workPermit.notes && (
+                      <div className="p-4 bg-blue-500/10 border border-blue-500/25 rounded-xl mb-6 flex items-start gap-3">
+                        <AlertCircle className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                        <p className="text-sm text-blue-700 dark:text-blue-300">{workPermit.notes}</p>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-4">
+                      <Button 
+                        variant="outline" 
+                        size="lg" 
+                        onClick={handleProceedToVisa} 
+                        disabled={transitioning}
+                        className="gap-2 border-border hover:bg-muted text-foreground"
+                      >
+                        {transitioning ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <>Next: Visa Payments <ChevronRight className="w-4 h-4" /></>
+                        )}
                       </Button>
-                    </a>
-                    <Button 
-                      variant="outline" 
-                      size="lg" 
-                      onClick={handleProceedToVisa} 
-                      disabled={transitioning}
-                      className="gap-2 border-border hover:bg-muted text-foreground"
-                    >
-                      {transitioning ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <>Next: Visa Payments <ChevronRight className="w-4 h-4" /></>
-                      )}
-                    </Button>
+                    </div>
                   </div>
                 </div>
               </div>
+            </Card>
+
+            {/* Document Download Cards Grid */}
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Document 1 Card */}
+              {workPermit.documentUrl && (
+                <Card className="p-6 border border-border bg-card shadow-sm flex flex-col justify-between space-y-4">
+                  <div className="space-y-2">
+                    <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+                      <Briefcase className="w-5 h-5 text-primary" />
+                    </div>
+                    <h3 className="font-bold text-foreground">Work Permit Document 1</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Primary work permit authorization approved by the Ministry of Labour.
+                    </p>
+                  </div>
+                  <a 
+                    href={workPermit.documentUrl?.includes('cloudinary.com') ? workPermit.documentUrl.replace('/upload/', '/upload/fl_attachment/') : workPermit.documentUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="w-full pt-2"
+                  >
+                    <Button className="w-full gap-2 bg-green-600 hover:bg-green-700 text-white rounded-xl h-10 text-xs font-bold">
+                      <FileDown className="w-4 h-4" /> Download Document 1
+                    </Button>
+                  </a>
+                </Card>
+              )}
+
+              {/* Document 2 Card */}
+              {workPermit.documentUrl2 && (
+                <Card className="p-6 border border-border bg-card shadow-sm flex flex-col justify-between space-y-4">
+                  <div className="space-y-2">
+                    <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+                      <Briefcase className="w-5 h-5 text-primary" />
+                    </div>
+                    <h3 className="font-bold text-foreground">Work Permit Document 2</h3>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Secondary work permit or supporting administrative document.
+                    </p>
+                  </div>
+                  <a 
+                    href={workPermit.documentUrl2?.includes('cloudinary.com') ? workPermit.documentUrl2.replace('/upload/', '/upload/fl_attachment/') : workPermit.documentUrl2} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="w-full pt-2"
+                  >
+                    <Button className="w-full gap-2 bg-green-600 hover:bg-green-700 text-white rounded-xl h-10 text-xs font-bold">
+                      <FileDown className="w-4 h-4" /> Download Document 2
+                    </Button>
+                  </a>
+                </Card>
+              )}
             </div>
-          </Card>
+          </div>
         ) : (
           <Card className="p-0 overflow-hidden border border-border shadow-md bg-card">
             <div className="h-2 bg-gradient-to-r from-amber-400 to-orange-400" />

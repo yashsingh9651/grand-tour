@@ -528,19 +528,27 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
     }
 
     // Inline Work Permit File Upload
-    const handleWpUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleWpUpload = async (e: React.ChangeEvent<HTMLInputElement>, slotNum: number) => {
       const file = e.target.files?.[0]
       if (!file) return
       try {
         setWpUploading(true)
         const result = await uploadService.upload(file)
         if (result?.url) {
-          await workPermitService.uploadWorkPermit({
+          const wpRecord = application?.workPermit
+          const payload: any = {
             applicationId,
-            documentUrl: result.url,
             notes: wpNotes || undefined
-          })
-          toast.success('Work permit uploaded and issued successfully!')
+          }
+          if (slotNum === 1) {
+            payload.documentUrl = result.url
+            payload.documentUrl2 = wpRecord?.documentUrl2 || undefined
+          } else {
+            payload.documentUrl = wpRecord?.documentUrl || ''
+            payload.documentUrl2 = result.url
+          }
+          await workPermitService.uploadWorkPermit(payload)
+          toast.success(`Work permit document ${slotNum} uploaded successfully!`)
           await fetchDetails()
         }
       } catch (error: any) {
@@ -1393,11 +1401,11 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
           const wpRecord = application.workPermit
           return (
             <div className="space-y-4">
-              <h4 className="font-bold text-slate-900 border-b pb-2 flex items-center gap-2"><Sparkles className="w-4 h-4 text-primary" /> Work Permit Document</h4>
+              <h4 className="font-bold text-slate-900 border-b pb-2 flex items-center gap-2"><Sparkles className="w-4 h-4 text-primary" /> Work Permit Documents</h4>
 
               {wpRecord ? (
-                <Card className="p-5 border border-slate-200 bg-white rounded-3xl space-y-4">
-                  <div className="flex justify-between items-start">
+                <Card className="p-5 border border-slate-200 bg-white rounded-3xl space-y-6">
+                  <div className="flex justify-between items-start border-b pb-3">
                     <div>
                       <span className="text-[10px] font-bold text-slate-400 block uppercase">Work Permit Status</span>
                       <span className="text-sm font-bold text-slate-800 mt-1 block">Status: <Badge className="bg-emerald-50 text-emerald-700 ml-1">{wpRecord.status || 'ISSUED'}</Badge></span>
@@ -1405,31 +1413,66 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
                     <span className="text-xs text-slate-400">{new Date(wpRecord.updatedAt).toLocaleDateString()}</span>
                   </div>
 
-                  <div className="p-3 bg-slate-50 border rounded-2xl flex items-center justify-between text-xs">
-                    <span className="font-semibold text-slate-700 flex items-center gap-1.5"><FileText className="w-4 h-4 text-slate-400" /> Issued Work Permit PDF</span>
-                    <a href={wpRecord.documentUrl} target="_blank" rel="noopener noreferrer">
-                      <Button size="sm" variant="outline" className="h-8 rounded-xl font-bold gap-1.5"><Eye className="w-3.5 h-3.5" /> View / Download</Button>
-                    </a>
+                  {/* Document 1 Slot */}
+                  <div className="space-y-3">
+                    <h5 className="text-xs font-bold text-slate-700 uppercase tracking-wide">Work Permit Document 1</h5>
+                    {wpRecord.documentUrl ? (
+                      <div className="p-3 bg-slate-50 border rounded-2xl flex items-center justify-between text-xs">
+                        <span className="font-semibold text-slate-700 flex items-center gap-1.5"><FileText className="w-4 h-4 text-slate-400" /> Work Permit PDF 1</span>
+                        <a href={wpRecord.documentUrl} target="_blank" rel="noopener noreferrer">
+                          <Button size="sm" variant="outline" className="h-8 rounded-xl font-bold gap-1.5"><Eye className="w-3.5 h-3.5" /> View / Download</Button>
+                        </a>
+                      </div>
+                    ) : (
+                      <p className="text-xs text-muted-foreground italic">No document uploaded yet for Document 1.</p>
+                    )}
+                    <div className="pt-1">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase">Update / Upload Document 1</label>
+                      <div className="mt-1 flex gap-3">
+                        <Input
+                          type="file"
+                          accept=".pdf"
+                          onChange={(e) => handleWpUpload(e, 1)}
+                          disabled={wpUploading}
+                          className="rounded-xl flex-1 text-sm h-11"
+                        />
+                        {wpUploading && <Loader2 className="w-5 h-5 animate-spin self-center text-primary" />}
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="pt-2">
-                    <label className="text-xs font-bold text-slate-600">Update / Re-upload Work Permit PDF</label>
-                    <div className="mt-2 flex gap-3">
-                      <Input
-                        type="file"
-                        accept=".pdf"
-                        onChange={handleWpUpload}
-                        disabled={wpUploading}
-                        className="rounded-xl flex-1 text-sm h-11"
-                      />
-                      {wpUploading && <Loader2 className="w-5 h-5 animate-spin self-center text-primary" />}
+                  {/* Document 2 Slot */}
+                  <div className="space-y-3 border-t pt-4">
+                    <h5 className="text-xs font-bold text-slate-700 uppercase tracking-wide">Work Permit Document 2</h5>
+                    {wpRecord.documentUrl2 ? (
+                      <div className="p-3 bg-slate-50 border rounded-2xl flex items-center justify-between text-xs">
+                        <span className="font-semibold text-slate-700 flex items-center gap-1.5"><FileText className="w-4 h-4 text-slate-400" /> Work Permit PDF 2</span>
+                        <a href={wpRecord.documentUrl2} target="_blank" rel="noopener noreferrer">
+                          <Button size="sm" variant="outline" className="h-8 rounded-xl font-bold gap-1.5"><Eye className="w-3.5 h-3.5" /> View / Download</Button>
+                        </a>
+                      </div>
+                    ) : (
+                      <p className="text-xs text-muted-foreground italic">No document uploaded yet for Document 2.</p>
+                    )}
+                    <div className="pt-1">
+                      <label className="text-[10px] font-bold text-slate-400 uppercase">Update / Upload Document 2</label>
+                      <div className="mt-1 flex gap-3">
+                        <Input
+                          type="file"
+                          accept=".pdf"
+                          onChange={(e) => handleWpUpload(e, 2)}
+                          disabled={wpUploading}
+                          className="rounded-xl flex-1 text-sm h-11"
+                        />
+                        {wpUploading && <Loader2 className="w-5 h-5 animate-spin self-center text-primary" />}
+                      </div>
                     </div>
                   </div>
                 </Card>
               ) : (
                 <Card className="p-5 border border-slate-200 bg-white rounded-3xl space-y-4">
                   <div className="bg-amber-50 border border-amber-100 p-4 rounded-2xl text-xs text-amber-800 font-medium">
-                    Awaiting work permit. Please upload the official work permit file to issue it to the candidate.
+                    Awaiting work permit. Please upload the official work permit documents to issue them to the candidate.
                   </div>
 
                   <div className="space-y-4">
@@ -1444,12 +1487,26 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-xs font-bold text-slate-600">Upload Work Permit (PDF)</label>
+                      <label className="text-xs font-bold text-slate-600">Upload Work Permit Document 1 (PDF)</label>
                       <div className="flex gap-3">
                         <Input
                           type="file"
                           accept=".pdf"
-                          onChange={handleWpUpload}
+                          onChange={(e) => handleWpUpload(e, 1)}
+                          disabled={wpUploading}
+                          className="rounded-xl h-11 text-sm"
+                        />
+                        {wpUploading && <Loader2 className="w-5 h-5 animate-spin self-center text-primary" />}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 border-t pt-3">
+                      <label className="text-xs font-bold text-slate-600">Upload Work Permit Document 2 (PDF)</label>
+                      <div className="flex gap-3">
+                        <Input
+                          type="file"
+                          accept=".pdf"
+                          onChange={(e) => handleWpUpload(e, 2)}
                           disabled={wpUploading}
                           className="rounded-xl h-11 text-sm"
                         />

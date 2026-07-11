@@ -6,7 +6,7 @@ import emailService from '../services/email.service';
 
 // Admin: Upload work permit for a student
 export const uploadWorkPermit = async (req: Request, res: Response) => {
-  const { applicationId, documentUrl, notes } = req.body;
+  const { applicationId, documentUrl, documentUrl2, notes } = req.body;
   const adminId = (req as any).user?.id;
 
   const existing = await prisma.workPermit.findUnique({ where: { applicationId } });
@@ -15,11 +15,11 @@ export const uploadWorkPermit = async (req: Request, res: Response) => {
   if (existing) {
     workPermit = await prisma.workPermit.update({
       where: { applicationId },
-      data: { documentUrl, notes, status: 'ISSUED', updatedAt: new Date() },
+      data: { documentUrl, documentUrl2, notes, status: 'ISSUED', updatedAt: new Date() },
     });
   } else {
     workPermit = await prisma.workPermit.create({
-      data: { applicationId, documentUrl, notes, status: 'ISSUED' },
+      data: { applicationId, documentUrl, documentUrl2, notes, status: 'ISSUED' },
     });
   }
 

@@ -384,7 +384,7 @@ export const workPermitService = {
     const response = await apiClient.get('/api/workpermit');
     return response.data.data;
   },
-  uploadWorkPermit: async (data: { applicationId: string; documentUrl: string; notes?: string }) => {
+  uploadWorkPermit: async (data: { applicationId: string; documentUrl: string; documentUrl2?: string; notes?: string }) => {
     const response = await apiClient.post('/api/workpermit/upload', data);
     return response.data.data;
   },
