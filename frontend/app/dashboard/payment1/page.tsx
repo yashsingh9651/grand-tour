@@ -521,16 +521,16 @@ export default function Payment1Page() {
                     <Lock className="w-5 h-5 text-primary animate-pulse" />
                   </div>
                   <div className="space-y-1.5">
-                    <h3 className="font-extrabold text-sm uppercase tracking-widest text-foreground">Unlock Payment Center</h3>
+                    <h3 className="font-extrabold text-sm uppercase tracking-widest text-foreground">Financial Disclosure & Terms</h3>
                     <p className="text-[11px] text-muted-foreground leading-relaxed">
-                      Please accept the tuition payment policies, refund terms, and internship program timeline conditions to view details and proceed.
+                      Please execute formal acknowledgment of the tuition payment policies, refund schedules, and internship program timeline conditions to authorize access and proceed with payment processing.
                     </p>
                   </div>
                   <Button
                     onClick={handleAcceptTerms}
-                    className="w-full bg-[#E1000F] hover:bg-[#c5121e] text-white py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider shadow-lg shadow-red-500/10 active:scale-95 transition-all"
+                    className="w-full bg-[#E1000F] hover:bg-[#E1000F]/90 text-white py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider shadow-lg shadow-red-500/10 active:scale-95 transition-all"
                   >
-                    Accept T&C & Unlock
+                    Acknowledge & Unlock
                   </Button>
                 </div>
               </div>

@@ -1709,17 +1709,21 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
 
               {/* Profile Card */}
               <Card className="p-6 border border-slate-200 bg-white rounded-3xl shadow-sm space-y-4 text-center">
-                {application.user?.image || application.user?.profileImage ? (
-                  <img
-                    src={application.user?.image || application.user?.profileImage}
-                    alt={studentName}
-                    className="w-16 h-16 rounded-full object-cover mx-auto border-2 border-slate-100"
-                  />
-                ) : (
-                  <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center font-black text-slate-700 text-2xl mx-auto">
-                    {application.user?.firstName?.[0]}{application.user?.lastName?.[0]}
-                  </div>
-                )}
+                {(() => {
+                  const personalPhotoDoc = application.documents?.find((d: any) => d.type === 'photo')
+                  const avatarSrc = personalPhotoDoc?.url || application.user?.image || application.user?.profileImage
+                  return avatarSrc ? (
+                    <img
+                      src={avatarSrc}
+                      alt={studentName}
+                      className="w-16 h-16 rounded-full object-cover mx-auto border-2 border-slate-100"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center font-black text-slate-700 text-2xl mx-auto">
+                      {application.user?.firstName?.[0]}{application.user?.lastName?.[0]}
+                    </div>
+                  )
+                })()}
                 <div>
                   <h3 className="font-extrabold text-slate-900 text-lg">{studentName}</h3>
                   <p className="text-xs text-slate-500 font-medium mt-0.5">{application.user?.email}</p>
