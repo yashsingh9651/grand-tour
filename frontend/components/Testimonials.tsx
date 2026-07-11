@@ -68,7 +68,7 @@ export default function Testimonials() {
         <span className="text-3xl block text-[#dea306]">✨</span>
       </div>
 
-      <div className="relative z-10 text-center space-y-4 max-w-5xl mx-auto mb-20">
+      <div className="relative z-10 text-center space-y-4 max-w-5xl mx-auto mb-10 lg:mb-20">
         {/* Eyebrow badge */}
         <div className="inline-flex items-center justify-center">
           <span className="text-[11px] font-extrabold tracking-[0.2em] text-[#0b9940] uppercase bg-[#0b9940]/10 border border-[#0b9940]/20 px-4 py-1.5 rounded-full">
@@ -77,7 +77,7 @@ export default function Testimonials() {
         </div>
 
         {/* Heading */}
-        <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight text-[#141414] leading-tight">
+        <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight text-[#141414] leading-tight">
           From their words, not ours.
         </h2>
       </div>

@@ -38,7 +38,7 @@ export default function WhyGrandTour() {
           </div>
 
           {/* Heading */}
-          <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight text-[#141414] leading-tight font-sans">
+          <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight text-[#141414] leading-tight font-sans">
             We handle everything.<br />
             You live the <span className="text-[#0b9940]">experience.</span>
           </h2>
@@ -108,7 +108,7 @@ export default function WhyGrandTour() {
               alt="Culinary Kitchen Team Placements"
               width={600}
               height={600}
-              className="w-auto h-40 aspect-3/2 absolute top-1/2 rounded-[24px] -left-32 object-cover"
+              className="w-auto h-24 sm:h-40 aspect-3/2 absolute top-1/2 rounded-[24px] -left-12 sm:-left-20 lg:-left-32 object-cover hidden xs:block sm:block"
             />
 
           </div>

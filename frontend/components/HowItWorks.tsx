@@ -80,7 +80,7 @@ export default function HowItWorks() {
 
         {/* Heading & Subtitle */}
         <div className="space-y-3 max-w-4xl mx-auto">
-          <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight text-[#141414] leading-tight">
+          <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight text-[#141414] leading-tight">
             How It Works
           </h2>
           <p className="text-xs sm:text-sm text-gray-500 font-semibold leading-relaxed">
@@ -179,7 +179,7 @@ export default function HowItWorks() {
                 <div className="bg-white rounded-2xl border border-slate-100 p-4 shadow-[0_8px_32px_rgba(0,0,0,0.06)] w-full text-left">
                   {/* Icon + Title in same row */}
                   <div className="flex items-center gap-2.5 mb-2">
-                    <div className={`relative w-9 h-9 flex items-center justify-center rounded-xl shrink-0 shadow-lg shadow-[${s.iconBg}] shrink-0 bg-[${s.iconBg}]`}>
+                    <div className={`relative w-9 h-9 flex items-center justify-center rounded-xl shrink-0 shadow-lg ${s.iconShadow} ${s.iconBg}`}>
                       <Icon className="w-4 h-4 text-white" />
                       <div className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-[#141414] text-white font-black text-[9px] flex items-center justify-center border border-white">
                         {s.num}

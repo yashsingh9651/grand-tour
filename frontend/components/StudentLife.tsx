@@ -119,7 +119,7 @@ export default function StudentLife() {
         </div>
 
         {/* Heading */}
-        <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight text-white leading-tight">
+        <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight text-white leading-tight">
           Life in <span className="text-[#dea306]">France</span>, unfiltered.
         </h2>
 

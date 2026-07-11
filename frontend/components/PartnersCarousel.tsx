@@ -4,7 +4,7 @@ import Image from 'next/image'
 
 export default function PartnersCarousel() {
   return (
-    <section className="bg-white text-center space-y-8 py-20 px-4 sm:px-6 lg:px-8">
+    <section className="bg-white text-center space-y-8 py-12 sm:py-20 px-4 sm:px-6 lg:px-8">
         {/* Eyebrow Badge (using matched brand red #E1000F) */}
         <div className="inline-flex items-center justify-center">
           <span className="text-[10px] font-semibold tracking-[0.25em] text-[#E1000F] uppercase bg-[#E1000F]/10 px-4 py-1.5 rounded-full animate-fade-in">
@@ -14,7 +14,7 @@ export default function PartnersCarousel() {
 
         {/* Heading & Subtitle */}
         <div className="space-y-3">
-          <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight text-[#141414] leading-tight font-sans">
+          <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-semibold tracking-tight text-[#141414] leading-tight font-sans">
             Working With The <span className="text-[#0b9940]">Best</span> In <span className="text-[#dea306]">France</span>
           </h2>
           <p className="text-xs sm:text-base text-gray-500 font-medium tracking-wide leading-relaxed">
