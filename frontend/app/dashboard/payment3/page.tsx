@@ -221,9 +221,9 @@ export default function Payment3Page() {
           </div>
         </Card>
       ) : (
-        <div className="grid lg:grid-cols-3 gap-6 items-stretch mb-8">
-          {/* France Work Permit Ready Card */}
-          <Card className="relative overflow-hidden border border-border bg-gradient-to-b from-blue-500/10 via-background to-red-500/10 rounded-[2.5rem] shadow-md p-6 flex flex-col justify-between h-full space-y-6">
+        <div className="space-y-6">
+          {/* France Work Permit Ready Card (Horizontal Row) */}
+          <Card className="relative overflow-hidden border border-border bg-gradient-to-r from-blue-500/10 via-background to-red-500/10 rounded-[2.5rem] shadow-sm p-6">
             {/* Tricolore Top Bar */}
             <div className="absolute top-0 left-0 right-0 h-[6px] flex">
               <div className="flex-1 bg-[#002395]" />
@@ -231,8 +231,8 @@ export default function Payment3Page() {
               <div className="flex-1 bg-[#ED2939]" />
             </div>
 
-            <div className="space-y-4 text-center md:text-left">
-              <div className="w-16 h-16 rounded-2xl bg-card border border-border flex flex-col items-center justify-center shadow-sm relative overflow-hidden mx-auto md:mx-0 shrink-0">
+            <div className="flex flex-col md:flex-row items-center gap-6">
+              <div className="w-16 h-16 rounded-2xl bg-card border border-border flex flex-col items-center justify-center shadow-sm relative overflow-hidden shrink-0">
                 {/* Micro France Flag Backdrop inside Icon */}
                 <div className="absolute inset-0 flex opacity-10">
                   <div className="flex-1 bg-[#002395]" />
@@ -241,7 +241,7 @@ export default function Payment3Page() {
                 </div>
                 <span className="text-3xl relative z-10">🇫🇷</span>
               </div>
-              <div className="space-y-1">
+              <div className="space-y-1 text-center md:text-left flex-1">
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-1.5">
                   <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-blue-600/10 text-blue-600 border border-blue-200/20">
                     Visa Ready Status
@@ -253,29 +253,17 @@ export default function Payment3Page() {
                 <h3 className="text-lg font-extrabold text-foreground tracking-tight mt-1">
                   Félicitations! Your Work Permit is Ready
                 </h3>
-                <p className="text-[11px] text-muted-foreground leading-relaxed font-medium">
+                <p className="text-xs text-muted-foreground leading-relaxed font-medium">
                   Your official French work permit (Autorisation de travail) has been approved and issued by the French Ministry of Labour.
                 </p>
               </div>
             </div>
-
-            {application?.workPermit?.documentUrl && (
-              <a
-                href={application.workPermit.documentUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full mt-auto"
-              >
-                <Button className="w-full bg-[#002395] hover:bg-[#001c75] text-white border border-[#002395] rounded-2xl font-bold h-12 flex items-center justify-center gap-2 shadow-lg shadow-blue-500/10 transition-all hover:scale-[1.02] active:scale-[0.98]">
-                  <FileDown className="w-4 h-4" /> Download Permit
-                </Button>
-              </a>
-            )}
           </Card>
 
-          {/* Left Column: Payment details */}
-          <Card className="p-6 border border-border bg-card rounded-[2.5rem] shadow-sm text-foreground flex flex-col justify-between h-full space-y-4">
-            <div className="space-y-4">
+          <div className="grid md:grid-cols-2 gap-6 items-stretch mb-8">
+            {/* Left Column: Payment details */}
+            <Card className="p-6 border border-border bg-card rounded-[2.5rem] shadow-sm text-foreground flex flex-col justify-between h-full space-y-4">
+              <div className="space-y-4">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center">
                   <IndianRupee className="w-6 h-6 text-primary" />
@@ -500,6 +488,7 @@ export default function Payment3Page() {
             </Card>
           </div>
         )}
+        </div>
         </div>
       )}
 
