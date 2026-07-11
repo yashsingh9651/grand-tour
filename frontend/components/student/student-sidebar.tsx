@@ -136,13 +136,10 @@ export function StudentSidebar({ currentStep, darkMode }: { currentStep?: string
                     LOCKED
                   </span>
                 ) : activeStepId === item.stepKey ? (
-                  // <span
-                  //   className="text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider animate-pulse flex items-center gap-1 shrink-0"
-                  //   style={{ backgroundColor: 'rgba(11, 153, 64, 0.15)', color: '#0b9940', border: '1px solid rgba(11, 153, 64, 0.25)' }}
-                  // >
-                  //   Active
-                  // </span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#0b9940] animate-ping" />
+                  <span className="relative flex h-2.5 w-2.5 shrink-0 ml-auto mr-1">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#0b9940] opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#0b9940]"></span>
+                  </span>
                 ) : null}
               </Link>
             )
