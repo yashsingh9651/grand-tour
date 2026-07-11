@@ -18,6 +18,14 @@ class ApplicationService {
     const preferredDepartment = data.preferredDepartment !== undefined ? data.preferredDepartment : payloadData.preferredDepartment;
     const statementOfPurpose = data.statementOfPurpose !== undefined ? data.statementOfPurpose : payloadData.statementOfPurpose;
 
+    const email = payloadData.email || data.email;
+    if (email && typeof email === 'string' && email.trim() !== '') {
+      await prisma.user.update({
+        where: { id: data.userId },
+        data: { email: email.trim() }
+      });
+    }
+
     const application = await prisma.application.upsert({
       where: { userId: data.userId },
       update: {
@@ -91,6 +99,20 @@ class ApplicationService {
     const enrollmentStatus = data.enrollmentStatus !== undefined ? data.enrollmentStatus : payloadData.enrollmentStatus;
     const preferredDepartment = data.preferredDepartment !== undefined ? data.preferredDepartment : payloadData.preferredDepartment;
     const statementOfPurpose = data.statementOfPurpose !== undefined ? data.statementOfPurpose : payloadData.statementOfPurpose;
+
+    const email = payloadData.email || data.email;
+    if (email && typeof email === 'string' && email.trim() !== '') {
+      const app = await prisma.application.findUnique({
+        where: { id },
+        select: { userId: true }
+      });
+      if (app?.userId) {
+        await prisma.user.update({
+          where: { id: app.userId },
+          data: { email: email.trim() }
+        });
+      }
+    }
 
     const application = await prisma.application.update({
       where: { id },

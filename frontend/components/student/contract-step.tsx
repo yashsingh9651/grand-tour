@@ -170,16 +170,17 @@ export function ContractStep({ application, currentStepConfig, onSubmit, submitt
   }
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 text-foreground">
-      <Card className="p-8 border border-border bg-card shadow-sm rounded-[2rem]">
-        <div className="space-y-6 text-center max-w-2xl mx-auto">
-          <div className="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center mx-auto mb-2">
-            <FileText className="w-8 h-8 text-amber-600 dark:text-amber-400" />
-          </div>
-          <h2 className="text-3xl font-black tracking-tight text-foreground">
-            {config.contractTitle || 'Internship Contract'}
-          </h2>
-          <p className="text-muted-foreground font-medium text-lg leading-relaxed">
+    <div className="grid lg:grid-cols-3 gap-6 items-start animate-in fade-in duration-500 text-foreground">
+      <div className="lg:col-span-2 space-y-8">
+        <Card className="p-8 border border-border bg-card shadow-sm rounded-[2rem]">
+          <div className="space-y-6 text-center max-w-2xl mx-auto">
+            <div className="w-16 h-16 bg-amber-500/10 rounded-2xl flex items-center justify-center mx-auto mb-2">
+              <FileText className="w-8 h-8 text-amber-600 dark:text-amber-400" />
+            </div>
+            <h2 className="text-3xl font-black tracking-tight text-foreground">
+              {config.contractTitle || 'Internship Contract'}
+            </h2>
+            <p className="text-muted-foreground font-medium text-lg leading-relaxed">
             Please download your contract, print it, sign every page, and upload a scanned copy back here.
           </p>
 
@@ -456,6 +457,30 @@ export function ContractStep({ application, currentStepConfig, onSubmit, submitt
           )}
         </div>
       )}
+      </div>
+
+      {/* Guidelines Box */}
+      <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-foreground">
+        <div className="space-y-6">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center">
+              <FileText className="w-6 h-6 text-primary" />
+            </div>
+            <div>
+              <h2 className="text-xl font-black text-foreground">Guidelines</h2>
+              <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">Resources & Info</p>
+            </div>
+          </div>
+
+          {/* Instructions Text */}
+          <div className="space-y-3">
+            <h3 className="text-sm font-bold text-foreground">Instructions</h3>
+            <div className="p-4 bg-muted border border-border rounded-2xl text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap font-medium">
+              {"1. Download the unsigned template of your internship contract from the 'Download Contract' slot.\n\n2. Carefully review all terms & conditions, including your role description, work duration, stipend (if applicable), and hotel assignment details.\n\n3. Print the contract document, physically sign and date the bottom of every page.\n\n4. Scan the fully signed document pages back into a single PDF or clear image file.\n\n5. Upload the signed copy in the 'Upload Signed Copy' slot and submit for administrative review.\n\n6. Once administrative staff verifies the document, your status will turn to APPROVED and you will advance to the next step."}
+            </div>
+          </div>
+        </div>
+      </Card>
 
       <UploadPopup
         isOpen={isUploadOpen}

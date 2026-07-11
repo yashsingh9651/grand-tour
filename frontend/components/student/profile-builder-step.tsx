@@ -175,6 +175,10 @@ const extractPersistedValue = (field: any, application: any, sessionUser?: any) 
     return persistedData[field.fieldKey]
   }
 
+  if (field.fieldKey === 'email') {
+    return persistedData[field.fieldKey] || application?.user?.email || sessionUser?.email || ''
+  }
+
   if (field.fieldKey === 'fullName') {
     return resolveUserValue(field, application, sessionUser)
   }
@@ -189,9 +193,20 @@ export function ProfileBuilderStep({ application, onSubmit, submitting, pageCont
   const [formData, setFormData] = useState<Record<string, any>>({})
 
   const pageFields = useMemo(() => {
-    return (resolvedPageContent?.blocks || [])
+    const rawFields = (resolvedPageContent?.blocks || [])
       .filter((field: any) => field.enabled !== false)
       .sort((a: any, b: any) => Number(a.order || 0) - Number(b.order || 0))
+
+    return rawFields.map((field: any) => {
+      if (field.id === 'primary-email' || field.fieldKey === 'email') {
+        return {
+          ...field,
+          type: 'text',
+          disabled: false
+        }
+      }
+      return field
+    })
   }, [resolvedPageContent])
 
   useEffect(() => {

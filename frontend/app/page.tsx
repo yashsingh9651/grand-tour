@@ -91,7 +91,7 @@ export default function Home() {
               <Link
                 href={isLoggedIn ? dashboardLink : "/login"}
                 id="btn-desktop-partner"
-                className="bg-[#0055A5] hover:bg-[#1d4ed8] active:scale-95 text-white text-xs font-medium px-6 py-3 rounded-full uppercase tracking-wider transition-all shadow-lg select-none"
+                className="bg-[#0055A5] hover:bg-[#0055A5]/90 active:scale-95 text-white text-xs font-medium px-6 py-3 rounded-full uppercase tracking-wider transition-all shadow-lg select-none"
               >
                 {isLoggedIn ? "Go to Dashboard" : "Become a Partner"}
               </Link>
@@ -125,7 +125,7 @@ export default function Home() {
                   <Link
                     href={isLoggedIn ? dashboardLink : "/login"}
                     onClick={() => setMobileMenuOpen(false)}
-                    className="bg-[#2563EB] text-white font-bold text-center py-3 rounded-full text-sm uppercase tracking-wider"
+                    className="bg-[#0055A5] text-white font-bold text-center py-3 rounded-full text-sm uppercase tracking-wider"
                   >
                     {isLoggedIn ? "Go to Dashboard" : "Become a Partner"}
                   </Link>
@@ -225,7 +225,7 @@ export default function Home() {
               <Link
                 href={isLoggedIn ? dashboardLink : "/login"}
                 id="btn-apply-now"
-                className="bg-[#E1000F] border border-[#E1000F] hover:bg-[#c5121e] active:scale-95 text-white text-xs font-medium px-7 py-2.5 rounded-full tracking-widest transition-all shadow-lg select-none"
+                className="bg-[#E1000F] border border-[#E1000F] hover:bg-[#E1000F]/90 active:scale-95 text-white text-xs font-medium px-7 py-2.5 rounded-full tracking-widest transition-all shadow-lg select-none"
               >
                 Apply Now
               </Link>
