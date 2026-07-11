@@ -56,7 +56,7 @@ const MENU_SECTIONS: MenuSection[] = [
     items: [
       { icon: LayoutDashboard, label: "Dashboard", href: "/admin", feature: "dashboard" },
       // { icon: Users, label: "Candidates", href: "/admin/candidates", feature: "candidates" },
-      { icon: ClipboardList, label: "Applications Portal", href: "/admin/applications-portal", feature: "applications" },
+      { icon: ClipboardList, label: "Students Portal", href: "/admin/applications-portal", feature: "applications" },
       // { icon: ShieldCheck, label: "Approvals", href: "/admin/applications", feature: "applications", badge: "New" },
       // { icon: Search, label: "Search", href: "/admin/search", feature: "search" },
     ]
@@ -68,7 +68,7 @@ const MENU_SECTIONS: MenuSection[] = [
       // { icon: FileText, label: "Documents", href: "/admin/documents", feature: "documents" },
       // { icon: ClipboardList, label: "Contracts", href: "/admin/contracts", feature: "documents" },
       // { icon: CreditCard, label: "Payments", href: "/admin/payments", feature: "payments", badge: "New" },
-      { icon: Building2, label: "Hotel Inventory", href: "/admin/hotels", feature: "hotels" },
+      { icon: Building2, label: "Hotels List", href: "/admin/hotels", feature: "hotels" },
       // { icon: Briefcase, label: "Work Permits", href: "/admin/workpermit", feature: "workpermit" },
       { icon: Stamp, label: "Visa Slot Config", href: "/admin/visa", feature: "visa" },
       // { icon: Plane, label: "Travel", href: "/admin/travel", feature: "travel" },

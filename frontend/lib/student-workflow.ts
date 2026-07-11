@@ -28,7 +28,7 @@ export const WORKFLOW_STEPS: Record<WorkflowStep, Omit<WorkflowStepData, 'comple
   documents: { id: 'documents', title: 'Documents Upload', description: 'Upload required docs', icon: '✓', order: 2 },
   interview: { id: 'interview', title: 'Interview Booking', description: 'Schedule interview', icon: '🔓', order: 3 },
   payment1: { id: 'payment1', title: 'First Payment', description: 'Payment confirmation', icon: '🔒', order: 4 },
-  hotel: { id: 'hotel', title: 'Hotel Allocation', description: 'Accommodation details', icon: '🔒', order: 5 },
+  hotel: { id: 'hotel', title: 'Hotel Host', description: 'Accommodation details', icon: '🔒', order: 5 },
   payment2: { id: 'payment2', title: 'Second Payment', description: 'Payment installment 2', icon: '🔒', order: 6 },
   contract: { id: 'contract', title: 'Contract', description: 'Sign agreement', icon: '🔒', order: 7 },
   payment3: { id: 'payment3', title: 'Third Payment', description: 'Payment installment 3', icon: '🔒', order: 8 },

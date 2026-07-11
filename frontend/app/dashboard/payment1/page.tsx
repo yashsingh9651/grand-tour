@@ -316,7 +316,7 @@ export default function Payment1Page() {
           1st Installment Payment
         </h1>
         <p className="text-sm text-muted-foreground font-medium max-w-lg">
-          Please complete your first tuition payment installment to proceed to the hotel allocation step.
+          Please complete your first tuition payment installment to proceed to the hotel host step.
         </p>
       </div>
 
@@ -423,7 +423,7 @@ export default function Payment1Page() {
                   <PartyPopper className="w-5 h-5 text-green-600" />
                 </div>
                 <p className="text-sm text-muted-foreground font-medium max-w-sm mx-auto">
-                  Your 1st installment payment has been successfully verified. You are now cleared for hotel allocation.
+                  Your 1st installment payment has been successfully verified. You are now cleared for hotel host.
                 </p>
               </div>
               <div className="p-4 bg-muted border border-border rounded-2xl text-left space-y-3 text-sm">

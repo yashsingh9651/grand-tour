@@ -62,7 +62,7 @@ export default function HotelPage() {
     setResponding(true)
     try {
       await hotelService.respondToAssignment('ACCEPTED')
-      toast.success('Hotel allocation accepted!')
+      toast.success('Hotel host accepted!')
       await fetchData()
     } catch {
       toast.error('Failed to respond')
@@ -115,7 +115,7 @@ export default function HotelPage() {
       <StudentLayout currentStep="hotel">
         <div className="max-w-4xl space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold">Hotel Allocation</h1>
+            <h1 className="text-3xl font-bold">Hotel Host</h1>
             <p className="text-muted-foreground">View your accommodation details</p>
           </div>
           <Card className="p-12 border-2 border-dashed bg-secondary/20 flex flex-col items-center text-center">
@@ -124,7 +124,7 @@ export default function HotelPage() {
             </div>
             <h2 className="text-2xl font-bold">Step Locked</h2>
             <p className="text-muted-foreground mt-2 max-w-md">
-              Your hotel allocation will be available once your <span className="font-semibold text-primary">Payment 1</span> is approved.
+              Your hotel host will be available once your <span className="font-semibold text-primary">Payment 1</span> is approved.
             </p>
             <Link href="/dashboard/payment1">
               <Button className="mt-8">Go to Payment Step <ChevronRight className="w-4 h-4 ml-2" /></Button>
@@ -289,7 +289,7 @@ export default function HotelPage() {
                 <AlertTriangle className="w-6 h-6 text-primary" />
               </div>
               <div className="flex-1">
-                <h3 className="font-bold text-lg mb-1 text-foreground">Confirm Your Hotel Allocation</h3>
+                <h3 className="font-bold text-lg mb-1 text-foreground">Confirm Your Hotel Host</h3>
                 <p className="text-sm text-muted-foreground mb-4">
                   Please review the hotel details above and either accept or decline this allocation. 
                   Accepting will move you to the next payment step. Declining will notify our team to find an alternative.
@@ -312,7 +312,7 @@ export default function HotelPage() {
           <Card className="p-6 border border-emerald-500/20 bg-emerald-500/10 flex items-center gap-4 text-foreground">
             <CheckCircle2 className="w-10 h-10 text-emerald-600 flex-shrink-0" />
             <div>
-              <h3 className="font-bold text-emerald-600 dark:text-emerald-400">You've accepted this hotel allocation!</h3>
+              <h3 className="font-bold text-emerald-600 dark:text-emerald-400">You've accepted this hotel Host!</h3>
               
               {application?.currentStepId === 'hotel' ? (
                 <>
@@ -359,7 +359,7 @@ export default function HotelPage() {
           <Card className="p-6 border border-rose-500/20 bg-rose-500/10 flex items-center gap-4 text-foreground">
             <ThumbsDown className="w-10 h-10 text-rose-500 flex-shrink-0" />
             <div>
-              <h3 className="font-bold text-rose-600 dark:text-rose-400">You've declined this hotel allocation.</h3>
+              <h3 className="font-bold text-rose-600 dark:text-rose-400">You've declined this hotel host.</h3>
               <p className="text-sm text-muted-foreground mt-1">Our team has been notified and will contact you with alternatives shortly.</p>
               {assignment.responseNote && <p className="text-xs text-rose-600 mt-2 italic font-bold">Your note: "{assignment.responseNote}"</p>}
             </div>
@@ -388,7 +388,7 @@ export default function HotelPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-card border border-border rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4 text-foreground">
             <div className="flex items-center justify-between">
-              <h3 className="text-xl font-bold">Decline Hotel Allocation</h3>
+              <h3 className="text-xl font-bold">Decline Hotel Host</h3>
               <button onClick={() => setShowDeclineModal(false)} className="p-1 rounded-lg hover:bg-muted"><X className="w-5 h-5" /></button>
             </div>
             <p className="text-sm text-muted-foreground">Please provide a reason for declining. Our team will reach out to you with alternatives.</p>

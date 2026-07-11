@@ -123,7 +123,7 @@ class WorkflowService {
           },
           { id: 'interview', name: 'Interview Booking', description: 'Schedule your interview', order: 3, fields: [], isInterviewStep: true },
           { id: 'payment1', name: 'First Payment', description: 'Complete your initial payment', order: 4, fields: [], isPaymentStep: true, amount: 50000, gstPercentage: 18, discountPercentage: 0, paymentConfig: { accountName: 'International Education Corp', accountNumber: '1234567890', ifsc: 'ICIC0000001', bankName: 'ICICI Bank', qrCodeUrl: '' } },
-          { id: 'hotel', name: 'Hotel Allocation', description: 'View your accommodation details', order: 5, fields: [] },
+          { id: 'hotel', name: 'Hotel Host', description: 'View your accommodation details', order: 5, fields: [] },
           { id: 'payment2', name: 'Payment 2', description: 'Complete your second payment installment', order: 6, fields: [], isPaymentStep: true, amount: 100000, gstPercentage: 18, discountPercentage: 0, paymentConfig: { accountName: 'International Education Corp', accountNumber: '1234567890', ifsc: 'ICIC0000001', bankName: 'ICICI Bank', qrCodeUrl: '' } },
           { id: 'contract', name: 'Contract Signing', description: 'Sign your internship contract', order: 7, fields: [], isContractStep: true },
           { id: 'payment3', name: 'Payment 3', description: 'Complete your third payment installment', order: 8, fields: [], isPaymentStep: true, amount: 50000, gstPercentage: 18, discountPercentage: 0, paymentConfig: { accountName: 'International Education Corp', accountNumber: '1234567890', ifsc: 'ICIC0000001', bankName: 'ICICI Bank', qrCodeUrl: '' } },

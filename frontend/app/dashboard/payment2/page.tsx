@@ -18,7 +18,7 @@ import PaymentPlaneAnimation from '@/components/PaymentPlaneAnimation'
 
 const STEP_ID = 'payment2'
 const STEP_LABEL = 'Payment 2'
-const PREV_STEP_LABEL = 'Hotel Allocation'
+const PREV_STEP_LABEL = 'Hotel Host'
 
 export default function Payment2Page() {
   const { data: session } = useSession()
@@ -203,7 +203,7 @@ export default function Payment2Page() {
       <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm text-emerald-800 dark:text-emerald-300">
         <div className="flex items-center gap-2">
           <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
-          <span>You have accepted the hotel allocation. A confirmation email has been sent.</span>
+          <span>You have accepted the hotel host. A confirmation email has been sent.</span>
         </div>
         <Button 
           variant="outline" 

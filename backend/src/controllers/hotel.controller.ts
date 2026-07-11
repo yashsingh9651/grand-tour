@@ -103,9 +103,9 @@ export const respondToAssignment = async (req: Request, res: Response) => {
 
   // If accepted, log activity and send initial alert (step is unlocked only when confirmation email is sent)
   if (response === 'ACCEPTED') {
-    await activityService.log('Student accepted hotel allocation', 'HOTEL_ACCEPTED', application.id, userId);
+    await activityService.log('Student accepted hotel host', 'HOTEL_ACCEPTED', application.id, userId);
   } else {
-    await activityService.log('Student declined hotel allocation', 'HOTEL_DECLINED', application.id, userId);
+    await activityService.log('Student declined hotel host', 'HOTEL_DECLINED', application.id, userId);
   }
 
   res.status(200).json({ success: true, data: updated });

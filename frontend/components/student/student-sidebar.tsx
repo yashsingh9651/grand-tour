@@ -43,7 +43,7 @@ const NAV_ITEMS = [
   { icon: Sparkles, label: 'Application', href: '/dashboard/application', stepKey: 'application' },
   { icon: FileText, label: 'Documents', href: '/dashboard/documents', stepKey: 'documents' },
   { icon: Calendar, label: 'Interview Hub', href: '/dashboard/interview', stepKey: 'interview' },
-  { icon: Banknote, label: 'Payment 1', href: '/dashboard/payment1', stepKey: 'payment1', badge: 'New' },
+  { icon: Banknote, label: 'Payment 1', href: '/dashboard/payment1', stepKey: 'payment1' },
   { icon: Building2, label: 'Hotel', href: '/dashboard/hotel', stepKey: 'hotel' },
   { icon: Banknote, label: 'Payment 2', href: '/dashboard/payment2', stepKey: 'payment2' },
   { icon: ClipboardCheck, label: 'Contract', href: '/dashboard/contract', stepKey: 'contract' },
@@ -135,13 +135,14 @@ export function StudentSidebar({ currentStep, darkMode }: { currentStep?: string
                   >
                     LOCKED
                   </span>
-                ) : item.badge && !isActive ? (
-                  <span
-                    className="text-[9px] font-bold px-1.5 py-0.5 rounded-full"
-                    style={{ backgroundColor: 'var(--sp-accent)', color: 'var(--sp-accent-text)' }}
-                  >
-                    {item.badge}
-                  </span>
+                ) : activeStepId === item.stepKey ? (
+                  // <span
+                  //   className="text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider animate-pulse flex items-center gap-1 shrink-0"
+                  //   style={{ backgroundColor: 'rgba(11, 153, 64, 0.15)', color: '#0b9940', border: '1px solid rgba(11, 153, 64, 0.25)' }}
+                  // >
+                  //   Active
+                  // </span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#0b9940] animate-ping" />
                 ) : null}
               </Link>
             )

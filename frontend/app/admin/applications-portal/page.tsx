@@ -84,7 +84,7 @@ export default function ApplicationsPortalListPage() {
     <DashboardLayout>
       <div className="flex flex-col gap-6">
         <Header 
-          title="Unified Applications Portal" 
+          title="Unified Students Portal" 
           description="View and manage the full step-by-step progress, documents, payments, and workflow data of all candidates from a single page." 
           actions={
             <Button onClick={fetchData} variant="outline" className="gap-2 border-slate-200">

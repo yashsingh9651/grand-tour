@@ -443,7 +443,7 @@ export function ProfileBuilderStep({ application, onSubmit, submitting, pageCont
             className="bg-[#C6F16D] hover:bg-[#b5e359] text-[#1A1A1A] font-bold h-12 px-8 rounded-l-2xl rounded-r-none tracking-widest uppercase"
           >
             {submitting ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
-            Advance
+            Next
           </Button>
           <div className="bg-[#1A1A1A] text-white h-12 px-6 rounded-r-2xl rounded-l-none flex items-center justify-center border-l border-white/20">
             <div className="flex flex-col">

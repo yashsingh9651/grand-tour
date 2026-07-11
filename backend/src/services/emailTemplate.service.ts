@@ -92,8 +92,8 @@ class EmailTemplateService {
       },
       {
         name: 'HOTEL_CONFIRMATION',
-        subject: 'Hotel Allocation Confirmed - {{hotelName}}',
-        body: '<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #1f2937;"> <h1 style="color: #8B48F6;">Hotel Selection Confirmed</h1> <p>Hi {{studentName}},</p> <p>You have successfully accepted the hotel allocation for <strong>{{hotelName}}</strong>.</p> <p>Please log in to your dashboard to view the details: <a href="{{portalLink}}" style="display: inline-block; padding: 10px 20px; background-color: #CCFF00; color: #111; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 15px;">View Hotel Step</a></p> </div>',
+        subject: 'Hotel Host Confirmed - {{hotelName}}',
+        body: '<div style="font-family: Arial, sans-serif; line-height: 1.6; color: #1f2937;"> <h1 style="color: #8B48F6;">Hotel Selection Confirmed</h1> <p>Hi {{studentName}},</p> <p>You have successfully accepted the hotel host for <strong>{{hotelName}}</strong>.</p> <p>Please log in to your dashboard to view the details: <a href="{{portalLink}}" style="display: inline-block; padding: 10px 20px; background-color: #CCFF00; color: #111; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 15px;">View Hotel Step</a></p> </div>',
         variables: ['studentName', 'hotelName', 'portalLink']
       }
     ];
