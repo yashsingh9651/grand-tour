@@ -43,11 +43,29 @@ class PaymentService {
           applicationId: payment.applicationId
         });
 
+        const studentName = `${user.firstName} ${user.lastName}`.trim();
+        const paymentType = payment.description || 'Application Fee';
+
         await notificationService.notify(
           data.userId,
           'Payment Submitted',
           'Your payment has been submitted and is awaiting review.',
-          'INFO'
+          'INFO',
+          { applicationId: payment.applicationId, stepKey: 'payment1', amount: payment.amount, paymentType }
+        );
+
+        await notificationService.notifyAdmin(
+          `💳 Payment Submitted — ₹${payment.amount}`,
+          `${studentName} has submitted a payment of ₹${payment.amount} for "${paymentType}". Please review and approve.`,
+          'WARNING',
+          {
+            applicationId: payment.applicationId,
+            stepKey: 'payment1',
+            studentName,
+            amount: payment.amount,
+            paymentType,
+            paymentId: payment.id,
+          }
         );
       } catch (error) {
         console.error('Failed to send payment submitted email or notification:', error);
@@ -97,7 +115,8 @@ class PaymentService {
           payment.userId,
           'Payment Confirmed',
           `Your payment of ₹${payment.amount} has been approved.`,
-          'SUCCESS'
+          'SUCCESS',
+          { applicationId: payment.applicationId, stepKey: 'payment1', amount: payment.amount }
         );
       } catch (error) {
         console.error('Failed to send payment confirmation email or notification:', error);

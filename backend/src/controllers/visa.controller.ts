@@ -237,6 +237,16 @@ export const bookVisaSlot = async (req: Request, res: Response) => {
         dateTime: updated.startTime.toLocaleString(),
         meetLink: meetLink || 'Location will be shared soon'
       });
+
+      // Notify admin
+      const studentName = `${user.firstName} ${user.lastName}`.trim();
+      const notificationService = (await import('../services/notification.service')).default;
+      await notificationService.notifyAdmin(
+        `🗓️ Visa Appointment Booked`,
+        `${studentName} has booked a visa appointment on ${updated.startTime.toLocaleDateString()} at ${updated.startTime.toLocaleTimeString()}. Review and confirm.`,
+        'INFO',
+        { applicationId: application.id, stepKey: 'visa', studentName, slotId: updated.id }
+      );
     } catch (error) {
       logger.error('Failed to send visa booking email notification:', error);
     }

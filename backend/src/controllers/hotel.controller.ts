@@ -108,6 +108,27 @@ export const respondToAssignment = async (req: Request, res: Response) => {
     await activityService.log('Student declined hotel host', 'HOTEL_DECLINED', application.id, userId);
   }
 
+  // Notify admin of student's response
+  try {
+    const notificationService = (await import('../services/notification.service')).default;
+    const studentName = `${application.user?.firstName || ''} ${application.user?.lastName || ''}`.trim() || 'Student';
+    if (response === 'ACCEPTED') {
+      await notificationService.notifyAdmin(
+        `🏨 Hotel Assignment Accepted`,
+        `${studentName} has accepted their hotel assignment. You may now send them the official confirmation email to unlock the next step.`,
+        'SUCCESS',
+        { applicationId: application.id, stepKey: 'hotel', studentName }
+      );
+    } else {
+      await notificationService.notifyAdmin(
+        `🏨 Hotel Assignment Declined`,
+        `${studentName} has declined their hotel assignment${note ? `: "${note}"` : '.'}  You may need to reassign them.`,
+        'ERROR',
+        { applicationId: application.id, stepKey: 'hotel', studentName, declineNote: note }
+      );
+    }
+  } catch { /* non-critical */ }
+
   res.status(200).json({ success: true, data: updated });
 };
 

@@ -1,14 +1,38 @@
 import { prisma } from '../config/db';
 
 class NotificationService {
-  async notify(userId: string, title: string, message: string, type: string = 'INFO') {
+  async notify(userId: string, title: string, message: string, type: string = 'INFO', metadata?: Record<string, any>) {
     return await prisma.notification.create({
       data: {
         userId,
         title,
         message,
-        type
+        type,
+        metadata: metadata || undefined,
       }
+    });
+  }
+
+  /**
+   * Broadcast a notification to all ADMIN and SUPER_ADMIN users.
+   * Used when student actions need admin attention.
+   */
+  async notifyAdmin(title: string, message: string, type: string = 'INFO', metadata?: Record<string, any>) {
+    const admins = await prisma.user.findMany({
+      where: { role: { in: ['ADMIN', 'SUPER_ADMIN'] } },
+      select: { id: true },
+    });
+
+    if (admins.length === 0) return;
+
+    await prisma.notification.createMany({
+      data: admins.map((admin) => ({
+        userId: admin.id,
+        title,
+        message,
+        type,
+        metadata: metadata || undefined,
+      })),
     });
   }
 

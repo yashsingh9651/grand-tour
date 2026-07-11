@@ -73,11 +73,21 @@ class ApplicationService {
           status: application.status,
         });
 
+        const studentName = `${application.user.firstName} ${application.user.lastName}`.trim();
+
         await notificationService.notify(
           application.userId,
           'Application Submitted',
           'Your application has been submitted successfully and is being reviewed.',
-          'SUCCESS'
+          'SUCCESS',
+          { applicationId: application.id, stepKey: 'application' }
+        );
+
+        await notificationService.notifyAdmin(
+          '📋 New Application Submitted',
+          `${studentName} has submitted their application and is awaiting your review.`,
+          'INFO',
+          { applicationId: application.id, stepKey: 'application', studentName }
         );
       } catch (error) {
         console.error('Failed to send application submitted email or notification:', error);
@@ -195,7 +205,8 @@ class ApplicationService {
         application.userId,
         'Application Status Updated',
         `Your application status has been updated to ${application.status}.`,
-        application.status === 'REJECTED' ? 'ERROR' : 'INFO'
+        application.status === 'REJECTED' ? 'ERROR' : 'INFO',
+        { applicationId: application.id, stepKey: 'application' }
       );
     } catch (error) {
       console.error('Failed to send application update email or notification:', error);
@@ -206,10 +217,22 @@ class ApplicationService {
   }
 
   async updateApplicationCurrentStep(id: string, currentStepId: string) {
-    return await prisma.application.update({
+    const app = await prisma.application.update({
       where: { id },
       data: { currentStepId },
+      include: { user: true },
     });
+    const studentName = `${app.user.firstName} ${app.user.lastName}`.trim();
+    const stepLabel = currentStepId.charAt(0).toUpperCase() + currentStepId.slice(1);
+    try {
+      await notificationService.notifyAdmin(
+        `⏩ Student Advanced to ${stepLabel}`,
+        `${studentName} has progressed to the "${stepLabel}" step and may need your attention.`,
+        'INFO',
+        { applicationId: id, stepKey: currentStepId, studentName }
+      );
+    } catch { /* non-critical */ }
+    return app;
   }
 
   async updateApplicationNotes(id: string, notes: string) {
@@ -220,10 +243,22 @@ class ApplicationService {
   }
 
   async updateApplicationStep(id: string, currentStepId: string) {
-    return await prisma.application.update({
+    const app = await prisma.application.update({
       where: { id },
       data: { currentStepId },
+      include: { user: true },
     });
+    const studentName = `${app.user.firstName} ${app.user.lastName}`.trim();
+    const stepLabel = currentStepId.charAt(0).toUpperCase() + currentStepId.slice(1);
+    try {
+      await notificationService.notifyAdmin(
+        `⏩ Student Advanced to ${stepLabel}`,
+        `${studentName} has progressed to the "${stepLabel}" step and may need your attention.`,
+        'INFO',
+        { applicationId: id, stepKey: currentStepId, studentName }
+      );
+    } catch { /* non-critical */ }
+    return app;
   }
 
   async getApplicationByUserId(userId: string) {

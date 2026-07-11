@@ -193,8 +193,10 @@ model Notification {
   message     String
   type        String   // e.g., "INFO", "SUCCESS", "WARNING", "ERROR"
   isRead      Boolean  @default(false)
+  metadata    Json?    // { applicationId, stepKey, studentName, amount, documentType, ... }
   createdAt   DateTime @default(now())
 }
+
 
 model RolePermission {
   id        String   @id @default(uuid())

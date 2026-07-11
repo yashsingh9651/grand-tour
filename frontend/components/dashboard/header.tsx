@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { Search, Bell, Moon, Sun, Loader2 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { MobileNav } from "./mobile-nav"
@@ -22,23 +22,38 @@ export function Header({ title, description, actions }: HeaderProps) {
   const { data: session, status } = useSession()
   const [showSearchModal, setShowSearchModal] = useState(false)
   const [showNotificationsModal, setShowNotificationsModal] = useState(false)
-  const [hasUnread, setHasUnread] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(0)
   const [darkMode, setDarkMode] = useState(false)
   const pathname = usePathname()
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const prevUnreadRef = useRef<number>(0)
+
+  const checkUnread = useCallback(async (playSound = false) => {
+    try {
+      const notes = await notificationService.getAll()
+      const count = (notes as any[]).filter((n: any) => !n.isRead).length
+      if (playSound && count > prevUnreadRef.current) {
+        try {
+          if (!audioRef.current) {
+            audioRef.current = new Audio('/sounds/notification.wav')
+            audioRef.current.volume = 0.55
+          }
+          audioRef.current.currentTime = 0
+          audioRef.current.play().catch(() => {})
+        } catch {}
+      }
+      prevUnreadRef.current = count
+      setUnreadCount(count)
+    } catch {
+      // Silent fail
+    }
+  }, [])
 
   useEffect(() => {
-    const checkUnread = async () => {
-      try {
-        const notes = await notificationService.getAll()
-        setHasUnread(notes.some((n: any) => !n.isRead))
-      } catch {
-        // Silent
-      }
-    }
-    checkUnread()
-    const interval = setInterval(checkUnread, 60000)
+    checkUnread(false)
+    const interval = setInterval(() => checkUnread(true), 15000)
     return () => clearInterval(interval)
-  }, [])
+  }, [checkUnread])
 
   const user = session?.user as any
   const fullName = user ? `${user.firstName || user.name} ${user.lastName || ""}`.trim() : "Loading..."
@@ -123,14 +138,16 @@ export function Header({ title, description, actions }: HeaderProps) {
             id="admin-notifications-btn"
             onClick={() => setShowNotificationsModal(true)}
             className="relative transition-all duration-200 hover:scale-110"
-            style={{ color: "#555" }}
+            style={{ color: '#555' }}
           >
             <Bell className="w-4 h-4" />
-            {hasUnread && (
+            {unreadCount > 0 && (
               <span
-                className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full animate-pulse"
-                style={{ backgroundColor: "#FF4444" }}
-              />
+                className="absolute -top-2 -right-2 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full text-[8px] font-black text-white leading-none"
+                style={{ backgroundColor: '#E1000F' }}
+              >
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
             )}
           </button>
 
@@ -195,6 +212,7 @@ export function Header({ title, description, actions }: HeaderProps) {
         <NotificationsModal
           isOpen={showNotificationsModal}
           onClose={() => setShowNotificationsModal(false)}
+          onUpdate={() => checkUnread(false)}
         />
       )}
     </>
