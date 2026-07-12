@@ -179,11 +179,12 @@
   }
 }
 
-/* Custom animations for smooth card interactions */
 /* Smooth transitions for student panel theme switch */
 .student-panel,
 .student-panel * {
-  transition: background-color 250ms ease, border-color 250ms ease, color 250ms ease;
+  transition-property: background-color, border-color, color;
+  transition-duration: 250ms;
+  transition-timing-function: ease;
 }
 /* Exclude animated elements from color transitions */
 .student-panel [class*='animate'],

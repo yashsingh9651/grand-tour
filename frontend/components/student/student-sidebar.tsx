@@ -21,6 +21,7 @@ import {
   Stamp,
   Briefcase,
   ClipboardCheck,
+  Images,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -219,6 +220,19 @@ export function StudentSidebar({ currentStep, darkMode }: { currentStep?: string
             </Link>
           )
         })()}
+
+        <Link
+          href="/dashboard/gallery"
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[11px] font-semibold tracking-widest uppercase transition-all duration-200"
+          style={
+            pathname === '/dashboard/gallery'
+              ? { backgroundColor: 'var(--sp-accent)', color: 'var(--sp-accent-text)' }
+              : { color: 'var(--sp-text-muted)' }
+          }
+        >
+          <Images className="w-3.5 h-3.5 shrink-0" />
+          <span>Gallery</span>
+        </Link>
 
         <button
           onClick={() => signOut({ callbackUrl: '/' })}
