@@ -113,97 +113,104 @@ interface GalleryItem {
 /* ─── Lightbox Component ─── */
 function Lightbox({ item, onClose }: { item: GalleryItem; onClose: () => void }) {
   return (
-    <motion.div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={onClose}
-    >
+    <div className="fixed inset-0 z-[100] overflow-y-auto">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-xl" />
-
-      {/* Content */}
       <motion.div
-        className="relative z-10 w-full max-w-4xl rounded-[2rem] overflow-hidden shadow-2xl"
-        style={{ backgroundColor: 'var(--sp-surface)' }}
-        initial={{ scale: 0.85, y: 40 }}
-        animate={{ scale: 1, y: 0 }}
-        exit={{ scale: 0.85, y: 40 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2">
-          {/* Photo side */}
-          <div className="relative aspect-square md:aspect-auto md:min-h-[480px]">
-            <img
-              src={item.src}
-              alt={item.name}
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-            {/* Gradient overlay for text readability */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-            {/* Location badge on image */}
-            <div className="absolute bottom-5 left-5 flex items-center gap-1.5 bg-white/15 backdrop-blur-md border border-white/20 rounded-full px-3 py-1.5">
-              <MapPin className="w-3 h-3 text-white" />
-              <span className="text-[10px] font-bold text-white tracking-wider uppercase">{item.location}</span>
+        className="fixed inset-0 bg-black/80 backdrop-blur-xl"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+      />
+
+      {/* Scrolling Container */}
+      <div className="flex min-h-screen items-center justify-center p-4 sm:p-6 md:p-8">
+        {/* Content Card */}
+        <motion.div
+          className="relative z-10 w-full max-w-4xl rounded-2xl md:rounded-[2rem] overflow-hidden shadow-2xl my-auto"
+          style={{ backgroundColor: 'var(--sp-surface)' }}
+          initial={{ scale: 0.85, y: 40 }}
+          animate={{ scale: 1, y: 0 }}
+          exit={{ scale: 0.85, y: 40 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Close button - absolute positioned relative to the card, on top of everything */}
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 z-50 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110 shadow-lg"
+            style={{ 
+              backgroundColor: 'rgba(0,0,0,0.5)', 
+              color: '#fff',
+              backdropFilter: 'blur(4px)'
+            }}
+          >
+            <X className="w-4 h-4" />
+          </button>
+
+          <div className="grid grid-cols-1 md:grid-cols-2">
+            {/* Photo side */}
+            <div className="relative aspect-[4/3] md:aspect-auto md:min-h-[480px]">
+              <img
+                src={item.src}
+                alt={item.name}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              {/* Gradient overlay for text readability */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+              {/* Location badge on image */}
+              <div className="absolute bottom-5 left-5 flex items-center gap-1.5 bg-white/15 backdrop-blur-md border border-white/20 rounded-full px-3 py-1.5">
+                <MapPin className="w-3 h-3 text-white" />
+                <span className="text-[10px] font-bold text-white tracking-wider uppercase">{item.location}</span>
+              </div>
             </div>
-          </div>
 
-          {/* Story side */}
-          <div className="p-8 md:p-10 flex flex-col justify-center relative">
-            {/* Close button */}
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:scale-110"
-              style={{ backgroundColor: 'var(--sp-surface-2)', color: 'var(--sp-text-muted)' }}
-            >
-              <X className="w-4 h-4" />
-            </button>
-
-            {/* Decorative quote mark */}
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center mb-5"
-              style={{ backgroundColor: `${item.accent}15` }}
-            >
-              <Quote className="w-5 h-5" style={{ color: item.accent }} />
-            </div>
-
-            {/* Quote */}
-            <p
-              className="text-lg md:text-xl font-medium leading-relaxed mb-8 italic"
-              style={{ color: 'var(--sp-text)', fontFamily: 'Georgia, serif' }}
-            >
-              &ldquo;{item.quote}&rdquo;
-            </p>
-
-            {/* Author info */}
-            <div className="flex items-center gap-4">
+            {/* Story side */}
+            <div className="p-6 sm:p-8 md:p-10 flex flex-col justify-center relative">
+              {/* Decorative quote mark */}
               <div
-                className="w-12 h-12 rounded-full overflow-hidden ring-2 ring-offset-2"
-                style={{ '--tw-ring-color': item.accent, '--tw-ring-offset-color': 'var(--sp-surface)' } as any}
+                className="w-10 h-10 rounded-xl flex items-center justify-center mb-5"
+                style={{ backgroundColor: `${item.accent}15` }}
               >
-                <img src={item.src} alt={item.name} className="w-full h-full object-cover" />
+                <Quote className="w-5 h-5" style={{ color: item.accent }} />
               </div>
-              <div>
-                <h3 className="text-sm font-bold tracking-tight" style={{ color: 'var(--sp-text)' }}>
-                  {item.name}
-                </h3>
-                <p className="text-xs font-medium" style={{ color: 'var(--sp-text-muted)' }}>
-                  {item.hotel}
-                </p>
-              </div>
-            </div>
 
-            {/* Accent bar */}
-            <div
-              className="absolute bottom-0 left-0 right-0 h-1"
-              style={{ background: `linear-gradient(90deg, ${item.accent}, transparent)` }}
-            />
+              {/* Quote */}
+              <p
+                className="text-base sm:text-lg md:text-xl font-medium leading-relaxed mb-6 md:mb-8 italic"
+                style={{ color: 'var(--sp-text)', fontFamily: 'Georgia, serif' }}
+              >
+                &ldquo;{item.quote}&rdquo;
+              </p>
+
+              {/* Author info */}
+              <div className="flex items-center gap-4">
+                <div
+                  className="w-10 h-10 md:w-12 md:h-12 rounded-full overflow-hidden ring-2 ring-offset-2"
+                  style={{ '--tw-ring-color': item.accent, '--tw-ring-offset-color': 'var(--sp-surface)' } as any}
+                >
+                  <img src={item.src} alt={item.name} className="w-full h-full object-cover" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold tracking-tight" style={{ color: 'var(--sp-text)' }}>
+                    {item.name}
+                  </h3>
+                  <p className="text-xs font-medium" style={{ color: 'var(--sp-text-muted)' }}>
+                    {item.hotel}
+                  </p>
+                </div>
+              </div>
+
+              {/* Accent bar */}
+              <div
+                className="absolute bottom-0 left-0 right-0 h-1"
+                style={{ background: `linear-gradient(90deg, ${item.accent}, transparent)` }}
+              />
+            </div>
           </div>
-        </div>
-      </motion.div>
-    </motion.div>
+        </motion.div>
+      </div>
+    </div>
   )
 }
 
@@ -214,10 +221,10 @@ export default function GalleryPage() {
 
   return (
     <StudentLayout currentStep="gallery">
-      <div className="max-w-7xl mx-auto space-y-8">
+      <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
 
         {/* ── Hero Header ── */}
-        <div className="relative overflow-hidden rounded-[2rem] p-8 sm:p-12 lg:min-h-[380px]" style={{ backgroundColor: '#0d0f12' }}>
+        <div className="relative overflow-hidden rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-12 lg:min-h-[380px]" style={{ backgroundColor: '#0d0f12' }}>
           {/* Background decorative elements */}
           <div className="absolute top-0 right-0 w-80 h-80 bg-[radial-gradient(circle,rgba(0,85,165,0.18)_0%,transparent_70%)] pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-[radial-gradient(circle,rgba(225,0,15,0.12)_0%,transparent_70%)] pointer-events-none" />
@@ -257,43 +264,44 @@ export default function GalleryPage() {
 
           <div className="relative z-10 max-w-xl lg:max-w-lg">
             {/* Badge */}
-            <div className="inline-flex items-center mb-5">
-              <span className="text-[10px] font-bold tracking-[0.25em] text-white/70 uppercase bg-white/8 border border-white/10 px-4 py-1.5 rounded-full">
+            <div className="inline-flex items-center mb-4 sm:mb-5">
+              <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.25em] text-white/70 uppercase bg-white/8 border border-white/10 px-3.5 sm:border px-4 py-1.5 rounded-full">
                 Student Gallery
               </span>
             </div>
 
             <h1
-              className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white leading-[1.15] mb-4"
+              className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white leading-[1.15] mb-3 sm:mb-4"
               style={{ fontFamily: 'Gilroy, sans-serif' }}
             >
               Moments that
               <br />
               defined their{' '}
               <span
-                className="inline-block px-2 py-0.5 rounded-lg"
-                style={{ backgroundColor: '#dea306', color: '#000' }}
+                className="inline-block px-2 py-0.5 rounded-lg text-black"
+                style={{ backgroundColor: '#dea306' }}
               >
                 journey
               </span>
             </h1>
 
-            <p className="text-sm text-white/50 font-medium leading-relaxed max-w-lg">
+            <p className="text-xs sm:text-sm text-white/50 font-medium leading-relaxed max-w-lg">
               Real photos, real stories — from students who traded textbooks for Parisian kitchens,
               Mediterranean sunsets, and careers they never imagined possible.
             </p>
+
             {/* Stats row */}
-            <div className="flex flex-wrap items-center gap-6 mt-7">
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6 mt-6 sm:mt-7">
               {[
                 { num: '5,000+', label: 'Students Placed', color: '#0b9940' },
                 { num: '200+', label: 'Partner Hotels', color: '#0055A5' },
                 { num: '15+', label: 'Cities in France', color: '#E1000F' },
               ].map((stat) => (
-                <div key={stat.label} className="flex items-center gap-2.5">
-                  <div className="w-1.5 h-8 rounded-full" style={{ backgroundColor: stat.color }} />
+                <div key={stat.label} className="flex items-center gap-2 sm:gap-2.5">
+                  <div className="w-1 sm:w-1.5 h-6 sm:h-8 rounded-full" style={{ backgroundColor: stat.color }} />
                   <div>
-                    <p className="text-lg font-bold text-white leading-none">{stat.num}</p>
-                    <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest mt-0.5">{stat.label}</p>
+                    <p className="text-base sm:text-lg font-bold text-white leading-none">{stat.num}</p>
+                    <p className="text-[8px] sm:text-[9px] font-bold text-white/40 uppercase tracking-widest mt-0.5">{stat.label}</p>
                   </div>
                 </div>
               ))}
@@ -302,20 +310,20 @@ export default function GalleryPage() {
         </div>
 
         {/* ── Masonry Photo Wall ── */}
-        <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+        <div className="columns-1 sm:columns-2 lg:columns-3 gap-4">
           {GALLERY.map((item, idx) => {
             const isHovered = hoveredId === item.id
             const heightClass =
               item.span === 'tall'
-                ? 'h-[420px] sm:h-[480px]'
+                ? 'h-[360px] sm:h-[480px]'
                 : item.span === 'wide'
-                  ? 'h-[260px] sm:h-[300px]'
-                  : 'h-[280px] sm:h-[340px]'
+                  ? 'h-[220px] sm:h-[300px]'
+                  : 'h-[240px] sm:h-[340px]'
 
             return (
               <motion.div
                 key={item.id}
-                className="break-inside-avoid"
+                className="break-inside-avoid mb-4"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-50px' }}
@@ -323,7 +331,7 @@ export default function GalleryPage() {
               >
                 {/* Separate div for CSS hover transitions — Framer doesn't touch this */}
                 <div
-                  className={`relative ${heightClass} rounded-2xl overflow-hidden cursor-pointer group`}
+                  className={`relative ${heightClass} rounded-xl sm:rounded-2xl overflow-hidden cursor-pointer group`}
                   onClick={() => setSelectedItem(item)}
                   onMouseEnter={() => setHoveredId(item.id)}
                   onMouseLeave={() => setHoveredId(null)}
@@ -395,7 +403,7 @@ export default function GalleryPage() {
 
                   {/* Colored border on hover */}
                   <div
-                    className="absolute inset-0 rounded-2xl pointer-events-none"
+                    className="absolute inset-0 rounded-xl sm:rounded-2xl pointer-events-none"
                     style={{
                       border: `2px solid ${isHovered ? `${item.accent}40` : 'transparent'}`,
                       transition: 'border-color 500ms ease',
