@@ -54,8 +54,12 @@ export default function Navbar() {
             About
           </Link>
           <Link
-            href="#"
-            className="text-sm font-medium text-white/80 hover:text-white transition-colors select-none"
+            href="/contact"
+            className={`text-sm font-medium transition-colors select-none ${
+              isActive("/contact")
+                ? "text-white border-b-2 border-white pb-0.5"
+                : "text-white/80 hover:text-white"
+            }`}
           >
             Contact Us
           </Link>
@@ -114,9 +118,9 @@ export default function Navbar() {
                 About
               </Link>
               <Link
-                href="#"
+                href="/contact"
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-white/80 font-semibold"
+                className={`font-semibold ${isActive("/contact") ? "text-white" : "text-white/80"}`}
               >
                 Contact Us
               </Link>
