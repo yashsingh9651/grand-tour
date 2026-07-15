@@ -10,7 +10,7 @@ export default function Footer() {
       <div className="max-w-8xl mx-auto rounded-[2.5rem] bg-[#121214] text-white shadow-xl relative overflow-hidden">
         
         {/* White Logo Tab (Top Left) */}
-        <div className="absolute top-0 left-16 sm:left-20 bg-white px-8 py-5 rounded-b-[.8rem] flex items-center justify-center z-10">
+        <div className="absolute top-0 left-6 sm:left-20 bg-white px-8 py-5 rounded-b-[.8rem] flex items-center justify-center z-10">
           {/* Left Concave Curve */}
           <div className="absolute top-0 right-full w-5 h-5 bg-white pointer-events-none">
             <div className="absolute inset-0 bg-[#121214] rounded-tr-[.8rem]" />

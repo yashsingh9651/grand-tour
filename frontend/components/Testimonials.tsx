@@ -88,7 +88,7 @@ export default function Testimonials() {
           <div key={t.id} className="flex flex-col gap-6 group">
             {/* Speech Bubble Card */}
             <div 
-              className={`relative p-8 rounded-[1.8rem] shadow-[0_15px_45px_rgba(0,0,0,0.06)] border border-slate-100/50 flex flex-col gap-4 transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_20px_55px_rgba(0,0,0,0.1)] ${
+              className={`relative p-6 sm:p-8 rounded-[1.8rem] shadow-[0_15px_45px_rgba(0,0,0,0.06)] border border-slate-100/50 flex flex-col gap-4 transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_20px_55px_rgba(0,0,0,0.1)] ${
                 t.isDark ? 'bg-[#141416] text-white border-transparent' : 'bg-white text-slate-700'
               }`}
             >

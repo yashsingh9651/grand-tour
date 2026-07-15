@@ -38,7 +38,7 @@ export default function VisionMission() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
             whileHover={{ y: -5, borderColor: "rgba(255,255,255,0.15)" }}
-            className="flex-1 bg-[#121316]/5 border border-white/5 backdrop-blur-xs rounded-[2.2rem] p-8 sm:p-12 text-left space-y-6 shadow-[0_30px_70px_rgba(0,0,0,0.4)] transition-colors duration-300"
+            className="flex-1 bg-[#121316]/5 border border-white/5 backdrop-blur-xs rounded-[2.2rem] p-6 sm:p-12 text-left space-y-6 shadow-[0_30px_70px_rgba(0,0,0,0.4)] transition-colors duration-300"
           >
             {/* Red Target Icon */}
             <div className="w-12 h-12 rounded-2xl bg-[#E1000F] flex items-center justify-center shadow-lg shadow-[#E1000F]/20">
@@ -61,7 +61,7 @@ export default function VisionMission() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
             whileHover={{ y: -5, borderColor: "rgba(255,255,255,0.15)" }}
-            className="flex-1 bg-[#121316]/5 border border-white/5 rounded-[2.2rem] p-8 sm:p-12 text-left space-y-6 shadow-[0_30px_70px_rgba(0,0,0,0.4)] transition-colors duration-300"
+            className="flex-1 bg-[#121316]/5 border border-white/5 rounded-[2.2rem] p-6 sm:p-12 text-left space-y-6 shadow-[0_30px_70px_rgba(0,0,0,0.4)] transition-colors duration-300"
           >
             {/* Blue Globe Icon */}
             <div className="w-12 h-12 rounded-2xl bg-[#0055A5] flex items-center justify-center shadow-lg shadow-[#0055A5]/20">

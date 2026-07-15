@@ -78,21 +78,21 @@ export default function AboutHistory() {
         </div>
 
         {/* Right Column: Layered Photo Collage */}
-        <div className="w-full lg:w-2/5 relative h-[450px] sm:h-[540px] mt-12 lg:mt-0 select-none">
+        <div className="w-full lg:w-2/5 relative h-[380px] sm:h-[480px] lg:h-[540px] mt-12 lg:mt-0 select-none">
           {/* Top Right Image (Presentation) */}
           <motion.div
             initial={{ opacity: 0, x: 30, y: -20, rotate: 6 }}
             animate={{ opacity: 1, x: 0, y: 0, rotate: 6 }}
             transition={{ duration: 0.7 }}
             whileHover={{ rotate: 2, scale: 1.03 }}
-            className="absolute top-4 right-2 sm:right-6 w-[220px] sm:w-[280px] aspect-[4/3] rounded-[2.5rem] overflow-hidden shadow-2xl bg-slate-100 z-10 border-[6px] border-white"
+            className="absolute top-4 right-2 sm:right-6 w-[170px] sm:w-[220px] lg:w-[280px] aspect-[4/3] rounded-[1.8rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl bg-slate-100 z-10 border-[4px] sm:border-[6px] border-white"
           >
             <Image
               src="/about_presentation.png"
               alt="Student Presentation Classroom"
               fill
               className="object-cover"
-              sizes="(max-width: 640px) 220px, 280px"
+              sizes="(max-width: 640px) 170px, (max-width: 1024px) 220px, 280px"
             />
           </motion.div>
 
@@ -102,14 +102,14 @@ export default function AboutHistory() {
             animate={{ opacity: 1, x: 0, y: 0, rotate: -6 }}
             transition={{ duration: 0.7, delay: 0.15 }}
             whileHover={{ rotate: -2, scale: 1.03 }}
-            className="absolute top-20 sm:top-24 left-2 sm:left-4 w-[190px] sm:w-[245px] aspect-[4/3] rounded-[2.5rem] overflow-hidden shadow-2xl bg-slate-100 z-20 border-[6px] border-white"
+            className="absolute top-16 sm:top-24 left-2 sm:left-4 w-[145px] sm:w-[190px] lg:w-[245px] aspect-[4/3] rounded-[1.8rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl bg-slate-100 z-20 border-[4px] sm:border-[6px] border-white"
           >
             <Image
               src="/about_chefs.png"
               alt="Culinary Students in Kitchen"
               fill
               className="object-cover"
-              sizes="(max-width: 640px) 190px, 245px"
+              sizes="(max-width: 640px) 145px, (max-width: 1024px) 190px, 245px"
             />
           </motion.div>
 
@@ -119,14 +119,14 @@ export default function AboutHistory() {
             animate={{ opacity: 1, y: 0, rotate: 3 }}
             transition={{ duration: 0.7, delay: 0.3 }}
             whileHover={{ rotate: 1, scale: 1.03 }}
-            className="absolute bottom-8 sm:bottom-12 left-4 sm:left-10 w-[200px] sm:w-[240px] bg-[#FAF8F5] p-5 sm:p-6 rounded-[2.5rem] shadow-xl border-[6px] border-white z-30"
+            className="absolute bottom-6 sm:bottom-12 left-2 sm:left-10 w-[150px] sm:w-[200px] lg:w-[240px] bg-[#FAF8F5] p-3 sm:p-6 rounded-[1.8rem] sm:rounded-[2.5rem] shadow-xl border-[4px] sm:border-[6px] border-white z-30"
           >
-            <p className="text-xs sm:text-sm font-bold text-slate-800 leading-relaxed text-left">
+            <p className="text-[10px] sm:text-xs lg:text-sm font-bold text-slate-800 leading-relaxed text-left">
               We didn't want to arrange placements. We wanted to build careers our students would look back on forever.
             </p>
             {/* Quote icon */}
-            <div className="text-left mt-2 leading-none">
-              <span className="text-3xl text-[#dea306] font-serif leading-none font-bold">“</span>
+            <div className="text-left mt-1 sm:mt-2 leading-none">
+              <span className="text-xl sm:text-3xl text-[#dea306] font-serif leading-none font-bold">“</span>
             </div>
           </motion.div>
 
@@ -136,14 +136,14 @@ export default function AboutHistory() {
             animate={{ opacity: 1, x: 0, y: 0, rotate: -5 }}
             transition={{ duration: 0.7, delay: 0.25 }}
             whileHover={{ rotate: -1, scale: 1.03 }}
-            className="absolute bottom-0 right-2 w-[210px] sm:w-[265px] aspect-[4/3] rounded-[2.5rem] overflow-hidden shadow-2xl bg-slate-100 z-20 border-[6px] border-white"
+            className="absolute bottom-0 right-2 w-[160px] sm:w-[210px] lg:w-[265px] aspect-[4/3] rounded-[1.8rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl bg-slate-100 z-20 border-[4px] sm:border-[6px] border-white"
           >
             <Image
               src="/about_group.png"
               alt="Students Group Selfie Outdoor"
               fill
               className="object-cover"
-              sizes="(max-width: 640px) 210px, 265px"
+              sizes="(max-width: 640px) 160px, (max-width: 1024px) 210px, 265px"
             />
           </motion.div>
         </div>

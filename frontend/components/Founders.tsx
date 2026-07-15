@@ -54,7 +54,7 @@ export default function Founders() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.15 }}
-            className="relative z-10 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.06)] rounded-[2.5rem] p-7 sm:p-10 max-w-[700px] border border-slate-100 ml-4 text-left"
+            className="relative z-10 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.06)] rounded-[2.5rem] p-7 sm:p-10 max-w-[700px] border border-slate-100 mx-4 lg:mx-0 lg:ml-4 text-left"
           >
             <h3 className="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">
               Vaishanavi Banaitkar
@@ -82,7 +82,7 @@ export default function Founders() {
         </div>
 
         {/* Founder 2: Nishad Sutar */}
-        <div className="flex -mt-20 flex-col items-center justify-center gap-8 lg:gap-0 lg:flex-row-reverse">
+        <div className="flex mt-24 lg:-mt-20 flex-col items-center justify-center gap-8 lg:gap-0 lg:flex-row-reverse">
           {/* Photo on Right */}
           <motion.div
             initial={{ opacity: 0, x: 30, rotate: 4 }}
@@ -90,7 +90,7 @@ export default function Founders() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
             whileHover={{ scale: 1.02, rotate: 1 }}
-            className="relative z-20 w-[270px] sm:w-[330px] md:w-[420px] aspect-[3/4] rounded-[2.5rem] overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.15)] border-[6px] border-white shrink-0 ml-4"
+            className="relative z-20 w-[270px] sm:w-[330px] md:w-[420px] aspect-[3/4] rounded-[2.5rem] overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.15)] border-[6px] border-white shrink-0 lg:ml-4"
           >
             <Image
               src="/founder_nishad.png"
@@ -108,7 +108,7 @@ export default function Founders() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: 0.15 }}
-            className="relative z-10 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.06)] rounded-[2.5rem] p-7 sm:p-10 max-w-[700px] border border-slate-100 ml-4 text-left"
+            className="relative z-10 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.06)] rounded-[2.5rem] p-7 sm:p-10 max-w-[700px] border border-slate-100 mx-4 lg:mx-0 lg:mr-4 text-left"
           >
             <h3 className="text-2xl sm:text-3xl font-bold text-slate-800 tracking-tight">
               Nishad Sutar
