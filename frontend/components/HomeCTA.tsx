@@ -101,7 +101,12 @@ export default function HomeCTA() {
 
         {/* Waving French Flag Sticker Top-Right */}
         <div className="absolute top-8 right-12 z-20 select-none animate-bounce hidden sm:block">
-          <span className="text-4xl filter drop-shadow-[0_4px_8px_rgba(0,0,0,0.2)] rotate-[15deg] block">🇫🇷</span>
+          <div className="w-12 h-8 rounded-md overflow-hidden flex shadow-[0_4px_12px_rgba(0,0,0,0.25)] border border-white/20 rotate-[15deg] relative">
+            <div className="w-1/3 bg-[#002395]" />
+            <div className="w-1/3 bg-white" />
+            <div className="w-1/3 bg-[#ED2939]" />
+            <div className="absolute inset-0 bg-gradient-to-tr from-black/10 via-transparent to-white/20 pointer-events-none" />
+          </div>
         </div>
       </div>
     </section>

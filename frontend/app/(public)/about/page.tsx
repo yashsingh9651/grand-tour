@@ -22,6 +22,15 @@ const Testimonials = dynamic(() => import("@/components/Testimonials"), {
   ),
 });
 
+const AboutStats = dynamic(() => import("@/components/AboutStats"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-28 bg-slate-50 dark:bg-zinc-950 animate-pulse flex items-center justify-center text-xs text-slate-400 font-semibold uppercase tracking-wider">
+      Loading stats...
+    </div>
+  ),
+});
+
 const AboutHistory = dynamic(() => import("@/components/AboutHistory"), {
   ssr: false,
   loading: () => (
@@ -81,7 +90,7 @@ const AboutPage = () => {
   return (
     <div className="relative w-full min-h-screen bg-white dark:bg-zinc-950 overflow-x-hidden font-Gilroy">
       {/* ─── Full-screen About Hero wrapper ─── */}
-      <div className="relative w-full min-h-screen lg:h-screen overflow-hidden shrink-0 flex flex-col">
+      <div className="relative w-full min-h-screen lg:h-screen lg:overflow-hidden shrink-0 flex flex-col">
         {/* Background Image */}
         <Image
           src="/horizontal-frame.png"
@@ -95,14 +104,19 @@ const AboutPage = () => {
         <div className="absolute inset-0 bg-black/45 z-[1]" />
 
         {/* ── HERO BODY ── */}
-        <main className="flex-1 relative z-50 w-full px-4 sm:px-8 md:px-12 flex items-center justify-between">
+        <main className="flex-1 relative z-50 w-full px-4 sm:px-8 md:px-12 pt-28 pb-16 lg:py-0 flex items-center justify-between">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.6 }}
-            className="absolute z-60 top-4 lg:top-32 right-4 lg:right-4 xl:right-12 flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/40 px-6 py-3 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
+            className="hidden sm:flex absolute z-60 top-24 lg:top-32 right-4 lg:right-4 xl:right-12 items-center gap-3 bg-white/10 backdrop-blur-md border border-white/40 px-6 py-3 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)]"
           >
-            <span className="text-2xl sm:text-3xl">🇫🇷</span>
+            <div className="w-8 h-5 sm:w-9 sm:h-6 rounded-sm overflow-hidden flex border border-white/20 relative shrink-0 shadow-sm">
+              <div className="w-1/3 bg-[#002395]" />
+              <div className="w-1/3 bg-white" />
+              <div className="w-1/3 bg-[#ED2939]" />
+              <div className="absolute inset-0 bg-gradient-to-tr from-black/5 via-transparent to-white/15 pointer-events-none" />
+            </div>
             <div className="text-left leading-tight">
               <div className="text-xs font-bold text-white">500+ Students</div>
               <div className="text-[9px] text-white/60 tracking-widest uppercase mt-0.5">
@@ -110,7 +124,7 @@ const AboutPage = () => {
               </div>
             </div>
           </motion.div>
-          <div className="flex flex-col lg:flex-row items-end justify-between gap-12 lg:gap-8 w-full">
+          <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-12 lg:gap-8 w-full">
             {/* Left Column: Headline and Description */}
             <div className="flex-1 text-left space-y-6 lg:pr-4">
               {/* Pill badge */}
@@ -148,7 +162,7 @@ const AboutPage = () => {
               </div>
             </div>
             {/* Right Column: Layered Polaroid and Floating Stats Badge */}
-            <div className="relative min-h-[350px] sm:min-h-[420px] w-full lg:w-auto pr-16">
+            <div className="relative min-h-[300px] sm:min-h-[420px] w-full lg:w-auto pr-0 lg:pr-16 flex justify-center lg:block">
               {/* Layered Polaroid Card */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.9, rotate: -12 }}
@@ -183,6 +197,7 @@ const AboutPage = () => {
       <AboutHistory />
       <Founders />
       <VisionMission />
+      <AboutStats />
       <Testimonials />
       <HomeCTA />
       <Footer />

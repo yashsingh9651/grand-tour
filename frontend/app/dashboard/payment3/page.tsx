@@ -239,7 +239,12 @@ export default function Payment3Page() {
                   <div className="flex-1 bg-white" />
                   <div className="flex-1 bg-[#ED2939]" />
                 </div>
-                <span className="text-3xl relative z-10">🇫🇷</span>
+                <div className="w-10 h-7 rounded-sm overflow-hidden flex border border-slate-200/60 shadow-sm relative z-10">
+                  <div className="w-1/3 bg-[#002395]" />
+                  <div className="w-1/3 bg-white" />
+                  <div className="w-1/3 bg-[#ED2939]" />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-black/5 via-transparent to-white/15 pointer-events-none" />
+                </div>
               </div>
               <div className="space-y-1 text-center md:text-left flex-1">
                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-1.5">
