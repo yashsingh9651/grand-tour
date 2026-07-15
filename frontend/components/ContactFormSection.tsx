@@ -61,7 +61,7 @@ export default function ContactFormSection() {
           </p>
 
           {/* Group Photo with Speech Testimonial */}
-          <div className="relative w-full aspect-[16/6] bg-slate-100 dark:bg-zinc-900 shadow-xl border border-slate-100 dark:border-zinc-800">
+          <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] lg:aspect-[16/6] bg-slate-100 dark:bg-zinc-900 shadow-xl border border-slate-100 dark:border-zinc-800">
             <Image
               src="/about_group.png"
               alt="Students group photo in park"
@@ -75,7 +75,7 @@ export default function ContactFormSection() {
               whileInView={{ opacity: 1, scale: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
-              className="absolute -right-4 sm:-right-32 bottom-4 sm:bottom-8 backdrop-blur z-20 bg-white/70 border border-slate-100 dark:border-zinc-800 p-1 sm:p-2 rounded-2xl shadow-xl max-w-[220px] sm:max-w-[260px] text-left"
+              className="absolute right-4 sm:-right-24 md:-right-32 bottom-4 sm:bottom-8 backdrop-blur z-20 bg-white/80 dark:bg-zinc-900/80 border border-slate-100 dark:border-zinc-800 p-3 sm:p-4 rounded-2xl shadow-xl max-w-[200px] sm:max-w-[260px] text-left"
             >
               <div className="flex gap-2.5 items-start">
                 <span className="text-slate-500 dark:text-slate-400 text-lg leading-none">💬</span>
@@ -87,7 +87,7 @@ export default function ContactFormSection() {
           </div>
 
           {/* Badges Grid (2x2) */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Badge 1: Response within 24 Hours */}
             <div className="flex items-center gap-3 px-4 py-3.5 rounded-[1.2rem] bg-[#0b9940]/10 border border-[#0b9940]/15 transition-all hover:bg-[#0b9940]/15">
               <div className="w-8 h-8 rounded-lg bg-[#0b9940]/15 flex items-center justify-center shrink-0">

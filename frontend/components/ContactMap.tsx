@@ -34,7 +34,7 @@ export default function ContactMap() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="relative w-full aspect-16/5 rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl bg-zinc-900"
+          className="relative w-full h-[300px] sm:h-[400px] md:aspect-[16/5] md:h-auto rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden shadow-2xl bg-zinc-900"
         >
           {/* Floating Airport Tooltip/Badge */}
           <div className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-xl border border-slate-100 dark:border-zinc-800 flex items-center gap-2 select-none">
