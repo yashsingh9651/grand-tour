@@ -22,6 +22,23 @@ const Footer = dynamic(() => import("@/components/Footer"), {
   ),
 });
 
+const ContactFormSection = dynamic(() => import("@/components/ContactFormSection"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-28 bg-slate-50 dark:bg-zinc-950 animate-pulse flex items-center justify-center text-xs text-slate-400 font-semibold uppercase tracking-wider">
+      Loading form...
+    </div>
+  ),
+});
+const HomeCTA = dynamic(() => import("@/components/HomeCTA"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-28 bg-slate-50 dark:bg-zinc-950 animate-pulse flex items-center justify-center text-xs text-slate-400 font-semibold uppercase tracking-wider">
+      Loading home cta...
+    </div>
+  ),
+});
+
 export default function ContactPage() {
   const { data: session, status } = useSession();
   const isLoggedIn = status === "authenticated";
@@ -90,7 +107,7 @@ export default function ContactPage() {
                   Contact Grand Tour
                 </span>
               </div>
-              
+
               {/* Main Heading */}
               <h1 className="text-4xl sm:text-5xl lg:text-[68px] font-black text-white leading-[1.08] tracking-tight">
                 Let's Start Your<br />
@@ -169,6 +186,8 @@ export default function ContactPage() {
         </main>
       </div>
 
+      <ContactFormSection />
+      <HomeCTA />
       <Footer />
     </div>
   );
