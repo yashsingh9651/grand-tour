@@ -1,10 +1,9 @@
 "use client";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import Image from "next/image";
-import { Menu, X, Award, Building, TrendingUp, Users } from "lucide-react";
+import { Award, Building, TrendingUp, Users } from "lucide-react";
 import dynamic from "next/dynamic";
 
 const PartnersCarousel = dynamic(() => import("@/components/PartnersCarousel"), {
@@ -66,7 +65,6 @@ const Footer= dynamic(() => import("@/components/Footer"), {
 
 export default function Home() {
   const { data: session, status } = useSession();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const isLoggedIn = status === "authenticated";
   const user = session?.user as any;
@@ -92,91 +90,7 @@ export default function Home() {
 
         {/* ── 3. BOTTOM FADE GRADIENT (bg fades to near-white at bottom edge) ── */}
         <div className="absolute bottom-0 left-0 right-0 h-14 bg-gradient-to-t from-white/90 via-white/40 to-transparent z-[2] pointer-events-none" />
-        <div className="relative lg:absolute lg:inset-0 z-[10] flex flex-col min-h-screen lg:min-h-0 justify-between">
-          {/* ── HEADER ── */}
-          <header className="w-full shrink-0">
-            <div className="px-4 sm:px-8 py-2 flex items-center justify-between">
-              <Link href="/" id="nav-logo" className="flex items-center">
-                <Image src="/logo.png" alt="logo" width={200} height={200} className="h-10 w-auto" />
-              </Link>
-
-              {/* Desktop navigation links */}
-              <nav className="hidden md:flex items-center gap-10">
-                <Link
-                  href="/"
-                  className="text-sm font-medium text-white border-b-2 border-white pb-0.5 select-none"
-                >
-                  Home
-                </Link>
-                <Link
-                  href="#"
-                  className="text-sm font-medium text-white/80 hover:text-white transition-colors select-none"
-                >
-                  About
-                </Link>
-                <Link
-                  href="#"
-                  className="text-sm font-medium text-white/80 hover:text-white transition-colors select-none"
-                >
-                  Contact Us
-                </Link>
-                <Link
-                  href="#"
-                  className="text-sm font-medium text-white/80 hover:text-white transition-colors select-none"
-                >
-                  Internship in France
-                </Link>
-              </nav>
-
-              {/* Become a Partner CTA */}
-              <div className="hidden md:flex">
-                <Link
-                  href={isLoggedIn ? dashboardLink : "/login"}
-                  id="btn-desktop-partner"
-                  className="bg-[#0055A5] hover:bg-[#0055A5]/90 active:scale-95 text-white text-xs font-medium px-6 py-3 rounded-full uppercase tracking-wider transition-all shadow-lg select-none"
-                >
-                  {isLoggedIn ? "Go to Dashboard" : "Become a Partner"}
-                </Link>
-              </div>
-
-              {/* Mobile hamburger */}
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-2 text-white"
-                aria-label="Toggle menu"
-                id="mobile-menu-toggle"
-              >
-                {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-              </button>
-            </div>
-
-            {/* Mobile drawer */}
-            <AnimatePresence>
-              {mobileMenuOpen && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="md:hidden bg-black/90 backdrop-blur-md"
-                >
-                  <div className="px-6 py-6 flex flex-col gap-5">
-                    <Link href="/" onClick={() => setMobileMenuOpen(false)} className="text-white font-semibold">Home</Link>
-                    <Link href="#" onClick={() => setMobileMenuOpen(false)} className="text-white/80 font-semibold">About</Link>
-                    <Link href="#" onClick={() => setMobileMenuOpen(false)} className="text-white/80 font-semibold">Contact Us</Link>
-                    <Link href="#" onClick={() => setMobileMenuOpen(false)} className="text-white/80 font-semibold">Internship in France</Link>
-                    <Link
-                      href={isLoggedIn ? dashboardLink : "/login"}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="bg-[#0055A5] text-white font-bold text-center py-3 rounded-full text-sm uppercase tracking-wider"
-                    >
-                      {isLoggedIn ? "Go to Dashboard" : "Become a Partner"}
-                    </Link>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </header>
-
+        <div className="relative lg:absolute lg:inset-0 z-[10] flex flex-col min-h-screen lg:min-h-0 justify-between pt-16">
           {/* ── HERO BODY — takes remaining vertical space ── */}
           <main className="flex-1 relative flex items-center justify-center pt-8 pb-48 lg:py-0">
             {/* === LEFT POLAROID FRAME === */}
