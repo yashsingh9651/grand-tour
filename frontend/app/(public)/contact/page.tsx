@@ -48,6 +48,15 @@ const ContactMap = dynamic(() => import("@/components/ContactMap"), {
   ),
 });
 
+const ContactWays = dynamic(() => import("@/components/ContactWays"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-28 bg-slate-50 dark:bg-zinc-950 animate-pulse flex items-center justify-center text-xs text-slate-400 font-semibold uppercase tracking-wider">
+      Loading contact ways...
+    </div>
+  ),
+});
+
 export default function ContactPage() {
   const { data: session, status } = useSession();
   const isLoggedIn = status === "authenticated";
@@ -197,6 +206,7 @@ export default function ContactPage() {
 
       <ContactFormSection />
       <ContactMap />
+      <ContactWays />
       <HomeCTA />
       <Footer />
     </div>
