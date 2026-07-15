@@ -84,7 +84,7 @@ export default function StudentLife() {
   const duplicatedCards = [...cards, ...cards]
 
   return (
-    <section className={`relative bg-[#0d0f12] py-24 px-4 sm:px-6 lg:px-8 overflow-hidden ${kalam.variable}`}>
+    <section className={`relative bg-[#0d0f12] py-24 overflow-hidden ${kalam.variable}`}>
       {/* Inline styles for the infinite marquee */}
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes marquee {

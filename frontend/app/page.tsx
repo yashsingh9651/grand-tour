@@ -15,12 +15,54 @@ const PartnersCarousel = dynamic(() => import("@/components/PartnersCarousel"), 
     </div>
   )
 });
-import WhyGrandTour from "@/components/WhyGrandTour";
-import HowItWorks from "@/components/HowItWorks";
-import StudentLife from "@/components/StudentLife";
-import Testimonials from "@/components/Testimonials";
-import HomeCTA from "@/components/HomeCTA";
-import Footer from "@/components/Footer";
+const WhyGrandTour= dynamic(() => import("@/components/WhyGrandTour"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-28 bg-slate-50 dark:bg-zinc-950 animate-pulse flex items-center justify-center text-xs text-slate-400 font-semibold uppercase tracking-wider">
+      Loading why grand tour...
+    </div>
+  )
+});
+const HowItWorks= dynamic(() => import("@/components/HowItWorks"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-28 bg-slate-50 dark:bg-zinc-950 animate-pulse flex items-center justify-center text-xs text-slate-400 font-semibold uppercase tracking-wider">
+      Loading how it works...
+    </div>
+  )
+});
+const StudentLife= dynamic(() => import("@/components/StudentLife"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-28 bg-slate-50 dark:bg-zinc-950 animate-pulse flex items-center justify-center text-xs text-slate-400 font-semibold uppercase tracking-wider">
+      Loading student life...
+    </div>
+  )
+});
+const Testimonials= dynamic(() => import("@/components/Testimonials"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-28 bg-slate-50 dark:bg-zinc-950 animate-pulse flex items-center justify-center text-xs text-slate-400 font-semibold uppercase tracking-wider">
+      Loading testimonials...
+    </div>
+  )
+});
+const HomeCTA= dynamic(() => import("@/components/HomeCTA"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-28 bg-slate-50 dark:bg-zinc-950 animate-pulse flex items-center justify-center text-xs text-slate-400 font-semibold uppercase tracking-wider">
+      Loading home cta...
+    </div>
+  )
+});
+const Footer= dynamic(() => import("@/components/Footer"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-28 bg-slate-50 dark:bg-zinc-950 animate-pulse flex items-center justify-center text-xs text-slate-400 font-semibold uppercase tracking-wider">
+      Loading footer...
+    </div>
+  )
+});
 
 export default function Home() {
   const { data: session, status } = useSession();

@@ -323,10 +323,6 @@ export default function Payment2Page() {
             </div>
             <div className="p-4 bg-muted border border-border rounded-2xl text-left space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">UTR Number:</span>
-                <span className="font-mono font-bold text-green-600 dark:text-green-400">{latestPayment.utrNumber}</span>
-              </div>
-              <div className="flex justify-between">
                 <span className="text-muted-foreground">Amount Paid:</span>
                 <span className="font-bold text-green-600 dark:text-green-400">{currencySymbol}{latestPayment.amount?.toLocaleString()}</span>
               </div>
@@ -337,7 +333,7 @@ export default function Payment2Page() {
                   size="sm"
                   onClick={() => {
                     setViewingProofUrl(latestPayment.screenshotUrl)
-                    setViewingReceiptName(`Receipt - UTR ${latestPayment.utrNumber}`)
+                    setViewingReceiptName(`Receipt`)
                   }}
                   className="gap-1.5 h-8 text-foreground border-border hover:bg-muted"
                 >
@@ -365,10 +361,6 @@ export default function Payment2Page() {
             </div>
             <div className="p-4 bg-muted border border-border rounded-2xl text-left space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">UTR Number:</span>
-                <span className="font-mono font-bold text-purple-600 dark:text-purple-400">{latestPayment.utrNumber}</span>
-              </div>
-              <div className="flex justify-between">
                 <span className="text-muted-foreground">Amount Submitted:</span>
                 <span className="font-bold text-purple-600 dark:text-purple-400">{currencySymbol}{latestPayment.amount?.toLocaleString()}</span>
               </div>
@@ -379,7 +371,7 @@ export default function Payment2Page() {
                   size="sm"
                   onClick={() => {
                     setViewingProofUrl(latestPayment.screenshotUrl)
-                    setViewingReceiptName(`Receipt - UTR ${latestPayment.utrNumber}`)
+                    setViewingReceiptName(`Receipt`)
                   }}
                   className="gap-1.5 h-8 text-foreground border-border hover:bg-muted"
                 >

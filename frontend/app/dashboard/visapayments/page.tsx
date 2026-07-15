@@ -279,10 +279,6 @@ export default function VisaPaymentsPage() {
             <p className="text-xs text-muted-foreground">Your transaction has been verified by our finance team.</p>
             <div className="bg-muted p-3 rounded-xl border border-border text-xs space-y-1">
               <div className="flex justify-between">
-                <span className="text-muted-foreground font-medium">UTR:</span>
-                <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{paymentObj.utrNumber}</span>
-              </div>
-              <div className="flex justify-between">
                 <span className="text-muted-foreground font-medium">Date:</span>
                 <span className="font-bold text-muted-foreground">{new Date(paymentObj.createdAt).toLocaleDateString()}</span>
               </div>
@@ -316,8 +312,8 @@ export default function VisaPaymentsPage() {
             <p className="text-xs text-muted-foreground">We are currently verifying this payment. Please check back within 24 hours.</p>
             <div className="bg-muted p-3 rounded-xl border border-border text-xs space-y-1">
               <div className="flex justify-between">
-                <span className="text-muted-foreground font-medium">UTR:</span>
-                <span className="font-mono font-bold text-amber-600 dark:text-amber-400">{paymentObj.utrNumber}</span>
+                <span className="text-muted-foreground font-medium">Status:</span>
+                <span className="font-bold text-amber-600 dark:text-amber-400">Reviewing</span>
               </div>
             </div>
           </div>
@@ -352,7 +348,7 @@ export default function VisaPaymentsPage() {
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <div>
                 <p className="font-bold">Previous Submission Rejected</p>
-                <p>Please re-verify the UTR and upload a clear screenshot of the transfer receipt.</p>
+                <p>Please upload a clear screenshot of the transfer receipt.</p>
               </div>
             </div>
           )}
