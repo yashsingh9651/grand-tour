@@ -11,26 +11,26 @@ const kalam = Kalam({
 
 export default function AboutHistory() {
   return (
-    <section className="relative w-full bg-white py-20 sm:py-32 px-4 sm:px-8 border-b border-slate-100">
-      <div className="w-full max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-16 lg:gap-8">
+    <section className="relative w-full bg-white py-20 sm:py-32 px-4 sm:px-8 md:px-12 border-b border-slate-100">
+      <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-16 lg:gap-8">
         
         {/* Left Column: Story Content & Timeline */}
-        <div className="flex-1 text-left space-y-8 max-w-2xl">
+        <div className="w-3/5 text-left space-y-8">
           {/* Pill Badge */}
           <div className="inline-flex items-center bg-[#dea306]/10 px-4 py-1.5 rounded-full select-none">
-            <span className="text-[#dea306] text-xs font-black uppercase tracking-wider">
+            <span className="text-[#dea306] text-xs font-semibold uppercase tracking-wider">
               How Grand Tour Began
             </span>
           </div>
 
           {/* Title */}
-          <h2 className="text-3xl sm:text-5xl lg:text-[54px] font-black text-slate-900 leading-[1.1] tracking-tight">
+          <h2 className="text-3xl sm:text-5xl lg:text-7xl font-bold text-slate-900 leading-[1.1] tracking-tight">
             From one dream <br />
             <span className="text-[#E1000F]">internship</span> to a movement
           </h2>
 
           {/* Main Paragraph */}
-          <p className="text-sm sm:text-base text-slate-500 font-medium leading-relaxed max-w-xl">
+          <p className="text-sm sm:text-base md:text-lg text-slate-500 max-w-3xl font-medium leading-relaxed">
             Grand Tour began with a simple frustration: brilliant hospitality students were being shut out of the internships that could actually change their careers buried under paperwork, language barriers, and closed doors. We built the bridge we wished we'd had.
           </p>
 
@@ -78,7 +78,7 @@ export default function AboutHistory() {
         </div>
 
         {/* Right Column: Layered Photo Collage */}
-        <div className="flex-1 relative w-full max-w-md lg:max-w-none h-[420px] sm:h-[500px]">
+        <div className="w-2/5 relative h-[420px] sm:h-[500px]">
           {/* Top Right Image (Presentation) */}
           <motion.div
             initial={{ opacity: 0, x: 30, y: -20, rotate: 6 }}
