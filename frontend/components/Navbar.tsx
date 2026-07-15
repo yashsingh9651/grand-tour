@@ -64,7 +64,7 @@ export default function Navbar() {
             Contact Us
           </Link>
           <Link
-            href="#"
+            href="/about"
             className="text-sm font-medium text-white/80 hover:text-white transition-colors select-none"
           >
             Internship in France
@@ -125,7 +125,7 @@ export default function Navbar() {
                 Contact Us
               </Link>
               <Link
-                href="#"
+                href="/about"
                 onClick={() => setMobileMenuOpen(false)}
                 className="text-white/80 font-semibold"
               >

@@ -49,7 +49,9 @@ export default function Footer() {
               {/* Social Icons Row */}
               <div className="flex items-center gap-3 pt-2">
                 <a 
-                  href="#" 
+                  href="https://www.instagram.com/grandtour.internships" 
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 aspect-square rounded bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center text-white"
                   aria-label="Instagram"
                 >
@@ -60,7 +62,9 @@ export default function Footer() {
                   </svg>
                 </a>
                 <a 
-                  href="#" 
+                  href="https://www.linkedin.com" 
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 aspect-square rounded bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center text-white"
                   aria-label="LinkedIn"
                 >
@@ -71,7 +75,9 @@ export default function Footer() {
                   </svg>
                 </a>
                 <a 
-                  href="#" 
+                  href="https://www.facebook.com" 
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 aspect-square rounded bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center text-white"
                   aria-label="Facebook"
                 >
@@ -95,17 +101,17 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-white transition-colors">
+                <Link href="/about" className="hover:text-white transition-colors">
                   About
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-white transition-colors">
+                <Link href="/contact" className="hover:text-white transition-colors">
                   Contact
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-white transition-colors">
+                <Link href="/login" className="hover:text-white transition-colors">
                   Partnership
                 </Link>
               </li>
@@ -124,12 +130,12 @@ export default function Footer() {
             </h4>
             <ul className="space-y-3 text-gray-400 font-medium tracking-wide">
               <li>
-                <Link href="#" className="hover:text-white transition-colors">
+                <Link href="/contact" className="hover:text-white transition-colors">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-white transition-colors">
+                <Link href="/contact" className="hover:text-white transition-colors">
                   Terms & Conditions
                 </Link>
               </li>
