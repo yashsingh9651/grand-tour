@@ -13,9 +13,9 @@ export default function AboutHistory() {
   return (
     <section className="relative w-full bg-white py-20 sm:py-32 px-4 sm:px-8 md:px-12 border-b border-slate-100">
       <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-16 lg:gap-8">
-        
+
         {/* Left Column: Story Content & Timeline */}
-        <div className="w-3/5 text-left space-y-8">
+        <div className="w-full lg:w-3/5 text-left space-y-8">
           {/* Pill Badge */}
           <div className="inline-flex items-center bg-[#dea306]/10 px-4 py-1.5 rounded-full select-none">
             <span className="text-[#dea306] text-xs font-semibold uppercase tracking-wider">
@@ -78,76 +78,75 @@ export default function AboutHistory() {
         </div>
 
         {/* Right Column: Layered Photo Collage */}
-        <div className="w-2/5 relative h-[420px] sm:h-[500px]">
+        <div className="w-full lg:w-2/5 relative h-[450px] sm:h-[540px] mt-12 lg:mt-0 select-none">
           {/* Top Right Image (Presentation) */}
           <motion.div
             initial={{ opacity: 0, x: 30, y: -20, rotate: 6 }}
-            animate={{ opacity: 1, x: 0, y: 0, rotate: 4 }}
+            animate={{ opacity: 1, x: 0, y: 0, rotate: 6 }}
             transition={{ duration: 0.7 }}
-            whileHover={{ rotate: 1, scale: 1.02 }}
-            className="absolute top-4 right-2 sm:right-6 w-[200px] sm:w-[260px] aspect-[4/3] rounded-2xl overflow-hidden shadow-[0_15px_30px_rgba(0,0,0,0.15)] bg-slate-100 z-10"
+            whileHover={{ rotate: 2, scale: 1.03 }}
+            className="absolute top-4 right-2 sm:right-6 w-[220px] sm:w-[280px] aspect-[4/3] rounded-[2.5rem] overflow-hidden shadow-2xl bg-slate-100 z-10 border-[6px] border-white"
           >
             <Image
               src="/about_presentation.png"
               alt="Student Presentation Classroom"
               fill
               className="object-cover"
-              sizes="(max-width: 640px) 200px, 260px"
+              sizes="(max-width: 640px) 220px, 280px"
             />
           </motion.div>
 
           {/* Left Middle Image (Chefs) */}
           <motion.div
-            initial={{ opacity: 0, x: -30, y: -10, rotate: -5 }}
-            animate={{ opacity: 1, x: 0, y: 0, rotate: -3 }}
+            initial={{ opacity: 0, x: -30, y: -10, rotate: -6 }}
+            animate={{ opacity: 1, x: 0, y: 0, rotate: -6 }}
             transition={{ duration: 0.7, delay: 0.15 }}
-            whileHover={{ rotate: -1, scale: 1.02 }}
-            className="absolute top-24 sm:top-28 left-2 sm:left-6 w-[180px] sm:w-[220px] aspect-[4/3] rounded-2xl overflow-hidden shadow-[0_15px_35px_rgba(0,0,0,0.18)] bg-slate-100 z-20"
+            whileHover={{ rotate: -2, scale: 1.03 }}
+            className="absolute top-20 sm:top-24 left-2 sm:left-4 w-[190px] sm:w-[245px] aspect-[4/3] rounded-[2.5rem] overflow-hidden shadow-2xl bg-slate-100 z-20 border-[6px] border-white"
           >
             <Image
               src="/about_chefs.png"
               alt="Culinary Students in Kitchen"
               fill
               className="object-cover"
-              sizes="(max-width: 640px) 180px, 220px"
+              sizes="(max-width: 640px) 190px, 245px"
             />
           </motion.div>
 
           {/* Bottom Left Quote Card */}
           <motion.div
             initial={{ opacity: 0, y: 30, rotate: 3 }}
-            animate={{ opacity: 1, y: 0, rotate: 1 }}
+            animate={{ opacity: 1, y: 0, rotate: 3 }}
             transition={{ duration: 0.7, delay: 0.3 }}
-            whileHover={{ rotate: -1, scale: 1.02 }}
-            className="absolute bottom-12 sm:bottom-16 left-6 sm:left-12 w-[210px] sm:w-[240px] bg-[#FAF8F5] p-4 sm:p-5 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.12)] border border-slate-100 z-30"
+            whileHover={{ rotate: 1, scale: 1.03 }}
+            className="absolute bottom-8 sm:bottom-12 left-4 sm:left-10 w-[200px] sm:w-[240px] bg-[#FAF8F5] p-5 sm:p-6 rounded-[2.5rem] shadow-xl border-[6px] border-white z-30"
           >
-            <p className="text-[11px] sm:text-xs font-extrabold text-slate-800 leading-relaxed text-left">
+            <p className="text-xs sm:text-sm font-bold text-slate-800 leading-relaxed text-left">
               We didn't want to arrange placements. We wanted to build careers our students would look back on forever.
             </p>
-            {/* Quote icon from font-kalam */}
-            <div className={`${kalam.className} text-xl sm:text-2xl text-[#dea306] font-bold text-left leading-none mt-1`}>
-              "
+            {/* Quote icon */}
+            <div className="text-left mt-2 leading-none">
+              <span className="text-3xl text-[#dea306] font-serif leading-none font-bold">“</span>
             </div>
           </motion.div>
 
           {/* Bottom Right Image (Group Selfie) */}
           <motion.div
-            initial={{ opacity: 0, x: 30, y: 20, rotate: -7 }}
+            initial={{ opacity: 0, x: 30, y: 20, rotate: -5 }}
             animate={{ opacity: 1, x: 0, y: 0, rotate: -5 }}
             transition={{ duration: 0.7, delay: 0.25 }}
-            whileHover={{ rotate: -2, scale: 1.02 }}
-            className="absolute bottom-4 right-0 w-[200px] sm:w-[240px] aspect-[4/3] rounded-2xl overflow-hidden shadow-[0_15px_30px_rgba(0,0,0,0.15)] bg-slate-100 z-20"
+            whileHover={{ rotate: -1, scale: 1.03 }}
+            className="absolute bottom-0 right-2 w-[210px] sm:w-[265px] aspect-[4/3] rounded-[2.5rem] overflow-hidden shadow-2xl bg-slate-100 z-20 border-[6px] border-white"
           >
             <Image
               src="/about_group.png"
               alt="Students Group Selfie Outdoor"
               fill
               className="object-cover"
-              sizes="(max-width: 640px) 200px, 240px"
+              sizes="(max-width: 640px) 210px, 265px"
             />
           </motion.div>
         </div>
-
       </div>
     </section>
   );

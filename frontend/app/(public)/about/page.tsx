@@ -31,6 +31,24 @@ const AboutHistory = dynamic(() => import("@/components/AboutHistory"), {
   ),
 });
 
+const Founders = dynamic(() => import("@/components/Founders"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-28 bg-slate-50 dark:bg-zinc-950 animate-pulse flex items-center justify-center text-xs text-slate-400 font-semibold uppercase tracking-wider">
+      Loading founders...
+    </div>
+  ),
+});
+
+const VisionMission = dynamic(() => import("@/components/VisionMission"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-28 bg-slate-50 dark:bg-zinc-950 animate-pulse flex items-center justify-center text-xs text-slate-400 font-semibold uppercase tracking-wider">
+      Loading vision...
+    </div>
+  ),
+});
+
 const HomeCTA = dynamic(() => import("@/components/HomeCTA"), {
   ssr: false,
   loading: () => (
@@ -163,6 +181,8 @@ const AboutPage = () => {
         </main>
       </div>
       <AboutHistory />
+      <Founders />
+      <VisionMission />
       <Testimonials />
       <HomeCTA />
       <Footer />
