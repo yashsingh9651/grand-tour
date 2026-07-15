@@ -39,6 +39,15 @@ const HomeCTA = dynamic(() => import("@/components/HomeCTA"), {
   ),
 });
 
+const ContactMap = dynamic(() => import("@/components/ContactMap"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-28 bg-[#0A0B0D] animate-pulse flex items-center justify-center text-xs text-slate-500 font-semibold uppercase tracking-wider">
+      Loading map...
+    </div>
+  ),
+});
+
 export default function ContactPage() {
   const { data: session, status } = useSession();
   const isLoggedIn = status === "authenticated";
@@ -187,6 +196,7 @@ export default function ContactPage() {
       </div>
 
       <ContactFormSection />
+      <ContactMap />
       <HomeCTA />
       <Footer />
     </div>
