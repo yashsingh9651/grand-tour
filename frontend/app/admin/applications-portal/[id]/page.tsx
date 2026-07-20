@@ -1634,6 +1634,151 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
             </div>
           )
 
+        case 'googlerate':
+          const ratingDoc = documentsList.find((d: any) => d.type === 'google_review_screenshot')
+          const videoDoc = documentsList.find((d: any) => d.type === 'google_review_video')
+          
+          return (
+            <div className="space-y-4">
+              <h4 className="font-bold text-slate-900 border-b pb-2 flex items-center gap-2"><Star className="w-4 h-4 text-amber-500 fill-amber-500" /> Google Review & Video Feedback</h4>
+              
+              <div className="grid md:grid-cols-2 gap-4">
+                {/* Google Review Card */}
+                <Card className="p-5 border border-slate-200 bg-white rounded-3xl space-y-4 shadow-sm flex flex-col justify-between">
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h5 className="font-bold text-slate-800 text-sm">Google Review Screenshot</h5>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">Screenshot proof</p>
+                      </div>
+                      {ratingDoc ? (
+                        <Badge className={`rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
+                          ratingDoc.status === 'APPROVED' ? 'bg-green-100 text-green-700' :
+                          ratingDoc.status === 'REJECTED' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'
+                        }`}>{ratingDoc.status}</Badge>
+                      ) : (
+                        <span className="text-[9px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Not Uploaded</span>
+                      )}
+                    </div>
+
+                    {ratingDoc ? (
+                      <div className="border rounded-2xl p-3 bg-slate-50 flex items-center justify-between">
+                        <span className="text-xs font-semibold text-slate-700 truncate max-w-[150px]">{ratingDoc.fileName}</span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => openLightbox(ratingDoc.url, 'Google Review Screenshot')}
+                          className="gap-1.5 text-xs font-bold rounded-xl shrink-0"
+                        >
+                          <Eye className="w-3.5 h-3.5" /> View
+                        </Button>
+                      </div>
+                    ) : (
+                      <p className="text-xs text-slate-400 italic py-4 text-center">No screenshot uploaded yet.</p>
+                    )}
+                  </div>
+
+                  {ratingDoc && ratingDoc.status === 'PENDING' && (
+                    <div className="flex flex-col gap-2 pt-2 border-t mt-4">
+                      <Input
+                        placeholder="Rejection remarks (required only if rejecting)..."
+                        value={docReviewRemarks[ratingDoc.id] || ''}
+                        onChange={(e) => setDocReviewRemarks(p => ({ ...p, [ratingDoc.id]: e.target.value }))}
+                        className="h-8 rounded-lg border-slate-200 text-xs"
+                      />
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={() => handleDocReview(ratingDoc.id, 'REJECTED')}
+                          disabled={submittingAction}
+                          size="sm"
+                          variant="outline"
+                          className="flex-1 text-rose-600 border-rose-200 hover:bg-rose-50 h-8 rounded-lg font-bold"
+                        >
+                          Reject
+                        </Button>
+                        <Button
+                          onClick={() => handleDocReview(ratingDoc.id, 'APPROVED')}
+                          disabled={submittingAction}
+                          size="sm"
+                          className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white h-8 rounded-lg font-bold"
+                        >
+                          Approve
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </Card>
+
+                {/* Video Review Card */}
+                <Card className="p-5 border border-slate-200 bg-white rounded-3xl space-y-4 shadow-sm flex flex-col justify-between">
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h5 className="font-bold text-slate-800 text-sm">Video Review Feedback</h5>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">MP4/MOV Video</p>
+                      </div>
+                      {videoDoc ? (
+                        <Badge className={`rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
+                          videoDoc.status === 'APPROVED' ? 'bg-green-100 text-green-700' :
+                          videoDoc.status === 'REJECTED' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'
+                        }`}>{videoDoc.status}</Badge>
+                      ) : (
+                        <span className="text-[9px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Not Uploaded</span>
+                      )}
+                    </div>
+
+                    {videoDoc ? (
+                      <div className="border rounded-2xl p-3 bg-slate-50 flex items-center justify-between">
+                        <span className="text-xs font-semibold text-slate-700 truncate max-w-[150px]">{videoDoc.fileName}</span>
+                        <a href={videoDoc.url} target="_blank" rel="noopener noreferrer">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="gap-1.5 text-xs font-bold rounded-xl shrink-0"
+                          >
+                            <Eye className="w-3.5 h-3.5" /> View / Download
+                          </Button>
+                        </a>
+                      </div>
+                    ) : (
+                      <p className="text-xs text-slate-400 italic py-4 text-center">No video review uploaded yet.</p>
+                    )}
+                  </div>
+
+                  {videoDoc && videoDoc.status === 'PENDING' && (
+                    <div className="flex flex-col gap-2 pt-2 border-t mt-4">
+                      <Input
+                        placeholder="Rejection remarks (required only if rejecting)..."
+                        value={docReviewRemarks[videoDoc.id] || ''}
+                        onChange={(e) => setDocReviewRemarks(p => ({ ...p, [videoDoc.id]: e.target.value }))}
+                        className="h-8 rounded-lg border-slate-200 text-xs"
+                      />
+                      <div className="flex gap-2">
+                        <Button
+                          onClick={() => handleDocReview(videoDoc.id, 'REJECTED')}
+                          disabled={submittingAction}
+                          size="sm"
+                          variant="outline"
+                          className="flex-1 text-rose-600 border-rose-200 hover:bg-rose-50 h-8 rounded-lg font-bold"
+                        >
+                          Reject
+                        </Button>
+                        <Button
+                          onClick={() => handleDocReview(videoDoc.id, 'APPROVED')}
+                          disabled={submittingAction}
+                          size="sm"
+                          className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white h-8 rounded-lg font-bold"
+                        >
+                          Approve
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </Card>
+              </div>
+            </div>
+          )
+
         case 'travel':
           const travelDocs = application.travelDocuments || []
           const hasTravelDocs = travelDocs.length > 0

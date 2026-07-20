@@ -10,6 +10,7 @@ export type WorkflowStep =
   | 'workpermit'
   | 'visapayments'
   | 'visa'
+  | 'googlerate'
   | 'travel'
 
 export interface WorkflowStepData {
@@ -35,7 +36,8 @@ export const WORKFLOW_STEPS: Record<WorkflowStep, Omit<WorkflowStepData, 'comple
   workpermit: { id: 'workpermit', title: 'Work Permit', description: 'Permit processing', icon: '🔒', order: 9 },
   visapayments: { id: 'visapayments', title: 'Visa Payments', description: 'Pay visa fees & SEVIS', icon: '🔒', order: 10 },
   visa: { id: 'visa', title: 'Visa Stage', description: 'Visa application', icon: '🔒', order: 11 },
-  travel: { id: 'travel', title: 'Travel Details', description: 'Travel information', icon: '🔒', order: 12 },
+  googlerate: { id: 'googlerate', title: 'Google Rating', description: 'Rate us on Google & upload screenshot', icon: '🔒', order: 12 },
+  travel: { id: 'travel', title: 'Travel Details', description: 'Travel information', icon: '🔒', order: 13 },
 }
 
 export const getWorkflowSteps = (currentStepId: WorkflowStep): WorkflowStepData[] => {

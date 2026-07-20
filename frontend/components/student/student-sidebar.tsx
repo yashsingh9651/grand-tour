@@ -22,6 +22,7 @@ import {
   Briefcase,
   ClipboardCheck,
   Images,
+  Star,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -37,7 +38,8 @@ const WORKFLOW_STEP_ORDER: Record<string, number> = {
   workpermit: 8,
   visapayments: 9,
   visa: 10,
-  travel: 11,
+  googlerate: 11,
+  travel: 12,
 }
 
 const NAV_ITEMS = [
@@ -52,6 +54,7 @@ const NAV_ITEMS = [
   { icon: Briefcase, label: 'Work Permit', href: '/dashboard/workpermit', stepKey: 'workpermit' },
   { icon: Banknote, label: 'Visa Payments', href: '/dashboard/visapayments', stepKey: 'visapayments' },
   { icon: Stamp, label: 'Visa', href: '/dashboard/visa', stepKey: 'visa' },
+  { icon: Star, label: 'Google Rating', href: '/dashboard/googlerate', stepKey: 'googlerate' },
   { icon: Plane, label: 'Travel', href: '/dashboard/travel', stepKey: 'travel' },
 ]
 

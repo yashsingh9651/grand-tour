@@ -49,7 +49,7 @@ export default function Footer() {
               {/* Social Icons Row */}
               <div className="flex items-center gap-3 pt-2">
                 <a 
-                  href="https://www.instagram.com/grandtour.internships" 
+                  href="https://www.instagram.com/grandtour.internships"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-10 aspect-square rounded bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center text-white"

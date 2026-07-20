@@ -11,7 +11,7 @@ class WorkflowService {
       workflow = await this.initializeDefaultWorkflow();
     } else {
       // Check if visapayments step is present in steps, if not insert it
-      const steps = (workflow.steps as any[]) || [];
+      let steps = (workflow.steps as any[]) || [];
       const hasVisaPayments = steps.some(s => s.id === 'visapayments');
       if (!hasVisaPayments) {
         // Find index of workpermit and insert visapayments right after it
@@ -43,6 +43,42 @@ class WorkflowService {
           adjustedSteps.splice(wpIndex + 1, 0, visaPaymentsStep);
         } else {
           adjustedSteps.push(visaPaymentsStep);
+        }
+
+        workflow = await prisma.workflow.update({
+          where: { id: workflow.id },
+          data: { steps: adjustedSteps }
+        });
+        steps = adjustedSteps;
+      }
+
+      // Check if googlerate step is present in steps, if not insert it
+      const hasGoogleRate = steps.some(s => s.id === 'googlerate');
+      if (!hasGoogleRate) {
+        // Find index of visa and insert googlerate right after it
+        const visaIndex = steps.findIndex(s => s.id === 'visa');
+        const googleRateStep = {
+          id: 'googlerate',
+          name: 'Google Rating',
+          description: 'Rate us on Google & upload screenshot',
+          order: 12,
+          fields: [],
+          isGoogleRateStep: true
+        };
+
+        // Adjust orders of steps after visa
+        const adjustedSteps = steps.map(s => {
+          if (s.order > 11) {
+            return { ...s, order: s.order + 1 };
+          }
+          return s;
+        });
+
+        // Insert new step
+        if (visaIndex !== -1) {
+          adjustedSteps.splice(visaIndex + 1, 0, googleRateStep);
+        } else {
+          adjustedSteps.push(googleRateStep);
         }
 
         workflow = await prisma.workflow.update({
@@ -130,7 +166,8 @@ class WorkflowService {
           { id: 'workpermit', name: 'Work Permit', description: 'Work permit processing', order: 9, fields: [] },
           { id: 'visapayments', name: 'Visa Payments', description: 'Pay visa processing fees and SEVIS fees', order: 10, fields: [], isVisaPaymentsStep: true, amounts: { visaFee: 15000, sevisFee: 25000, miscFee: 5000 } },
           { id: 'visa', name: 'Visa Stage', description: 'Visa application process', order: 11, fields: [] },
-          { id: 'travel', name: 'Travel Details', description: 'Your travel itinerary', order: 12, fields: [] },
+          { id: 'googlerate', name: 'Google Rating', description: 'Rate us on Google & upload screenshot', order: 12, fields: [], isGoogleRateStep: true },
+          { id: 'travel', name: 'Travel Details', description: 'Your travel itinerary', order: 13, fields: [] },
         ]
       }
     });

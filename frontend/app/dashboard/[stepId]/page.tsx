@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 import { SlotPicker } from '@/components/interviews/slot-picker'
-import { QrCode, IndianRupee, Copy, Upload, CheckCircle2, Info } from 'lucide-react'
+import { QrCode, IndianRupee, Copy, Upload, CheckCircle2, Info, Star } from 'lucide-react'
 import UploadPopup from '@/components/UploadPopup'
 import { useSession } from 'next-auth/react'
 import { paymentService } from '@/lib/services/api.service'
@@ -29,7 +29,9 @@ export default function DynamicStepPage({ params }: { params: Promise<{ stepId: 
   const [submitting, setSubmitting] = useState(false)
   const [utrNumber, setUtrNumber] = useState('')
   const [screenshotUrl, setScreenshotUrl] = useState('')
+  const [videoUrl, setVideoUrl] = useState('')
   const [isUploadOpen, setIsUploadOpen] = useState(false)
+  const [isVideoUploadOpen, setIsVideoUploadOpen] = useState(false)
   
   const currentStepConfig = workflow?.steps?.find((s: any) => s.id === stepId)
 
@@ -43,6 +45,22 @@ export default function DynamicStepPage({ params }: { params: Promise<{ stepId: 
         ])
         setApplication(appData)
         setWorkflow(wfData)
+        
+        // Reset screenshot and video URL by default on step change
+        setScreenshotUrl('')
+        setVideoUrl('')
+        
+        // Pre-populate if google review documents exist
+        if (appData?.documents) {
+          const googleDoc = appData.documents.find((d: any) => d.type === 'google_review_screenshot')
+          if (googleDoc) {
+            setScreenshotUrl(googleDoc.url)
+          }
+          const videoDoc = appData.documents.find((d: any) => d.type === 'google_review_video')
+          if (videoDoc) {
+            setVideoUrl(videoDoc.url)
+          }
+        }
       } catch (error: any) {
         toast.error('Failed to load step data')
       } finally {
@@ -507,6 +525,165 @@ export default function DynamicStepPage({ params }: { params: Promise<{ stepId: 
             onSubmit={handleSubmit}
             submitting={submitting}
           />
+        ) : (stepId === 'googlerate' || currentStepConfig.isGoogleRateStep) ? (
+          <div className="space-y-6">
+            <Card className="p-8 lg:p-12 border-2 border-primary/20 bg-gradient-to-br from-background to-primary/5 rounded-[2.5rem] shadow-2xl shadow-primary/5 max-w-4xl mx-auto">
+              <div className="flex flex-col items-center text-center space-y-6">
+                <div className="w-20 h-20 bg-amber-500/10 rounded-full flex items-center justify-center border border-amber-500/20">
+                  <Star className="w-10 h-10 text-amber-500 fill-amber-500 animate-pulse" />
+                </div>
+                
+                <div className="space-y-2">
+                  <h2 className="text-3xl font-black tracking-tight text-foreground">Rate Us on Google & Share a Video Review</h2>
+                  <p className="text-muted-foreground max-w-2xl mx-auto font-medium">
+                    Thank you for choosing Grand Tour! Your feedback is invaluable to us. Please take a moment to rate your experience on Google, record a quick video review sharing your journey, and upload both below to unlock your final travel step.
+                  </p>
+                </div>
+
+                <div className="w-full pt-2 max-w-md">
+                  <a 
+                    href="https://search.google.com/local/writereview?placeid=ChIJN1t_tDeuEmsRUsoyG83dQkw" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex w-full h-14 items-center justify-center rounded-2xl font-black uppercase tracking-widest bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white shadow-lg shadow-amber-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all gap-2"
+                  >
+                    Rate on Google
+                    <Star className="w-5 h-5 fill-white" />
+                  </a>
+                </div>
+
+                <div className="w-full border-t border-slate-200/60 my-2 pt-6 text-left grid md:grid-cols-2 gap-6">
+                  {/* Left Column: Google Review Screenshot */}
+                  <div className="space-y-3">
+                    <label className="text-sm font-black text-slate-700 ml-1">Upload Review Screenshot</label>
+                    {screenshotUrl ? (
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-3 p-4 bg-green-500/10 border border-green-500/20 rounded-2xl">
+                          <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-black text-green-700 truncate">Screenshot Uploaded</p>
+                            <p className="text-[10px] text-green-600/80 truncate font-semibold">Proof saved successfully.</p>
+                          </div>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-8 text-green-600 hover:text-green-700 hover:bg-green-100 shrink-0 text-[10px] px-2 font-bold" 
+                            onClick={() => setIsUploadOpen(true)}
+                          >
+                            Change
+                          </Button>
+                        </div>
+                        <div className="relative w-full h-48 rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 flex items-center justify-center shadow-inner">
+                          <img src={screenshotUrl} alt="Review Screenshot Preview" className="h-full w-full object-contain" />
+                        </div>
+                      </div>
+                    ) : (
+                      <Button 
+                        variant="outline" 
+                        onClick={() => setIsUploadOpen(true)}
+                        className="w-full h-64 rounded-3xl border-dashed border-2 border-slate-300 text-slate-500 hover:border-primary hover:text-primary transition-all flex flex-col items-center justify-center gap-2 bg-slate-50/50"
+                      >
+                        <Upload className="w-8 h-8 text-slate-400" />
+                        <span className="font-bold text-sm">Click to upload screenshot</span>
+                        <span className="text-[10px] text-muted-foreground">PNG, JPG or PDF (Max. 50MB)</span>
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* Right Column: Video Review Feedback */}
+                  <div className="space-y-3">
+                    <label className="text-sm font-black text-slate-700 ml-1">Upload Video Review</label>
+                    {videoUrl ? (
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-3 p-4 bg-green-500/10 border border-green-500/20 rounded-2xl">
+                          <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-black text-green-700 truncate">Video Uploaded</p>
+                            <p className="text-[10px] text-green-600/80 truncate font-semibold">Video review saved successfully.</p>
+                          </div>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="h-8 text-green-600 hover:text-green-700 hover:bg-green-100 shrink-0 text-[10px] px-2 font-bold" 
+                            onClick={() => setIsVideoUploadOpen(true)}
+                          >
+                            Change
+                          </Button>
+                        </div>
+                        <div className="relative w-full h-48 rounded-2xl overflow-hidden border border-slate-200 bg-slate-100 flex items-center justify-center shadow-inner">
+                          <video src={videoUrl} controls className="h-full w-full object-contain" />
+                        </div>
+                      </div>
+                    ) : (
+                      <Button 
+                        variant="outline" 
+                        onClick={() => setIsVideoUploadOpen(true)}
+                        className="w-full h-64 rounded-3xl border-dashed border-2 border-slate-300 text-slate-500 hover:border-primary hover:text-primary transition-all flex flex-col items-center justify-center gap-2 bg-slate-50/50"
+                      >
+                        <Upload className="w-8 h-8 text-slate-400" />
+                        <span className="font-bold text-sm">Click to upload video</span>
+                        <span className="text-[10px] text-muted-foreground">MP4, MOV or AVI (Max. 50MB)</span>
+                      </Button>
+                    )}
+                  </div>
+                </div>
+
+                <div className="w-full pt-4">
+                  <Button 
+                    onClick={async () => {
+                      if (!screenshotUrl || !videoUrl) {
+                        toast.error('Please upload both your screenshot and video review')
+                        return
+                      }
+                      try {
+                        setSubmitting(true)
+                        await handleSubmit({ googleRated: true })
+                      } catch (error) {
+                        toast.error('Failed to submit step')
+                      } finally {
+                        setSubmitting(false)
+                      }
+                    }}
+                    disabled={submitting || !screenshotUrl || !videoUrl}
+                    className="w-full h-14 rounded-2xl font-black uppercase tracking-widest bg-primary shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                  >
+                    {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Confirm & Proceed to Final Step'}
+                  </Button>
+                  {(!screenshotUrl || !videoUrl) && (
+                    <p className="text-[11px] font-bold text-rose-500 uppercase tracking-wider mt-2 text-center">
+                      * Please upload both a screenshot and a video review to proceed.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </Card>
+
+            <UploadPopup 
+              isOpen={isUploadOpen}
+              onClose={() => setIsUploadOpen(false)}
+              onUploadComplete={(doc) => {
+                setScreenshotUrl(doc.url)
+                toast.success('Screenshot uploaded!')
+              }}
+              token={(session as any)?.backendToken || ''}
+              applicationId={application?.id}
+              documentType="google_review_screenshot"
+              documentName={`Google Review Screenshot - ${currentStepConfig.name}`}
+            />
+
+            <UploadPopup 
+              isOpen={isVideoUploadOpen}
+              onClose={() => setIsVideoUploadOpen(false)}
+              onUploadComplete={(doc) => {
+                setVideoUrl(doc.url)
+                toast.success('Video review uploaded!')
+              }}
+              token={(session as any)?.backendToken || ''}
+              applicationId={application?.id}
+              documentType="google_review_video"
+              documentName={`Google Review Video - ${currentStepConfig.name}`}
+            />
+          </div>
         ) : (stepId === 'application' || currentStepConfig.name.toLowerCase().includes('profile')) ? (
           <ProfileBuilderStep 
             application={application}
