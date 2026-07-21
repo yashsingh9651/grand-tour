@@ -58,7 +58,7 @@ const NAV_ITEMS = [
   { icon: Plane, label: 'Travel', href: '/dashboard/travel', stepKey: 'travel' },
 ]
 
-export function StudentSidebar({ currentStep, darkMode }: { currentStep?: string; darkMode?: boolean }) {
+export function StudentSidebar({ currentStep, darkMode, isMobile = false }: { currentStep?: string; darkMode?: boolean; isMobile?: boolean }) {
   const pathname = usePathname()
   const { data: session } = useSession()
   const [dbCurrentStepId, setDbCurrentStepId] = useState<string | null>(null)
@@ -83,10 +83,15 @@ export function StudentSidebar({ currentStep, darkMode }: { currentStep?: string
 
   return (
     <aside
-      className="fixed top-0 left-0 w-56 h-screen flex flex-col transition-colors duration-300"
+      className={cn(
+        "transition-colors duration-300 flex flex-col",
+        isMobile 
+          ? "w-full h-full" 
+          : "hidden lg:flex fixed top-0 left-0 w-56 h-screen"
+      )}
       style={{
         backgroundColor: 'var(--sp-sidebar-bg)',
-        borderRight: '1px solid var(--sp-border)',
+        borderRight: isMobile ? 'none' : '1px solid var(--sp-border)',
       }}
     >
       {/* Brand */}

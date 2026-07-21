@@ -1,12 +1,14 @@
 'use client'
 
 import { StudentSidebar } from './student-sidebar'
-import { useState, useEffect } from 'react'
-import { Bell, Moon, Sun, Loader2 } from 'lucide-react'
+import { useState } from 'react'
+import { Bell, Moon, Sun, Loader2, Menu } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Button } from '@/components/ui/button'
 
 interface StudentLayoutProps {
   children: React.ReactNode
@@ -61,6 +63,17 @@ export function StudentLayout({ children, currentStep = 'application', headerCon
         >
           {/* Left: Brand label */}
           <div className="flex items-center gap-3">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="lg:hidden hover:bg-secondary transition-all duration-300">
+                  <Menu className="w-5 h-5" style={{ color: 'var(--sp-text)' }} />
+                  <span className="sr-only">Open menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="p-0 w-56 bg-[var(--sp-sidebar-bg)] border-r border-[var(--sp-border)]">
+                <StudentSidebar currentStep={currentStep} darkMode={darkMode} isMobile />
+              </SheetContent>
+            </Sheet>
             <span
               className="text-sm font-bold tracking-tight hidden sm:block transition-colors duration-300"
               style={{ color: 'var(--sp-text)', fontFamily: 'Gilroy, sans-serif' }}

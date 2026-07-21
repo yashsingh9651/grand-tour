@@ -165,7 +165,8 @@ export default function AdminPaymentsPage() {
                 <Loader2 className="w-8 h-8 text-primary animate-spin" />
               </div>
             ) : (
-              <Table>
+              <div className="overflow-x-auto">
+                <Table>
                 <TableHeader className="bg-slate-50/50">
                   <TableRow className="border-slate-50">
                     <TableHead className="font-bold text-slate-700">Student</TableHead>
@@ -257,6 +258,7 @@ export default function AdminPaymentsPage() {
                   )}
                 </TableBody>
               </Table>
+              </div>
             )}
           </Card>
         </div>
