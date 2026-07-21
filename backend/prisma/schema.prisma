@@ -50,6 +50,7 @@ model User {
   profileImage String?
   role      Role     @default(STUDENT)
   isVerified Boolean @default(false)
+  isActive  Boolean  @default(true)
   otp       String?
   otpExpiry DateTime?
   createdAt DateTime @default(now())

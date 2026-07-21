@@ -12,6 +12,7 @@ class UserService {
         lastName: true,
         profileImage: true,
         role: true,
+        isActive: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -41,6 +42,7 @@ class UserService {
         lastName,
         role: role as Role,
         isVerified: true,
+        isActive: true,
         whatsapp,
         dateOfBirth,
         address,
@@ -65,6 +67,18 @@ class UserService {
         state: data.state,
         pincode: data.pincode,
       },
+    });
+  }
+
+  async toggleUserStatus(id: string) {
+    const user = await prisma.user.findUnique({
+      where: { id },
+      select: { isActive: true }
+    });
+    if (!user) throw new Error('User not found');
+    return await prisma.user.update({
+      where: { id },
+      data: { isActive: !user.isActive }
     });
   }
 

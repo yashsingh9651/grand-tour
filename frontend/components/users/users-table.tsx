@@ -58,7 +58,7 @@ export function UsersTable() {
           name: `${u.firstName} ${u.lastName}`,
           email: u.email,
           role: role,
-          status: 'active',
+          status: u.isActive !== false ? 'active' : 'inactive',
           joinDate: new Date(u.createdAt),
           avatar: u.profileImage,
         };
@@ -85,7 +85,7 @@ export function UsersTable() {
         name: `${data.firstName} ${data.lastName}`,
         email: data.email,
         role: data.role.toLowerCase() === 'admin' ? 'admin' : 'team_member',
-        status: 'active',
+        status: data.isActive !== false ? 'active' : 'inactive',
         joinDate: new Date(data.createdAt),
       }
       
@@ -112,22 +112,27 @@ export function UsersTable() {
     }
   }
 
-  const handleToggleStatus = (id: string) => {
-    // Backend doesn't have status yet, just toggle local state for UI
-    setUsers(
-      users.map((u) =>
-        u.id === id ? { ...u, status: u.status === 'active' ? 'inactive' : 'active' } : u
+  const handleToggleStatus = async (id: string) => {
+    try {
+      const updatedUser = await userService.toggleStatus(id)
+      setUsers(
+        users.map((u) =>
+          u.id === id ? { ...u, status: updatedUser.isActive ? 'active' : 'inactive' } : u
+        )
       )
-    )
-    toast.info('Status toggle is simulated for now')
+      toast.success(`User ${updatedUser.isActive ? 'enabled' : 'disabled'} successfully`)
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to toggle status')
+    }
   }
 
   const roles: UserRole[] = ['super_admin', 'admin', 'team_member', 'marketing', 'hr']
 
   const filteredUsers = users.filter((u) => {
-    const matchesSearch =
-      u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      u.email.toLowerCase().includes(searchTerm.toLowerCase())
+    const cleanSearch = searchTerm.trim().toLowerCase()
+    const matchesSearch = !cleanSearch ||
+      u.name.toLowerCase().includes(cleanSearch) ||
+      u.email.toLowerCase().includes(cleanSearch)
 
     const matchesRole = filterRole === 'all' || u.role === filterRole
 
@@ -252,7 +257,7 @@ export function UsersTable() {
           </Dialog>
 
           <p className="text-sm text-muted-foreground whitespace-nowrap">
-            {filteredUsers.length} user{filteredUsers.length !== 1 ? 's' : ''}
+            {loading ? 'Loading...' : `${filteredUsers.length} user${filteredUsers.length !== 1 ? 's' : ''}`}
           </p>
         </div>
       </Card>
@@ -340,6 +345,8 @@ export function UsersTable() {
                       variant="outline"
                       size="sm"
                       onClick={() => handleDeleteUser(user.id)}
+                      aria-label={`Delete user ${user.name}`}
+                      title={`Delete user ${user.name}`}
                       className="text-red-600 hover:text-red-700"
                     >
                       <Trash2 className="w-3 h-3" />

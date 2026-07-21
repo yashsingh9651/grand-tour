@@ -22,18 +22,42 @@ export const createHotel = async (req: Request, res: Response) => {
     siretNo,
     proposalPdf
   });
+
+  await activityService.log(
+    `Admin created hotel: ${hotel.name} at ${hotel.location}`,
+    'ADMIN_CREATE_HOTEL',
+    undefined,
+    (req as any).user?.id
+  );
+
   res.status(201).json({ success: true, data: hotel });
 };
 
 export const updateHotel = async (req: Request, res: Response) => {
   const { id } = req.params;
   const hotel = await hotelService.updateHotel(id, req.body);
+
+  await activityService.log(
+    `Admin updated hotel: ${hotel.name}`,
+    'ADMIN_UPDATE_HOTEL',
+    undefined,
+    (req as any).user?.id
+  );
+
   res.status(200).json({ success: true, data: hotel });
 };
 
 export const deleteHotel = async (req: Request, res: Response) => {
   const { id } = req.params;
   await hotelService.deleteHotel(id);
+
+  await activityService.log(
+    `Admin deleted hotel ID: ${id}`,
+    'ADMIN_DELETE_HOTEL',
+    undefined,
+    (req as any).user?.id
+  );
+
   res.status(200).json({ success: true, message: 'Hotel deleted' });
 };
 

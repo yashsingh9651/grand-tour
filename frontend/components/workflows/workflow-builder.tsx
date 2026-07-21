@@ -242,6 +242,8 @@ export function WorkflowBuilder({ workflow, onSave, onCancel }: WorkflowBuilderP
                           variant="ghost"
                           size="icon"
                           onClick={() => setEditingStepId(step.id)}
+                          aria-label={`Configure stage ${step.name}`}
+                          title={`Configure stage ${step.name}`}
                           className="w-12 h-12 rounded-xl bg-primary/5 text-primary hover:bg-primary hover:text-white transition-all shadow-sm"
                         >
                           <Settings2 className="w-5 h-5" />
@@ -250,6 +252,8 @@ export function WorkflowBuilder({ workflow, onSave, onCancel }: WorkflowBuilderP
                           variant="ghost"
                           size="icon"
                           onClick={() => handleDeleteStep(step.id)}
+                          aria-label={`Delete stage ${step.name}`}
+                          title={`Delete stage ${step.name}`}
                           className="w-12 h-12 rounded-xl text-muted-foreground hover:bg-red-50 hover:text-red-600 transition-all"
                         >
                           <Trash2 className="w-5 h-5" />

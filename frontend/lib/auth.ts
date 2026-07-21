@@ -60,11 +60,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             return {
               id: data.data.id,
               email: data.data.email,
-              name: `${data.data.firstName} ${data.data.lastName}`,
+              name: [data.data.firstName, data.data.lastName].filter(Boolean).join(' '),
               role: data.data.role,
               backendToken: data.data.token,
               firstName: data.data.firstName,
-              lastName: data.data.lastName,
+              lastName: data.data.lastName || '',
               image: data.data.profileImage,
             };
           }

@@ -427,8 +427,8 @@ export function CRMDashboard() {
           {/* Table rows */}
           <div className="space-y-1">
             {data.recentApplications?.slice(0, 4).map((app: any, idx: number) => {
-              const name = `${app.user.firstName} ${app.user.lastName}`
-              const initials = `${app.user.firstName[0]}${app.user.lastName[0]}`
+              const name = [app.user.firstName, app.user.lastName].filter(Boolean).join(' ')
+              const initials = [app.user.firstName?.[0], app.user.lastName?.[0]].filter(Boolean).join('').toUpperCase() || '?'
               const avatarColors = ["#CCFF00", "#C084FC", "#60A5FA", "#F59E0B"]
               const stageColors: Record<string, string> = {
                 ACCEPTED: "#CCFF00",

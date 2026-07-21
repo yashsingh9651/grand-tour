@@ -1,11 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Save, Bell, Lock, Palette, Database, ShieldCheck } from 'lucide-react'
+import { Save, Bell, Lock, Palette, Database, ShieldCheck, Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import { applicationPageContentService } from '@/lib/services/api.service'
+import { toast } from 'sonner'
 
 export function SettingsContent() {
   const [companyName, setCompanyName] = useState('Tech Solutions Inc.')
@@ -14,11 +16,73 @@ export function SettingsContent() {
   const [emailNotifications, setEmailNotifications] = useState(true)
   const [interviewReminders, setInterviewReminders] = useState(true)
   const [documentNotifications, setDocumentNotifications] = useState(true)
+  
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
 
-  const handleSave = () => {
-    setSaved(true)
-    setTimeout(() => setSaved(false), 3000)
+  useEffect(() => {
+    async function fetchSettings() {
+      try {
+        setLoading(true)
+        const response = await applicationPageContentService.get('general_settings')
+        if (response && Array.isArray(response.blocks)) {
+          const nameBlock = response.blocks.find((b: any) => b.key === 'companyName')
+          const emailBlock = response.blocks.find((b: any) => b.key === 'email')
+          const tzBlock = response.blocks.find((b: any) => b.key === 'timezone')
+          const emailNotifBlock = response.blocks.find((b: any) => b.key === 'emailNotifications')
+          const interviewRemBlock = response.blocks.find((b: any) => b.key === 'interviewReminders')
+          const docNotifBlock = response.blocks.find((b: any) => b.key === 'documentNotifications')
+
+          if (nameBlock) setCompanyName(nameBlock.value)
+          if (emailBlock) setEmail(emailBlock.value)
+          if (tzBlock) setTimezone(tzBlock.value)
+          if (emailNotifBlock) setEmailNotifications(emailNotifBlock.value)
+          if (interviewRemBlock) setInterviewReminders(interviewRemBlock.value)
+          if (docNotifBlock) setDocumentNotifications(docNotifBlock.value)
+        }
+      } catch (err: any) {
+        console.error('Failed to load settings:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchSettings()
+  }, [])
+
+  const handleSave = async () => {
+    try {
+      setSaving(true)
+      const data = {
+        title: 'General Settings',
+        subtitle: 'System Configuration',
+        blocks: [
+          { key: 'companyName', value: companyName },
+          { key: 'email', value: email },
+          { key: 'timezone', value: timezone },
+          { key: 'emailNotifications', value: emailNotifications },
+          { key: 'interviewReminders', value: interviewReminders },
+          { key: 'documentNotifications', value: documentNotifications }
+        ]
+      }
+      await applicationPageContentService.update('general_settings', data)
+      setSaved(true)
+      toast.success('Settings saved successfully!')
+      setTimeout(() => setSaved(false), 3000)
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to save settings')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center p-20 gap-4">
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+        <p className="text-muted-foreground animate-pulse">Loading system settings...</p>
+      </div>
+    )
   }
 
   return (
@@ -58,7 +122,11 @@ export function SettingsContent() {
 
           <div>
             <label className="text-sm font-medium text-foreground block mb-2">Timezone</label>
-            <select className="w-full px-3 py-2 border border-border rounded-lg text-foreground">
+            <select 
+              value={timezone}
+              onChange={(e) => setTimezone(e.target.value)}
+              className="w-full px-3 py-2 border border-border rounded-lg text-foreground bg-background"
+            >
               <option value="UTC">UTC (Coordinated Universal Time)</option>
               <option value="EST">EST (Eastern Standard Time)</option>
               <option value="CST">CST (Central Standard Time)</option>
@@ -131,7 +199,7 @@ export function SettingsContent() {
         <div className="space-y-4">
           <div>
             <label className="text-sm font-medium text-foreground block mb-2">Default Email Template</label>
-            <select className="w-full px-3 py-2 border border-border rounded-lg text-foreground">
+            <select className="w-full px-3 py-2 border border-border rounded-lg text-foreground bg-background">
               <option value="generic">Generic Welcome Template</option>
               <option value="sales">Sales Process Template</option>
               <option value="hiring">Hiring Process Template</option>
@@ -210,8 +278,8 @@ export function SettingsContent() {
       {/* Save Button */}
       <div className="flex gap-2 justify-end">
         <Button variant="outline">Cancel</Button>
-        <Button onClick={handleSave} className="gap-2">
-          <Save className="w-4 h-4" />
+        <Button onClick={handleSave} disabled={saving} className="gap-2">
+          {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           Save Settings
         </Button>
       </div>

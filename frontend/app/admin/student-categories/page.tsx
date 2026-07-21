@@ -233,16 +233,20 @@ export default function StudentCategoriesPage() {
                     </div>
                   </div>
                   {/* Actions */}
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex items-center gap-1 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={() => openEditModal(cat)}
-                      className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors"
+                      aria-label={`Edit category ${cat.name}`}
+                      title={`Edit category ${cat.name}`}
+                      className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors focus:ring-2 focus:ring-slate-500 outline-none"
                     >
                       <Pencil className="w-3 h-3" />
                     </button>
                     <button
                       onClick={() => setDeleteTarget(cat)}
-                      className="p-1.5 rounded-lg hover:bg-red-50 text-slate-500 hover:text-red-600 transition-colors"
+                      aria-label={`Delete category ${cat.name}`}
+                      title={`Delete category ${cat.name}`}
+                      className="p-1.5 rounded-lg hover:bg-red-50 text-slate-500 hover:text-red-600 transition-colors focus:ring-2 focus:ring-red-500 outline-none"
                     >
                       <Trash2 className="w-3 h-3" />
                     </button>

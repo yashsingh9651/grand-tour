@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -13,13 +13,10 @@ import {
   Mail,
   CreditCard,
   X,
-  ChevronRight,
   Loader2,
 } from 'lucide-react'
 import Link from 'next/link'
-import { dummyCandidates } from '@/lib/candidate-data'
-import { dummyEmails } from '@/lib/email-data'
-import { dummyUsers } from '@/lib/user-data'
+import { applicationService, userService } from '@/lib/services/api.service'
 
 interface SearchResultItem {
   id: string
@@ -70,72 +67,90 @@ interface SearchModalProps {
 
 export function SearchModal({ isOpen, onClose }: SearchModalProps) {
   const [searchQuery, setSearchQuery] = useState('')
-  const [isSearching, setIsSearching] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [allResults, setAllResults] = useState<SearchResultItem[]>([])
+  const [dataLoaded, setDataLoaded] = useState(false)
+
+  // Load real data from API when modal opens
+  useEffect(() => {
+    if (!isOpen || dataLoaded) return
+
+    const loadData = async () => {
+      setIsLoading(true)
+      try {
+        const [applications, users] = await Promise.allSettled([
+          applicationService.getAll(),
+          userService.getAll(),
+        ])
+
+        const results: SearchResultItem[] = []
+
+        // Map real candidates from applications
+        if (applications.status === 'fulfilled' && Array.isArray(applications.value)) {
+          applications.value.forEach((app: any) => {
+            const name = [app.user?.firstName, app.user?.lastName].filter(Boolean).join(' ')
+            results.push({
+              id: app.id,
+              title: name || app.user?.email || 'Unknown Candidate',
+              description: app.user?.email || '',
+              type: 'candidate',
+              url: '/admin/candidates',
+              metadata: `${app.status} • ${app.category || 'STUDENT'}`,
+            })
+          })
+        }
+
+        // Map real team users
+        if (users.status === 'fulfilled' && Array.isArray(users.value)) {
+          users.value.forEach((u: any) => {
+            const name = [u.firstName, u.lastName].filter(Boolean).join(' ')
+            results.push({
+              id: u.id,
+              title: name || u.email,
+              description: u.email,
+              type: 'user',
+              url: '/admin/users',
+              metadata: u.role?.replace(/_/g, ' '),
+            })
+          })
+        }
+
+        setAllResults(results)
+        setDataLoaded(true)
+      } catch {
+        // Silent fail — show empty state
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadData()
+  }, [isOpen, dataLoaded])
+
+  // Reset on close so fresh data is loaded next open
+  useEffect(() => {
+    if (!isOpen) {
+      setSearchQuery('')
+      setDataLoaded(false)
+    }
+  }, [isOpen])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault()
-        isOpen ? onClose() : onClose()
+        if (isOpen) onClose()
       }
-      if (e.key === 'Escape') {
-        onClose()
-      }
+      if (e.key === 'Escape') onClose()
     }
-
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [isOpen, onClose])
 
-  const allResults: SearchResultItem[] = useMemo(() => {
-    return [
-      ...dummyCandidates.map((c) => ({
-        id: c.id,
-        title: c.name,
-        description: c.program,
-        type: 'candidate' as const,
-        url: '/candidates',
-        metadata: `${c.currentStep} • ${c.status}`,
-      })),
-      ...dummyUsers.map((u) => ({
-        id: u.id,
-        title: u.name,
-        description: u.role,
-        type: 'user' as const,
-        url: '/users',
-        metadata: `${u.department}`,
-      })),
-      ...dummyEmails.map((e) => ({
-        id: e.id,
-        title: e.subject,
-        description: `To: ${e.recipient}`,
-        type: 'email' as const,
-        url: '/emails',
-        metadata: e.sentAt.toLocaleDateString(),
-      })),
-      {
-        id: 'payment-001',
-        title: 'Payment Status - Sarah Johnson',
-        description: 'Unpaid • Sales Qualification',
-        type: 'payment' as const,
-        url: '/candidates',
-        metadata: '$5,000',
-      },
-      {
-        id: 'payment-002',
-        title: 'Payment Status - Michael Chen',
-        description: 'Pending • Sales Qualification',
-        type: 'payment' as const,
-        url: '/candidates',
-        metadata: '$3,500',
-      },
-    ]
-  }, [])
-
   const resultsByType = useMemo(() => {
     if (!searchQuery.trim()) return {}
 
-    const query = searchQuery.toLowerCase()
+    const query = searchQuery.trim().toLowerCase()
     const filtered = allResults.filter(
       (result) =>
         result.title.toLowerCase().includes(query) ||
@@ -155,6 +170,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
   }, [searchQuery, allResults])
 
   const hasResults = Object.keys(resultsByType).length > 0
+  const totalResults = Object.values(resultsByType).reduce((sum, arr) => sum + arr.length, 0)
 
   if (!isOpen) return null
 
@@ -167,13 +183,14 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
         {/* Search Input */}
         <div className="p-4 border-b border-border">
           <div className="relative">
-            {isSearching && (
+            {isLoading ? (
               <Loader2 className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground animate-spin" />
+            ) : (
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             )}
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <Input
               autoFocus
-              placeholder="Search candidates, users, emails, payments, interviews..."
+              placeholder="Search candidates, team members..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-12 h-12 text-base"
@@ -191,19 +208,28 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
         {/* Results */}
         <div className="max-h-[calc(100vh-200px)] overflow-y-auto">
-          {!searchQuery.trim() && (
+          {isLoading && (
             <div className="p-12 text-center">
-              <Search className="w-12 h-12 mx-auto text-muted-foreground opacity-30 mb-4" />
-              <p className="text-muted-foreground">Start typing to search...</p>
-              <p className="text-xs text-muted-foreground mt-2">Search across candidates, users, emails, payments, and more</p>
+              <Loader2 className="w-8 h-8 mx-auto text-muted-foreground animate-spin mb-4" />
+              <p className="text-muted-foreground text-sm">Loading records...</p>
             </div>
           )}
 
-          {searchQuery.trim() && !hasResults && (
+          {!isLoading && !searchQuery.trim() && (
+            <div className="p-12 text-center">
+              <Search className="w-12 h-12 mx-auto text-muted-foreground opacity-30 mb-4" />
+              <p className="text-muted-foreground">Start typing to search...</p>
+              <p className="text-xs text-muted-foreground mt-2">
+                Search across {allResults.length} records — candidates, team members, and more
+              </p>
+            </div>
+          )}
+
+          {!isLoading && searchQuery.trim() && !hasResults && (
             <div className="p-12 text-center">
               <Search className="w-12 h-12 mx-auto text-muted-foreground opacity-30 mb-4" />
               <p className="text-muted-foreground">No results found for "{searchQuery}"</p>
-              <p className="text-xs text-muted-foreground mt-2">Try different keywords</p>
+              <p className="text-xs text-muted-foreground mt-2">Try different keywords or check the spelling</p>
             </div>
           )}
 
@@ -212,7 +238,6 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
               {sortedTypes.map((type) => {
                 const results = resultsByType[type]
                 if (!results) return null
-
                 const IconComponent = typeIcons[type]
 
                 return (
@@ -220,7 +245,6 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                     <p className="text-xs font-semibold text-muted-foreground uppercase px-2 mb-2">
                       {typeLabels[type]} ({results.length})
                     </p>
-
                     <div className="space-y-1">
                       {results.slice(0, 5).map((result) => {
                         const colorClass = typeColors[type]
@@ -230,16 +254,10 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                               <div className={`p-1.5 rounded ${colorClass} flex-shrink-0 mt-0.5`}>
                                 <IconComponent className="w-4 h-4" />
                               </div>
-
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-foreground truncate">
-                                  {result.title}
-                                </p>
-                                <p className="text-xs text-muted-foreground truncate">
-                                  {result.description}
-                                </p>
+                                <p className="text-sm font-medium text-foreground truncate">{result.title}</p>
+                                <p className="text-xs text-muted-foreground truncate">{result.description}</p>
                               </div>
-
                               {result.metadata && (
                                 <p className="text-xs text-muted-foreground whitespace-nowrap flex-shrink-0">
                                   {result.metadata}
@@ -249,10 +267,9 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
                           </Link>
                         )
                       })}
-
                       {results.length > 5 && (
                         <p className="text-xs text-muted-foreground text-center p-2">
-                          +{results.length - 5} more {typeLabels[type].toLowerCase()}
+                          +{results.length - 5} more {typeLabels[type].toLowerCase()}s
                         </p>
                       )}
                     </div>
@@ -262,8 +279,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
 
               <div className="text-center pt-4 border-t border-border">
                 <p className="text-xs text-muted-foreground">
-                  Found {Object.values(resultsByType).reduce((sum, arr) => sum + arr.length, 0)} result
-                  {Object.values(resultsByType).reduce((sum, arr) => sum + arr.length, 0) !== 1 ? 's' : ''}
+                  Found {totalResults} result{totalResults !== 1 ? 's' : ''}
                 </p>
               </div>
             </div>

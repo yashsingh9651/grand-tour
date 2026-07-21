@@ -228,6 +228,19 @@ const defaultPageContentByPageKey: Record<string, any> = {
       },
     ],
   },
+  general_settings: {
+    pageKey: 'general_settings',
+    title: 'General Settings',
+    subtitle: 'System Configuration',
+    blocks: [
+      { key: 'companyName', value: 'Tech Solutions Inc.' },
+      { key: 'email', value: 'admin@company.com' },
+      { key: 'timezone', value: 'UTC' },
+      { key: 'emailNotifications', value: true },
+      { key: 'interviewReminders', value: true },
+      { key: 'documentNotifications', value: true }
+    ],
+  },
 }
 
 const getDefaultPageContent = (pageKey: string) => {

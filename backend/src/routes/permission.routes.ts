@@ -5,6 +5,6 @@ import { requireAuth, restrictTo } from '../middlewares/auth.middleware';
 const router = Router();
 
 router.get('/', requireAuth, getPermissions);
-router.put('/:role', requireAuth, restrictTo('SUPER_ADMIN'), updatePermission);
+router.put('/:role', requireAuth, restrictTo('ADMIN', 'SUPER_ADMIN'), updatePermission);
 
 export default router;

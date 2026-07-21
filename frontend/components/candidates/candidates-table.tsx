@@ -40,9 +40,6 @@ export function CandidatesTable({ initialStatus = 'all', title }: CandidatesTabl
         studentCategoryService.getAll().catch(() => []),
       ])
       
-      setWorkflow(wfData)
-      setCategories(catData || [])
-      
       // Map backend data to frontend Candidate type
       const mappedCandidates: Candidate[] = appData.map((app: any) => {
         let status: CandidateStatus = 'pending'
@@ -97,6 +94,24 @@ export function CandidatesTable({ initialStatus = 'all', title }: CandidatesTabl
           documents: app.documents,
         }
       })
+
+      // Get unique category names from applications
+      const appCategories = Array.from(new Set(mappedCandidates.map((c: any) => c.category).filter(Boolean)))
+      const dbCategoryNames = (catData || []).map((c: any) => c.name)
+      const combinedCategories = [...(catData || [])]
+      
+      appCategories.forEach((catName: any) => {
+        if (!dbCategoryNames.includes(catName)) {
+          combinedCategories.push({
+            id: catName,
+            name: catName,
+            description: 'Application data category'
+          })
+        }
+      })
+
+      setWorkflow(wfData)
+      setCategories(combinedCategories)
       setCandidates(mappedCandidates)
     } catch (error: any) {
       toast.error(error.message)
@@ -161,10 +176,11 @@ export function CandidatesTable({ initialStatus = 'all', title }: CandidatesTabl
   }
 
   const filteredCandidates = candidates.filter((c) => {
-    const matchesSearch =
-      c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.program.toLowerCase().includes(searchTerm.toLowerCase())
+    const cleanSearch = searchTerm.trim().toLowerCase()
+    const matchesSearch = !cleanSearch ||
+      c.name.toLowerCase().includes(cleanSearch) ||
+      c.email.toLowerCase().includes(cleanSearch) ||
+      c.program.toLowerCase().includes(cleanSearch)
 
     const matchesStatus = filterStatus === 'all' || c.status === filterStatus
     const matchesCategory = filterCategory === 'all' || (c as any).category === filterCategory
@@ -460,7 +476,7 @@ export function CandidatesTable({ initialStatus = 'all', title }: CandidatesTabl
           )}
 
           <p className="text-sm text-muted-foreground whitespace-nowrap">
-            {filteredCandidates.length} candidate{filteredCandidates.length !== 1 ? 's' : ''}
+            {loading ? 'Loading...' : `${filteredCandidates.length} candidate${filteredCandidates.length !== 1 ? 's' : ''}`}
           </p>
         </div>
       </Card>

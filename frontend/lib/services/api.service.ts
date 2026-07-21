@@ -13,6 +13,10 @@ export const userService = {
     const response = await apiClient.patch(`/api/users/${id}/role`, { role });
     return response.data.data;
   },
+  toggleStatus: async (id: string) => {
+    const response = await apiClient.patch(`/api/users/${id}/toggle-status`);
+    return response.data.data;
+  },
   delete: async (id: string) => {
     const response = await apiClient.delete(`/api/users/${id}`);
     return response.data;
