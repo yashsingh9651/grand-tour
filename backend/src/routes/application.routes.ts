@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { createApplication, updateApplication, getApplications, getMyApplication, updateStatus, updateNotes, updateStep, deleteApplication, getApplicationById } from '../controllers/application.controller';
-import { requireAuth } from '../middlewares/auth.middleware';
+import { requireAuth, restrictTo } from '../middlewares/auth.middleware';
 
 const router = Router();
 
@@ -8,13 +8,13 @@ const router = Router();
 router.use(requireAuth);
 
 router.get('/my', getMyApplication);
-router.get('/', getApplications);
-router.get('/:id', getApplicationById);
+router.get('/', restrictTo('ADMIN', 'SUPER_ADMIN', 'HR', 'TEAM_MEMBER', 'TEAM', 'MARKETING'), getApplications);
+router.get('/:id', restrictTo('ADMIN', 'SUPER_ADMIN', 'HR', 'TEAM_MEMBER', 'TEAM', 'MARKETING'), getApplicationById);
 router.post('/', createApplication);
 router.patch('/:id', updateApplication);
-router.patch('/:id/status', updateStatus);
-router.patch('/:id/notes', updateNotes);
-router.patch('/:id/step', updateStep);
-router.delete('/:id', deleteApplication);
+router.patch('/:id/status', restrictTo('ADMIN', 'SUPER_ADMIN', 'HR', 'TEAM_MEMBER', 'TEAM', 'MARKETING'), updateStatus);
+router.patch('/:id/notes', restrictTo('ADMIN', 'SUPER_ADMIN', 'HR', 'TEAM_MEMBER', 'TEAM', 'MARKETING'), updateNotes);
+router.patch('/:id/step', restrictTo('ADMIN', 'SUPER_ADMIN', 'HR', 'TEAM_MEMBER', 'TEAM', 'MARKETING'), updateStep);
+router.delete('/:id', restrictTo('ADMIN', 'SUPER_ADMIN'), deleteApplication);
 
 export default router;

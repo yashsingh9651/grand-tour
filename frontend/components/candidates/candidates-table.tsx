@@ -176,11 +176,11 @@ export function CandidatesTable({ initialStatus = 'all', title }: CandidatesTabl
   }
 
   const filteredCandidates = candidates.filter((c) => {
-    const cleanSearch = searchTerm.trim().toLowerCase()
+    const cleanSearch = searchTerm.trim().replace(/\s+/g, ' ').toLowerCase()
     const matchesSearch = !cleanSearch ||
-      c.name.toLowerCase().includes(cleanSearch) ||
-      c.email.toLowerCase().includes(cleanSearch) ||
-      c.program.toLowerCase().includes(cleanSearch)
+      c.name.replace(/\s+/g, ' ').toLowerCase().includes(cleanSearch) ||
+      c.email.replace(/\s+/g, ' ').toLowerCase().includes(cleanSearch) ||
+      c.program.replace(/\s+/g, ' ').toLowerCase().includes(cleanSearch)
 
     const matchesStatus = filterStatus === 'all' || c.status === filterStatus
     const matchesCategory = filterCategory === 'all' || (c as any).category === filterCategory

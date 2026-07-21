@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { StudentLayout } from '@/components/student/student-layout'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, MapPin, Quote, Heart, ArrowRight } from 'lucide-react'
@@ -428,14 +429,14 @@ export default function GalleryPage() {
               Complete your journey and share your story with the next generation of students.
             </p>
           </div>
-          <a
+          <Link
             href="/dashboard/application"
             className="shrink-0 inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all hover:opacity-90 active:scale-95"
             style={{ backgroundColor: '#E1000F', color: '#fff' }}
           >
             Continue Journey
             <ArrowRight className="w-3.5 h-3.5" />
-          </a>
+          </Link>
         </div>
 
       </div>

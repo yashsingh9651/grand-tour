@@ -406,13 +406,13 @@ export function CRMDashboard() {
             >
               Recent Candidate Movements
             </h3>
-            <a
+            <Link
               href="/admin/applications-portal"
               className="text-[10px] font-bold tracking-widest uppercase"
               style={{ color: "#CCFF00", fontFamily: "Gilroy, sans-serif" }}
             >
               View All
-            </a>
+            </Link>
           </div>
 
           {/* Table header */}
@@ -428,7 +428,7 @@ export function CRMDashboard() {
           <div className="space-y-1">
             {data.recentApplications?.slice(0, 4).map((app: any, idx: number) => {
               const name = [app.user.firstName, app.user.lastName].filter(Boolean).join(' ')
-              const initials = [app.user.firstName?.[0], app.user.lastName?.[0]].filter(Boolean).join('').toUpperCase() || '?'
+              const initials = ([app.user.firstName?.[0], app.user.lastName?.[0]].filter(Boolean).join('').toUpperCase() || app.user.email?.[0] || '?').toUpperCase()
               const avatarColors = ["#CCFF00", "#C084FC", "#60A5FA", "#F59E0B"]
               const stageColors: Record<string, string> = {
                 ACCEPTED: "#CCFF00",

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -208,21 +208,14 @@ export function SearchResults() {
   const [searchQuery, setSearchQuery] = useState('')
   const [isSearching, setIsSearching] = useState(false)
 
-  const results = useMemo(() => {
-    if (!searchQuery.trim()) return []
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setIsSearching(false)
+      return
+    }
 
     setIsSearching(true)
-    // Simulate search delay
     const timer = setTimeout(() => setIsSearching(false), 300)
-
-    const query = searchQuery.toLowerCase()
-    const filtered = allResults.filter(
-      (result) =>
-        result.title.toLowerCase().includes(query) ||
-        result.description.toLowerCase().includes(query) ||
-        result.metadata?.toLowerCase().includes(query)
-    )
-
     return () => clearTimeout(timer)
   }, [searchQuery])
 

@@ -171,11 +171,17 @@ export function Header({ title, description, actions }: HeaderProps) {
                 className="text-xs font-bold"
                 style={{ backgroundColor: "#CCFF00", color: "#111" }}
               >
-                {fullName
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")
-                  .toUpperCase()}
+                {(() => {
+                  if (!user) return "?";
+                  const parts = [user.firstName, user.lastName].filter(Boolean);
+                  if (parts.length > 0) {
+                    return parts.map(p => p[0]).join("").toUpperCase();
+                  }
+                  if (user.name) {
+                    return user.name.split(" ").filter(Boolean).map((n: string) => n[0]).join("").toUpperCase();
+                  }
+                  return (user.email?.[0] || "?").toUpperCase();
+                })()}
               </AvatarFallback>
             </Avatar>
           )}

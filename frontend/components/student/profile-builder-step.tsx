@@ -220,7 +220,9 @@ export function ProfileBuilderStep({ application, onSubmit, submitting, pageCont
       initialData[field.fieldKey] = normalizeFieldValue(field, fallbackValue)
     })
 
-    setFormData(initialData)
+    setTimeout(() => {
+      setFormData(initialData)
+    }, 0)
   }, [application, pageFields, sessionUser])
 
   const sections = useMemo(() => {

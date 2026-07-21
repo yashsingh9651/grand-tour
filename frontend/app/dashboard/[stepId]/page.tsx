@@ -457,7 +457,7 @@ export default function DynamicStepPage({ params }: { params: Promise<{ stepId: 
                           }
                           try {
                             setSubmitting(true)
-                            let payment = await paymentService.submit({
+                            const payment = await paymentService.submit({
                               amount: currentStepConfig.amount,
                               applicationId: application?.id,
                               utrNumber: 'N/A',

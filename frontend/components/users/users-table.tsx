@@ -80,11 +80,16 @@ export function UsersTable() {
         role: newUser.role.toUpperCase()
       })
       
+      const normalizedRole = data.role.toLowerCase() as UserRole;
+      const role = ['super_admin', 'admin', 'team_member', 'marketing', 'hr'].includes(normalizedRole)
+        ? normalizedRole
+        : 'team_member';
+
       const mappedNewUser: User = {
         id: data.id,
         name: `${data.firstName} ${data.lastName}`,
         email: data.email,
-        role: data.role.toLowerCase() === 'admin' ? 'admin' : 'team_member',
+        role: role,
         status: data.isActive !== false ? 'active' : 'inactive',
         joinDate: new Date(data.createdAt),
       }
@@ -129,10 +134,10 @@ export function UsersTable() {
   const roles: UserRole[] = ['super_admin', 'admin', 'team_member', 'marketing', 'hr']
 
   const filteredUsers = users.filter((u) => {
-    const cleanSearch = searchTerm.trim().toLowerCase()
+    const cleanSearch = searchTerm.trim().replace(/\s+/g, ' ').toLowerCase()
     const matchesSearch = !cleanSearch ||
-      u.name.toLowerCase().includes(cleanSearch) ||
-      u.email.toLowerCase().includes(cleanSearch)
+      u.name.replace(/\s+/g, ' ').toLowerCase().includes(cleanSearch) ||
+      u.email.replace(/\s+/g, ' ').toLowerCase().includes(cleanSearch)
 
     const matchesRole = filterRole === 'all' || u.role === filterRole
 
@@ -296,7 +301,26 @@ export function UsersTable() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
                       <div>
                         <p className="text-muted-foreground mb-0.5">Role</p>
-                        <p className="font-medium text-foreground">{rolePermissions[user.role].name}</p>
+                        <select
+                          value={user.role}
+                          onChange={async (e) => {
+                            try {
+                              const newRole = e.target.value as UserRole;
+                              await userService.updateRole(user.id, newRole.toUpperCase());
+                              setUsers(users.map(u => u.id === user.id ? { ...u, role: newRole } : u));
+                              toast.success('Role updated successfully');
+                            } catch (err: any) {
+                              toast.error(err.message || 'Failed to update role');
+                            }
+                          }}
+                          className="font-medium text-foreground bg-transparent border-b border-dashed border-muted-foreground focus:outline-none cursor-pointer"
+                        >
+                          {roles.map((r) => (
+                            <option key={r} value={r}>
+                              {rolePermissions[r].name}
+                            </option>
+                          ))}
+                        </select>
                       </div>
 
                       {user.department && (

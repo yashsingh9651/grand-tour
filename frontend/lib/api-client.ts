@@ -8,7 +8,10 @@ let cachedSessionPromise: Promise<any> | null = null;
 const getCachedSession = () => {
   if (cachedSessionPromise) return cachedSessionPromise;
 
-  cachedSessionPromise = getSession();
+  cachedSessionPromise = getSession().catch((err) => {
+    cachedSessionPromise = null;
+    throw err;
+  });
 
   // Clear cache after 5 seconds to get fresh session, but deduplicate concurrent calls
   setTimeout(() => {

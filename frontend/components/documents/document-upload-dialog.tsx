@@ -417,7 +417,7 @@ export default function DocumentUploadDialog({
                       <div
                         onClick={() => fileRef.current?.click()}
                         onDragOver={e => e.preventDefault()}
-                        onDrop={e => { e.preventDefault(); e.dataTransfer.files?.[0] && handleFileSelect(e.dataTransfer.files[0]) }}
+                        onDrop={e => { e.preventDefault(); if (e.dataTransfer.files?.[0]) handleFileSelect(e.dataTransfer.files[0]) }}
                         className={cn(
                           'relative group cursor-pointer flex flex-col items-center justify-center gap-4 py-12 px-6 border-2 border-dashed rounded-[2rem] transition-all duration-300',
                           file ? 'border-primary bg-primary/5' : 'border-border/40 hover:border-primary/30 hover:bg-primary/5'

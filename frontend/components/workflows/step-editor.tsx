@@ -36,6 +36,10 @@ const FIELD_TYPES: { value: FieldType; label: string; icon: any }[] = [
   { value: 'file', label: 'File Upload', icon: Upload },
 ]
 
+const generateUniqueId = (prefix: string) => {
+  return `${prefix}-${Date.now()}`
+}
+
 interface StepEditorProps {
   step: WorkflowStep
   onSave: (step: WorkflowStep) => void
@@ -101,7 +105,7 @@ export function StepEditor({ step, onSave, onCancel }: StepEditorProps) {
 
   const handleAddSection = () => {
     const newSection: WorkflowField = {
-      id: `sec-${Date.now()}`,
+      id: generateUniqueId('sec'),
       type: 'section',
       name: 'New Section',
       required: false,
@@ -112,7 +116,7 @@ export function StepEditor({ step, onSave, onCancel }: StepEditorProps) {
 
   const handleAddField = (sectionId: string, type: FieldType) => {
     const newField: WorkflowField = {
-      id: `field-${Date.now()}`,
+      id: generateUniqueId('field'),
       type,
       name: `New ${type} field`,
       required: false,
@@ -577,9 +581,8 @@ export function StepEditor({ step, onSave, onCancel }: StepEditorProps) {
                                     <div className="p-2 bg-secondary rounded-lg text-primary">
                                       {FIELD_TYPES.find(t => t.value === field.type)?.icon && (
                                         <div className="w-4 h-4">
-                                          {/* @ts-ignore */}
                                           {(() => {
-                                            const Icon = FIELD_TYPES.find(t => t.value === field.type)?.icon
+                                            const Icon = FIELD_TYPES.find(t => t.value === field.type)?.icon as any
                                             return <Icon className="w-full h-full" />
                                           })()}
                                         </div>
@@ -749,9 +752,8 @@ export function StepEditor({ step, onSave, onCancel }: StepEditorProps) {
                                     <div className="p-2 bg-secondary rounded-lg text-primary">
                                       {FIELD_TYPES.find(t => t.value === field.type)?.icon && (
                                         <div className="w-4 h-4">
-                                          {/* @ts-ignore */}
                                           {(() => {
-                                            const Icon = FIELD_TYPES.find(t => t.value === field.type)?.icon
+                                            const Icon = FIELD_TYPES.find(t => t.value === field.type)?.icon as any
                                             return <Icon className="w-full h-full" />
                                           })()}
                                         </div>

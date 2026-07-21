@@ -71,6 +71,12 @@ class AuthService {
       where: { email }
     });
 
+    if (user && user.isActive === false) {
+      const error: any = new Error('Your account has been disabled. Please contact support.');
+      error.statusCode = 403;
+      throw error;
+    }
+
     // Check password
     if (user?.password && await bcrypt.compare(password, user.password)) {
       if (!user.isVerified) {
@@ -104,13 +110,20 @@ class AuthService {
         lastName: true,
         profileImage: true,
         role: true,
-        createdAt: true
+        createdAt: true,
+        isActive: true
       }
     });
 
     if (!user) {
       const error: any = new Error('User not found');
       error.statusCode = 404;
+      throw error;
+    }
+
+    if (user.isActive === false) {
+      const error: any = new Error('Your account is disabled');
+      error.statusCode = 403;
       throw error;
     }
 
@@ -125,6 +138,12 @@ class AuthService {
       where: { email }
     });
 
+    if (user && user.isActive === false) {
+      const error: any = new Error('Your account has been disabled. Please contact support.');
+      error.statusCode = 403;
+      throw error;
+    }
+
     if (!user) {
       // Create user without password (Google already verifies the email)
       user = await prisma.user.create({
@@ -135,6 +154,7 @@ class AuthService {
           email,
           role: 'STUDENT',
           isVerified: true,
+          isActive: true,
         }
       });
     } else if (profileImage && !user.profileImage) {
@@ -164,6 +184,12 @@ class AuthService {
       throw error;
     }
 
+    if (user.isActive === false) {
+      const error: any = new Error('Your account has been disabled. Please contact support.');
+      error.statusCode = 403;
+      throw error;
+    }
+
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     const otpExpiry = new Date(Date.now() + 10 * 60000);
 
@@ -182,6 +208,12 @@ class AuthService {
     if (!user) {
       const error: any = new Error('User not found');
       error.statusCode = 404;
+      throw error;
+    }
+
+    if (user.isActive === false) {
+      const error: any = new Error('Your account has been disabled. Please contact support.');
+      error.statusCode = 403;
       throw error;
     }
 

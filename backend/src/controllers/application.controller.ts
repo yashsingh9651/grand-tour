@@ -15,6 +15,21 @@ export const createApplication = async (req: Request, res: Response) => {
 
 export const updateApplication = async (req: Request, res: Response) => {
   const { id } = req.params;
+  const user = (req as any).user;
+
+  // Fetch application to check ownership
+  const app = await applicationService.getApplicationById(id);
+  if (!app) {
+    res.status(404).json({ success: false, message: 'Application not found' });
+    return;
+  }
+
+  const isStaff = ['ADMIN', 'SUPER_ADMIN', 'HR', 'TEAM_MEMBER', 'TEAM', 'MARKETING'].includes(user.role);
+  if (app.userId !== user.id && !isStaff) {
+    res.status(403).json({ success: false, message: 'Forbidden: You do not own this application' });
+    return;
+  }
+
   const application = await applicationService.updateApplication(id, req.body);
   res.status(200).json({
     success: true,

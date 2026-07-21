@@ -6,7 +6,7 @@ import {
   updateCategory,
   deleteCategory,
 } from '../controllers/studentCategory.controller';
-import { requireAuth } from '../middlewares/auth.middleware';
+import { requireAuth, restrictTo } from '../middlewares/auth.middleware';
 
 const router = Router();
 
@@ -18,10 +18,10 @@ router.get('/', getAllCategories);
 // GET single category
 router.get('/:id', getCategoryById);
 // POST create (admin)
-router.post('/', createCategory);
+router.post('/', restrictTo('ADMIN', 'SUPER_ADMIN', 'HR', 'TEAM_MEMBER', 'TEAM', 'MARKETING'), createCategory);
 // PATCH update (admin)
-router.patch('/:id', updateCategory);
+router.patch('/:id', restrictTo('ADMIN', 'SUPER_ADMIN', 'HR', 'TEAM_MEMBER', 'TEAM', 'MARKETING'), updateCategory);
 // DELETE remove (admin)
-router.delete('/:id', deleteCategory);
+router.delete('/:id', restrictTo('ADMIN', 'SUPER_ADMIN', 'HR', 'TEAM_MEMBER', 'TEAM', 'MARKETING'), deleteCategory);
 
 export default router;

@@ -16,22 +16,22 @@ const chartData = [
 
 const barColors = ["#059669", "#047857", "#10b981", "#065f46", "#059669", "#047857", "#10b981"]
 
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-foreground text-background px-3 py-2 rounded-lg text-xs font-semibold shadow-lg">
+        <p className="font-bold">{payload[0].value}%</p>
+        <p className="text-[10px] opacity-80">{payload[0].payload.label}</p>
+      </div>
+    )
+  }
+  return null
+}
+
 export function ProjectAnalytics() {
   const [hoveredBar, setHoveredBar] = useState<number | null>(null)
   const maxValue = Math.max(...chartData.map((d) => d.value))
   const average = Math.round(chartData.reduce((acc, d) => acc + d.value, 0) / chartData.length)
-
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-foreground text-background px-3 py-2 rounded-lg text-xs font-semibold shadow-lg">
-          <p className="font-bold">{payload[0].value}%</p>
-          <p className="text-[10px] opacity-80">{payload[0].payload.label}</p>
-        </div>
-      )
-    }
-    return null
-  }
 
   return (
     <Card

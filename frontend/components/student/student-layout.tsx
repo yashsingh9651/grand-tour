@@ -18,13 +18,12 @@ export function StudentLayout({ children, currentStep = 'application', headerCon
   const { data: session, status } = useSession()
   const user = session?.user as any
   const pathname = usePathname()
-  const [darkMode, setDarkMode] = useState(false)
-
-  // Persist dark mode preference
-  useEffect(() => {
-    const saved = localStorage.getItem('student-dark-mode')
-    if (saved === 'true') setDarkMode(true)
-  }, [])
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('student-dark-mode') === 'true'
+    }
+    return false
+  })
 
   const toggleDark = () => {
     setDarkMode((prev) => {
@@ -127,11 +126,17 @@ export function StudentLayout({ children, currentStep = 'application', headerCon
                   className="text-xs font-bold"
                   style={{ backgroundColor: 'var(--sp-accent)', color: 'var(--sp-accent-text)' }}
                 >
-                  {fullName
-                    .split(' ')
-                    .map((n) => n[0])
-                    .join('')
-                    .toUpperCase()}
+                  {(() => {
+                    if (!user) return "?";
+                    const parts = [user.firstName, user.lastName].filter(Boolean);
+                    if (parts.length > 0) {
+                      return parts.map(p => p[0]).join("").toUpperCase();
+                    }
+                    if (user.name) {
+                      return user.name.split(" ").filter(Boolean).map((n: string) => n[0]).join("").toUpperCase();
+                    }
+                    return (user.email?.[0] || "?").toUpperCase();
+                  })()}
                 </AvatarFallback>
               </Avatar>
             )}

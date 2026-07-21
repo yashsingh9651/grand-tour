@@ -35,7 +35,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const isReg = credentials.isRegister === "true";
           const isOtp = !!credentials.otp;
 
-          let body: any = { email: credentials.email };
+          const body: any = { email: credentials.email };
           
           if (isReg) {
             body.password = credentials.password;
@@ -54,7 +54,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           });
 
           const data = await res.json();
-          console.log("Auth response data:", data);
 
           if (res.ok && data.success) {
             return {

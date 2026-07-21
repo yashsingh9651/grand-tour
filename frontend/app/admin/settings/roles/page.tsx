@@ -29,6 +29,7 @@ const ROLES_TO_MANAGE = ["ADMIN", "HR", "TEAM_MEMBER", "TEAM", "MARKETING"]
 export default function RolesAccessPage() {
   const [permissions, setPermissions] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
   const [saving, setSaving] = useState<string | null>(null)
 
   useEffect(() => {
@@ -38,9 +39,11 @@ export default function RolesAccessPage() {
   const fetchPermissions = async () => {
     try {
       setLoading(true)
+      setError(false)
       const data = await permissionService.getAll()
       setPermissions(data)
-    } catch (error) {
+    } catch (err) {
+      setError(true)
       toast.error("Failed to load role permissions")
     } finally {
       setLoading(false)
@@ -74,7 +77,7 @@ export default function RolesAccessPage() {
       })
       
       toast.success(`Updated access for ${role}`)
-    } catch (error) {
+    } catch (err) {
       toast.error("Failed to update permission")
     } finally {
       setSaving(null)
@@ -87,6 +90,20 @@ export default function RolesAccessPage() {
         <div className="flex flex-col items-center justify-center p-20 gap-4">
           <Loader2 className="w-10 h-10 text-primary animate-spin" />
           <p className="text-muted-foreground animate-pulse">Loading access control list...</p>
+        </div>
+      </DashboardLayout>
+    )
+  }
+
+  if (error) {
+    return (
+      <DashboardLayout>
+        <div className="flex flex-col items-center justify-center p-20 gap-4 text-center">
+          <p className="text-red-500 font-bold text-lg">Failed to load role permissions matrix</p>
+          <p className="text-muted-foreground text-sm">Please verify your connection and check authentication session.</p>
+          <Button onClick={fetchPermissions} className="mt-2">
+            Retry Loading
+          </Button>
         </div>
       </DashboardLayout>
     )
