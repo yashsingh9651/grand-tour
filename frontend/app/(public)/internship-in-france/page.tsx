@@ -241,35 +241,38 @@ export default function InternshipInFrancePage() {
         <div className="w-full max-w-none mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center">
 
           {/* Left Column: Kitchen image with Stamps */}
-          <div className="lg:col-span-6 relative flex justify-center lg:block select-none py-12 px-4 sm:px-8">
+          <div className="lg:col-span-6 relative flex justify-center lg:justify-start select-none py-12">
+            
+            {/* Image & Stamp Wrapper Group */}
+            <div className="relative max-w-fit">
+              {/* Red dashed stamp on top left */}
+              <div className="absolute top-[-16px] left-[-16px] z-30 bg-white border-[3px] border-dashed border-[#DC2626] p-3 px-5 rounded-2xl shadow-lg -rotate-[10deg] transform">
+                <div className="text-[10px] font-black text-[#DC2626] uppercase tracking-widest text-center">Entry Stamp</div>
+                <div className="text-xs sm:text-sm font-black text-slate-800 uppercase tracking-wide mt-0.5 whitespace-nowrap">RÉPUBLIQUE FRANÇAISE</div>
+              </div>
 
-            {/* Red dashed stamp on top left */}
-            <div className="absolute top-10 left-2 sm:left-6 lg:left-[-10px] z-30 bg-white border-[3px] border-dashed border-[#DC2626] p-3 px-5 rounded-2xl shadow-lg -rotate-[10deg] transform">
-              <div className="text-[10px] font-black text-[#DC2626] uppercase tracking-widest text-center">Entry Stamp</div>
-              <div className="text-xs sm:text-sm font-black text-slate-800 uppercase tracking-wide mt-0.5 whitespace-nowrap">RÉPUBLIQUE FRANÇAISE</div>
-            </div>
+              {/* Main Kitchen Image (Rotated left) */}
+              <div className="relative w-[280px] sm:w-[480px] aspect-[4/3] rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.18)] bg-slate-50 -rotate-[3deg] transform transition-transform duration-500 hover:rotate-0">
+                <Image
+                  src="/internship_who_can_apply.png"
+                  alt="Chefs collaborating in commercial kitchen"
+                  fill
+                  className="object-cover"
+                  sizes="(max-w-640px) 280px, 480px"
+                />
+              </div>
 
-            {/* Main Kitchen Image (Rotated left) */}
-            <div className="relative w-[280px] sm:w-[580px] aspect-[4/3] rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.18)] bg-slate-50 -rotate-[3deg] transform transition-transform duration-500 hover:rotate-0">
-              <Image
-                src="/internship_who_can_apply.png"
-                alt="Chefs collaborating in commercial kitchen"
-                fill
-                className="object-cover"
-                sizes="(max-w-640px) 280px, 480px"
-              />
-            </div>
-
-            {/* Blue stamp on bottom right */}
-            <div className="absolute bottom-5 right-2 sm:right-6 lg:right-[10px] z-30 bg-[#2563EB] p-3.5 px-5 rounded-2xl shadow-2xl -rotate-[6deg] transform text-white flex items-center gap-3">
-              <svg className="w-5 h-5 text-white shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                <circle cx="12" cy="10" r="3" />
-              </svg>
-              <div className="text-left leading-none">
-                <div className="text-[9px] font-black text-white/70 uppercase tracking-widest">Passport Ready</div>
-                <div className="text-xs sm:text-sm font-black text-white uppercase tracking-wide mt-0.5 whitespace-nowrap">Let's Go</div>
+              {/* Blue stamp on bottom right */}
+              <div className="absolute bottom-[-16px] right-[-16px] z-30 bg-[#2563EB] p-3.5 px-5 rounded-2xl shadow-2xl -rotate-[6deg] transform text-white flex items-center gap-3">
+                <svg className="w-5 h-5 text-white shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
+                <div className="text-left leading-none">
+                  <div className="text-[9px] font-black text-white/70 uppercase tracking-widest">Passport Ready</div>
+                  <div className="text-xs sm:text-sm font-black text-white uppercase tracking-wide mt-0.5 whitespace-nowrap">Let's Go</div>
+                </div>
               </div>
             </div>
 

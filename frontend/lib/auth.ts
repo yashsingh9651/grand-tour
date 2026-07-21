@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 
@@ -68,12 +68,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
               image: data.data.profileImage,
             };
           }
-          
-          console.error("Auth failed:", data.message || "Unknown error");
-          return null;
-        } catch (error) {
+
+          const errorMessage = data.message || "Authentication failed";
+          console.error("Auth failed:", errorMessage);
+          throw new CredentialsSignin(errorMessage);
+        } catch (error: any) {
           console.error("Critical Auth error:", error);
-          return null;
+          // Re-throw CredentialsSignin errors directly
+          if (error instanceof CredentialsSignin) throw error;
+          throw new CredentialsSignin("An unexpected error occurred. Please try again.");
         }
       },
     }),
@@ -137,6 +140,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token;
     },
     async redirect({ url, baseUrl }) {
+      // Allow relative callback URLs
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      // Allow same origin URLs
+      if (new URL(url).origin === baseUrl) return url;
       return `${baseUrl}/dashboard`;
     },
   },

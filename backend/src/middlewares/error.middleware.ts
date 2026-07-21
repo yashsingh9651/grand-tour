@@ -10,8 +10,8 @@ export const notFound = (req: Request, res: Response, next: NextFunction) => {
 
 // General Error Handler
 export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
-  // If status is 200 but error occurred, set to 500
-  let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  // Priority: err.statusCode (set by service layer) > res.statusCode > 500
+  let statusCode = err.statusCode || (res.statusCode !== 200 ? res.statusCode : 500);
   let message = err.message;
 
   // Prisma unique constraint violation error

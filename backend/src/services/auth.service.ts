@@ -126,14 +126,15 @@ class AuthService {
     });
 
     if (!user) {
-      // Create user without password
+      // Create user without password (Google already verifies the email)
       user = await prisma.user.create({
         data: {
           firstName: firstName || 'User',
           lastName: lastName || '',
           profileImage: profileImage || null,
           email,
-          role: 'STUDENT'
+          role: 'STUDENT',
+          isVerified: true,
         }
       });
     } else if (profileImage && !user.profileImage) {

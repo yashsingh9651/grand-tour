@@ -107,17 +107,22 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/contact" className="hover:text-white transition-colors">
-                  Contact
+                  Contact Us
                 </Link>
               </li>
               <li>
-                <Link href="/login" className="hover:text-white transition-colors">
-                  Partnership
+                <Link href="/internship-in-france" className="hover:text-white transition-colors">
+                  Internship in France
                 </Link>
               </li>
               <li>
-                <Link href="/login" className="hover:text-white transition-colors">
-                  Start Journey
+                <Link href="/partner" className="hover:text-white transition-colors">
+                  Become a Partner
+                </Link>
+              </li>
+              <li>
+                <Link href="/blog" className="hover:text-white transition-colors">
+                  Blog
                 </Link>
               </li>
             </ul>

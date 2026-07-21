@@ -89,7 +89,11 @@ export default function LoginPage() {
         redirect: false,
       });
       if (result?.error) {
-        toast.error("Invalid credentials");
+        // NextAuth v5: result.error contains the thrown error message
+        const msg = result.error === "CredentialsSignin"
+          ? "Invalid credentials. Please check your email and password."
+          : (result.error || "Login failed");
+        toast.error(msg);
       } else {
         toast.success("Welcome back!");
         const session = await getSession();
@@ -151,7 +155,10 @@ export default function LoginPage() {
         redirect: false,
       });
       if (result?.error) {
-        toast.error("Invalid OTP");
+        const msg = result.error === "CredentialsSignin"
+          ? "Invalid or expired OTP. Please try again."
+          : (result.error || "Verification failed");
+        toast.error(msg);
       } else {
         toast.success("Verification successful!");
         const session = await getSession();

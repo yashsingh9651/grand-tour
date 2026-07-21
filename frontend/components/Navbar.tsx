@@ -73,6 +73,26 @@ export default function Navbar() {
           >
             Internship in France
           </Link>
+          <Link
+            href="/partner"
+            className={`text-sm font-medium transition-colors select-none ${
+              isActive("/partner")
+                ? "text-white border-b-2 border-white pb-0.5"
+                : "text-white/80 hover:text-white"
+            }`}
+          >
+            Become a Partner
+          </Link>
+          <Link
+            href="/blog"
+            className={`text-sm font-medium transition-colors select-none ${
+              isActive("/blog")
+                ? "text-white border-b-2 border-white pb-0.5"
+                : "text-white/80 hover:text-white"
+            }`}
+          >
+            Blog
+          </Link>
         </nav>
 
         {/* Become a Partner CTA */}
@@ -82,7 +102,7 @@ export default function Navbar() {
             id="btn-desktop-partner"
             className="bg-[#0055A5] hover:bg-[#0055A5]/90 active:scale-95 text-white text-xs font-medium px-6 py-3 rounded-full uppercase tracking-wider transition-all shadow-lg select-none"
           >
-            {isLoggedIn ? "Go to Dashboard" : "Become a Partner"}
+            {isLoggedIn ? "Go to Dashboard" : "Sign In / Register"}
           </Link>
         </div>
 
@@ -136,11 +156,25 @@ export default function Navbar() {
                 Internship in France
               </Link>
               <Link
+                href="/partner"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`font-semibold ${isActive("/partner") ? "text-white" : "text-white/80"}`}
+              >
+                Become a Partner
+              </Link>
+              <Link
+                href="/blog"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`font-semibold ${isActive("/blog") ? "text-white" : "text-white/80"}`}
+              >
+                Blog
+              </Link>
+              <Link
                 href={isLoggedIn ? dashboardLink : "/login"}
                 onClick={() => setMobileMenuOpen(false)}
                 className="bg-[#0055A5] text-white font-bold text-center py-3 rounded-full text-sm uppercase tracking-wider"
               >
-                {isLoggedIn ? "Go to Dashboard" : "Become a Partner"}
+                {isLoggedIn ? "Go to Dashboard" : "Sign In / Register"}
               </Link>
             </div>
           </motion.div>

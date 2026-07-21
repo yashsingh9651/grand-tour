@@ -79,7 +79,7 @@ export default function ForgotPassword() {
       const data = await res.json();
       if (res.ok && data.success) {
         toast.success("Password reset successfully! Please log in.");
-        router.push("/");
+        router.push("/login");
       } else {
         toast.error(data.message || "Password reset failed");
       }
