@@ -48,10 +48,10 @@ export function UsersTable() {
       // Map backend data to frontend User type
       const mappedUsers: User[] = data.map((u: any) => {
         const normalizedRole = u.role.toLowerCase() as UserRole;
-        // Fallback for roles not in frontend enum (like STUDENT or TEAM)
-        const role = ['super_admin', 'admin', 'team_member', 'marketing', 'hr'].includes(normalizedRole)
+        // Include student and team roles
+        const role = ['super_admin', 'admin', 'team_member', 'marketing', 'hr', 'student', 'team'].includes(normalizedRole)
           ? normalizedRole
-          : 'team_member';
+          : 'student';
 
         return {
           id: u.id,
@@ -81,9 +81,9 @@ export function UsersTable() {
       })
       
       const normalizedRole = data.role.toLowerCase() as UserRole;
-      const role = ['super_admin', 'admin', 'team_member', 'marketing', 'hr'].includes(normalizedRole)
+      const role = ['super_admin', 'admin', 'team_member', 'marketing', 'hr', 'student', 'team'].includes(normalizedRole)
         ? normalizedRole
-        : 'team_member';
+        : 'student';
 
       const mappedNewUser: User = {
         id: data.id,
@@ -131,7 +131,7 @@ export function UsersTable() {
     }
   }
 
-  const roles: UserRole[] = ['super_admin', 'admin', 'team_member', 'marketing', 'hr']
+  const roles: UserRole[] = ['super_admin', 'admin', 'team_member', 'marketing', 'hr', 'student', 'team']
 
   const filteredUsers = users.filter((u) => {
     const cleanSearch = searchTerm.trim().replace(/\s+/g, ' ').toLowerCase()
@@ -303,6 +303,7 @@ export function UsersTable() {
                         <p className="text-muted-foreground mb-0.5">Role</p>
                         <select
                           value={user.role}
+                          disabled={user.role === 'student'}
                           onChange={async (e) => {
                             try {
                               const newRole = e.target.value as UserRole;
@@ -313,7 +314,7 @@ export function UsersTable() {
                               toast.error(err.message || 'Failed to update role');
                             }
                           }}
-                          className="font-medium text-foreground bg-transparent border-b border-dashed border-muted-foreground focus:outline-none cursor-pointer"
+                          className={`font-medium text-foreground bg-transparent border-b border-dashed border-muted-foreground focus:outline-none ${user.role === 'student' ? 'cursor-not-allowed opacity-80' : 'cursor-pointer'}`}
                         >
                           {roles.map((r) => (
                             <option key={r} value={r}>

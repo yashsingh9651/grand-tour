@@ -189,7 +189,9 @@ const extractPersistedValue = (field: any, application: any, sessionUser?: any) 
 export function ProfileBuilderStep({ application, onSubmit, submitting, pageContent }: any) {
   const { data: session } = useSession()
   const sessionUser = session?.user
-  const resolvedPageContent = pageContent || fallbackPageContent
+  const resolvedPageContent = pageContent && pageContent.blocks && pageContent.blocks.length > 0
+    ? pageContent
+    : fallbackPageContent
   const [formData, setFormData] = useState<Record<string, any>>({})
 
   const pageFields = useMemo(() => {
@@ -240,19 +242,16 @@ export function ProfileBuilderStep({ application, onSubmit, submitting, pageCont
         return
       }
 
-      const fallbackGroup = {
-        section: field.section || 'General',
-        column: field.column || 'left',
-        fields: [] as any[],
+      if (!activeGroup) {
+        activeGroup = {
+          section: field.section || 'General',
+          column: field.column || 'left',
+          fields: [] as any[],
+        }
+        groups.push(activeGroup)
       }
 
-      const targetGroup = activeGroup || fallbackGroup
-
-      if (!targetGroup.fields) {
-        targetGroup.fields = [] as any[]
-      }
-
-      targetGroup.fields.push(field)
+      activeGroup.fields.push(field)
     })
 
     return groups

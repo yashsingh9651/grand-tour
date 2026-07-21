@@ -321,8 +321,25 @@ export const getAvailableSlots = async (req: Request, res: Response) => {
 
 export const bookSlot = async (req: Request, res: Response) => {
   const { slotId, applicationId } = req.body;
+  const user = (req as any).user;
 
   try {
+    const isStaff = ['ADMIN', 'SUPER_ADMIN', 'HR', 'TEAM_MEMBER', 'TEAM', 'MARKETING'].includes(user.role);
+
+    // Fetch application to check ownership
+    const application = await prisma.application.findUnique({
+        where: { id: applicationId },
+        include: { user: true }
+    });
+
+    if (!application) {
+        return res.status(404).json({ error: 'Application not found' });
+    }
+
+    if (!isStaff && application.userId !== user.id) {
+        return res.status(403).json({ error: 'Forbidden: You do not own this application' });
+    }
+
     const slot = await prisma.interviewSlot.findUnique({ where: { id: slotId } });
 
     if (!slot || slot.isBooked) {
@@ -369,51 +386,49 @@ export const bookSlot = async (req: Request, res: Response) => {
     }
 
     // Create/Update Interview record
-    const application = await prisma.application.findUnique({
-        where: { id: applicationId },
-        include: { user: true }
+    const existingInterview = await prisma.interview.findFirst({
+        where: { applicationId },
     });
 
-    if (application) {
-        const existingInterview = await prisma.interview.findFirst({
-            where: { applicationId },
+    if (existingInterview) {
+        await prisma.interview.update({
+            where: { id: existingInterview.id },
+            data: {
+                scheduledAt: slot.startTime,
+                status: 'PENDING',
+                locationUrl: generatedMeetLink || null,
+            }
         });
-
-        await prisma.interview.upsert({
-            where: { id: existingInterview?.id || 'temp-id' },
-            create: {
+    } else {
+        await prisma.interview.create({
+            data: {
                 applicationId,
                 interviewerId: application.userId, // Default to student for now, admin will change
                 scheduledAt: slot.startTime,
                 locationUrl: generatedMeetLink || null,
                 status: 'PENDING',
                 notes: 'Custom slot booked'
-            },
-            update: {
-                scheduledAt: slot.startTime,
-                status: 'PENDING',
-                locationUrl: generatedMeetLink || null,
             }
         });
+    }
 
-        await prisma.activityLog.create({
-            data: {
-                applicationId,
-                description: `Interview scheduled for ${new Date(slot.startTime).toLocaleString()}`,
-                type: 'INTERVIEW_SCHEDULED'
-            }
-        });
-
-        // Send confirmation email to student
-        try {
-            await emailService.sendInterviewBookedEmail(application.user.email, {
-                studentName: `${application.user.firstName || ''} ${application.user.lastName || ''}`.trim(),
-                dateTime: new Date(slot.startTime).toLocaleString(),
-                meetLink: generatedMeetLink || 'Will be shared soon'
-            });
-        } catch (emailError) {
-            logger.error('Error sending interview booked email:', emailError);
+    await prisma.activityLog.create({
+        data: {
+            applicationId,
+            description: `Interview scheduled for ${new Date(slot.startTime).toLocaleString()}`,
+            type: 'INTERVIEW_SCHEDULED'
         }
+    });
+
+    // Send confirmation email to student
+    try {
+        await emailService.sendInterviewBookedEmail(application.user.email, {
+            studentName: `${application.user.firstName || ''} ${application.user.lastName || ''}`.trim(),
+            dateTime: new Date(slot.startTime).toLocaleString(),
+            meetLink: generatedMeetLink || 'Will be shared soon'
+        });
+    } catch (emailError) {
+        logger.error('Error sending interview booked email:', emailError);
     }
 
     return res.status(200).json({
@@ -513,6 +528,15 @@ export const updateInterviewStatus = async (req: Request, res: Response) => {
 
         // On approval, advance the application to the next workflow step
         if (status === 'COMPLETED' && interview.applicationId) {
+            const user = await prisma.user.findFirst({
+                where: { applications: { some: { id: interview.applicationId } } }
+            });
+            if (user) {
+                emailService.sendEmail(user.email, 'INTERVIEW_CLEARED', {
+                    'First Name': user.firstName || 'Student'
+                }).catch((err) => logger.error('Failed to send INTERVIEW_CLEARED email:', err));
+            }
+
             const application = await prisma.application.findUnique({
                 where: { id: interview.applicationId },
             });

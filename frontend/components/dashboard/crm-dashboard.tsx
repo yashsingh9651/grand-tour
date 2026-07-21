@@ -312,7 +312,7 @@ export function CRMDashboard() {
                 Projection
               </p>
               <p className="text-sm font-bold" style={{ color: "#111" }}>
-                +$240k Expected
+                +₹2.0 Cr Expected
               </p>
             </div>
           </div>

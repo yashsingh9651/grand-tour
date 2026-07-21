@@ -19,6 +19,10 @@ const startServer = async () => {
     // Connect to Database
     await connectDB();
 
+    // Proactively seed/update email templates in the database
+    const emailTemplateService = (await import('./services/emailTemplate.service')).default;
+    await emailTemplateService.seedTemplates().catch((err) => logger.error('Failed to seed email templates:', err));
+
     const server = app.listen(PORT, () => {
       logger.info(`Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`);
     });

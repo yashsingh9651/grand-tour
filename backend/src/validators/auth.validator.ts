@@ -5,8 +5,7 @@ export const registerSchema = Joi.object({
   firstName: Joi.string().required().min(2).max(50),
   lastName: Joi.string().required().min(2).max(50),
   email: Joi.string().email().required(),
-  password: Joi.string().min(6).required(),
-  role: Joi.string().valid('STUDENT', 'TEAM', 'ADMIN', 'SUPER_ADMIN', 'TEAM_MEMBER', 'MARKETING', 'HR').optional()
+  password: Joi.string().min(8).required()
 });
 
 export const loginSchema = Joi.object({
@@ -21,7 +20,7 @@ export const forgotPasswordSchema = Joi.object({
 export const resetPasswordSchema = Joi.object({
   email: Joi.string().email().required(),
   otp: Joi.string().length(6).required(),
-  newPassword: Joi.string().min(6).required()
+  newPassword: Joi.string().min(8).required()
 });
 
 // Middleware to validate requests against a schema

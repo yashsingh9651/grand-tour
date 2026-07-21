@@ -40,9 +40,10 @@ export const uploadWorkPermit = async (req: Request, res: Response) => {
   // Notify student via email
   if (application && application.user) {
     try {
-      await emailService.sendWorkPermitIssuedEmail(application.user.email, {
-        studentName: `${application.user.firstName} ${application.user.lastName}`,
-        applicationId: application.id,
+      const portalUrl = process.env.PORTAL_URL || 'http://localhost:3000/login';
+      await emailService.sendEmail(application.user.email, 'WORK_PERMIT_APPROVED', {
+        'First Name': application.user.firstName || 'Student',
+        'portalUrl': portalUrl,
       });
     } catch (error) {
       console.error('Failed to send work permit email notification:', error);

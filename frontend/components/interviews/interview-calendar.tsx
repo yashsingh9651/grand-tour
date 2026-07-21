@@ -36,6 +36,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { motion, AnimatePresence } from 'framer-motion'
 import { format, isSameDay } from 'date-fns'
 
+const isValidDate = (d: any): d is Date => d instanceof Date && !isNaN(d.getTime());
+
+const parseLocalDate = (dateStr: string): Date => {
+  if (!dateStr) return new Date();
+  const [year, month, day] = dateStr.split('-').map(Number);
+  return new Date(year, month - 1, day);
+};
+
 export function InterviewCalendar() {
   const [slots, setSlots] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -75,6 +83,14 @@ export function InterviewCalendar() {
   }
 
   const handleAddManualSlot = async () => {
+    if (!newSlot.date || !isValidDate(newSlot.date)) {
+        toast.error('Please enter a valid date')
+        return
+    }
+    if (!newSlot.startTime || !newSlot.endTime) {
+        toast.error('Please specify start and end times')
+        return
+    }
     try {
         setAdding(true)
         const start = new Date(newSlot.date)
@@ -162,8 +178,11 @@ export function InterviewCalendar() {
                             <Label>Date</Label>
                             <Input 
                                 type="date" 
-                                value={format(newSlot.date, 'yyyy-MM-dd')}
-                                onChange={(e) => setNewSlot(prev => ({ ...prev, date: new Date(e.target.value) }))}
+                                value={isValidDate(newSlot.date) ? format(newSlot.date, 'yyyy-MM-dd') : ''}
+                                onChange={(e) => {
+                                    const parsed = parseLocalDate(e.target.value);
+                                    setNewSlot(prev => ({ ...prev, date: parsed }));
+                                }}
                                 className="h-11"
                             />
                         </div>

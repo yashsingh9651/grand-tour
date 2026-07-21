@@ -4,6 +4,8 @@ export type UserRole =
   | 'team_member'
   | 'marketing'
   | 'hr'
+  | 'student'
+  | 'team'
 
 export interface User {
   id: string
@@ -157,6 +159,24 @@ export const rolePermissions: Record<
       'View HR reports',
       'Manage documents',
       'View activity logs',
+    ],
+  },
+  student: {
+    name: 'Student',
+    description: 'Student access',
+    permissions: [
+      'View own application',
+      'Upload documents',
+      'Book interviews',
+      'Make payments',
+    ],
+  },
+  team: {
+    name: 'Team Partner',
+    description: 'Corporate partner access',
+    permissions: [
+      'View assigned candidates',
+      'Review candidate profiles',
     ],
   },
 }

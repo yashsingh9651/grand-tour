@@ -12,11 +12,16 @@ export const getNotifications = async (req: Request, res: Response) => {
 
 export const markRead = async (req: Request, res: Response) => {
   const { id } = req.params;
-  await notificationService.markAsRead(id);
-  res.status(200).json({
-    success: true,
-    message: 'Notification marked as read'
-  });
+  const userId = (req as any).user.id;
+  try {
+    await notificationService.markAsRead(id, userId);
+    res.status(200).json({
+      success: true,
+      message: 'Notification marked as read'
+    });
+  } catch (error: any) {
+    res.status(error.statusCode || 500).json({ error: error.message });
+  }
 };
 
 export const markAllRead = async (req: Request, res: Response) => {

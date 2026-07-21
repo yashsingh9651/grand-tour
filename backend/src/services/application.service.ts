@@ -3,6 +3,72 @@ import { ApplicationStatus } from '@prisma/client';
 import emailService from './email.service';
 import notificationService from './notification.service';
 
+async function handleStepEmailTrigger(app: any, newStepId: string) {
+  const email = app.user?.email;
+  if (!email) return;
+  const firstName = app.user?.firstName || 'Student';
+  const portalUrl = process.env.PORTAL_URL || 'http://localhost:3000/login';
+
+  try {
+    switch (newStepId) {
+      case 'application':
+        await emailService.sendEmail(email, 'PROFILE_BUILD', {
+          'First Name': firstName,
+          'portalUrl': portalUrl
+        });
+        break;
+      case 'documents': {
+        const docs = await prisma.document.findMany({
+          where: { applicationId: app.id }
+        });
+        const requiredDocs = ['Resume / CV', 'Passport Copy', 'College ID Card', 'Motivation Letter', 'Language Certificate'];
+        const uploadedTypes = docs.map(d => d.type.toLowerCase());
+        const pending = requiredDocs.filter(type => {
+          const lower = type.toLowerCase();
+          if (lower.includes('cv') || lower.includes('resume')) {
+            return !uploadedTypes.some(t => t.includes('cv') || t.includes('resume'));
+          }
+          if (lower.includes('passport')) {
+            return !uploadedTypes.some(t => t.includes('passport'));
+          }
+          if (lower.includes('college')) {
+            return !uploadedTypes.some(t => t.includes('college') || t.includes('id'));
+          }
+          return !uploadedTypes.includes(lower);
+        });
+        const pendingStr = pending.length > 0 ? pending.join('\n ') : 'Pending Documents list will be reviewed by admin';
+
+        await emailService.sendEmail(email, 'DOCUMENTS_PENDING', {
+          'First Name': firstName,
+          'Pending Documents': pendingStr,
+          'portalUrl': portalUrl
+        });
+        break;
+      }
+      case 'interview':
+        await emailService.sendEmail(email, 'INTERVIEW_BOOKING_REQUEST', {
+          'First Name': firstName,
+          'portalUrl': portalUrl
+        });
+        break;
+      case 'contract':
+        await emailService.sendEmail(email, 'CONVENTION_READY', {
+          'First Name': firstName,
+          'portalUrl': portalUrl
+        });
+        break;
+      case 'workpermit':
+        await emailService.sendEmail(email, 'WORK_PERMIT_SUBMITTED', {
+          'First Name': firstName
+        });
+        break;
+      default:
+        break;
+    }
+  } catch (error) {
+    console.error(`Failed to send step email trigger for ${newStepId}:`, error);
+  }
+}
 
 class ApplicationService {
   async createApplication(data: any) {
@@ -100,7 +166,7 @@ class ApplicationService {
   async updateApplication(id: string, data: any) {
     const existingApplication = await prisma.application.findUnique({
       where: { id },
-      select: { status: true }
+      select: { status: true, currentStepId: true }
     });
 
     const payloadData = data.data || {};
@@ -160,6 +226,10 @@ class ApplicationService {
       }
     }
 
+    if (existingApplication && existingApplication.currentStepId !== application.currentStepId && application.currentStepId) {
+      handleStepEmailTrigger(application, application.currentStepId).catch(console.error);
+    }
+
     return application;
   }
 
@@ -214,14 +284,15 @@ class ApplicationService {
 
     return application;
 
-  }
-
-  async updateApplicationCurrentStep(id: string, currentStepId: string) {
+  }  async updateApplicationCurrentStep(id: string, currentStepId: string) {
     const app = await prisma.application.update({
       where: { id },
       data: { currentStepId },
       include: { user: true },
     });
+    // Trigger step-specific email
+    handleStepEmailTrigger(app, currentStepId).catch(console.error);
+
     const studentName = `${app.user.firstName} ${app.user.lastName}`.trim();
     const stepLabel = currentStepId.charAt(0).toUpperCase() + currentStepId.slice(1);
     try {
@@ -234,20 +305,20 @@ class ApplicationService {
     } catch { /* non-critical */ }
     return app;
   }
-
   async updateApplicationNotes(id: string, notes: string) {
     return await prisma.application.update({
       where: { id },
       data: { notes },
     });
-  }
-
-  async updateApplicationStep(id: string, currentStepId: string) {
+  }  async updateApplicationStep(id: string, currentStepId: string) {
     const app = await prisma.application.update({
       where: { id },
       data: { currentStepId },
       include: { user: true },
     });
+    // Trigger step-specific email
+    handleStepEmailTrigger(app, currentStepId).catch(console.error);
+
     const studentName = `${app.user.firstName} ${app.user.lastName}`.trim();
     const stepLabel = currentStepId.charAt(0).toUpperCase() + currentStepId.slice(1);
     try {
@@ -260,7 +331,6 @@ class ApplicationService {
     } catch { /* non-critical */ }
     return app;
   }
-
   async getApplicationByUserId(userId: string) {
     const application = await prisma.application.findFirst({
       where: { userId },

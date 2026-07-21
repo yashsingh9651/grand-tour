@@ -232,10 +232,13 @@ export const bookVisaSlot = async (req: Request, res: Response) => {
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (user) {
     try {
-      await emailService.sendVisaSlotBookedEmail(user.email, {
-        studentName: `${user.firstName} ${user.lastName}`,
-        dateTime: updated.startTime.toLocaleString(),
-        meetLink: meetLink || 'Location will be shared soon'
+      const dateStr = updated.startTime.toLocaleDateString();
+      const timeStr = updated.startTime.toLocaleTimeString();
+      await emailService.sendEmail(user.email, 'VISA_SLOT_BOOKED', {
+        'First Name': user.firstName || 'Student',
+        'Location': meetLink || 'VFS Centre Location',
+        'Date': dateStr,
+        'Time': timeStr
       });
 
       // Notify admin

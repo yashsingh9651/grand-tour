@@ -36,16 +36,35 @@ export default function Payment1Page() {
   const [acceptedTerms, setAcceptedTerms] = useState(false)
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const accepted = localStorage.getItem('payment1_terms_accepted') === 'true'
-      setAcceptedTerms(accepted)
+    if (application?.data?.termsAcceptance?.payment1?.accepted) {
+      setAcceptedTerms(true)
+    } else {
+      setAcceptedTerms(false)
     }
-  }, [])
+  }, [application])
 
-  const handleAcceptTerms = () => {
-    localStorage.setItem('payment1_terms_accepted', 'true')
-    setAcceptedTerms(true)
-    toast.success('Terms and conditions accepted successfully!')
+  const handleAcceptTerms = async () => {
+    if (!application?.id) return
+    try {
+      const updatedData = {
+        ...(application.data || {}),
+        termsAcceptance: {
+          ...(application.data?.termsAcceptance || {}),
+          payment1: {
+            accepted: true,
+            acceptedAt: new Date().toISOString(),
+            policyVersion: 'v1.0',
+            userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown'
+          }
+        }
+      }
+      await applicationService.update(application.id, { data: updatedData })
+      setApplication((prev: any) => ({ ...prev, data: updatedData }))
+      setAcceptedTerms(true)
+      toast.success('Terms and conditions accepted successfully!')
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to record terms acceptance')
+    }
   }
 
   // Receipt download — only used when payment is COMPLETED

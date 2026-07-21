@@ -99,12 +99,11 @@ export class HotelService {
 
     // Send assignment email
     try {
-      await emailService.sendHostelAssignmentEmail(assignment.application.user.email, {
-        studentName: `${assignment.application.user.firstName} ${assignment.application.user.lastName}`,
-        hotelName: assignment.hotel.name,
-        checkIn: assignment.checkIn.toLocaleDateString(),
-        checkOut: assignment.checkOut.toLocaleDateString(),
-        applicationId: assignment.applicationId
+      await emailService.sendEmail(assignment.application.user.email, 'HOSTEL_ASSIGNMENT', {
+        'First Name': assignment.application.user.firstName || 'Student',
+        'Hotel Name': assignment.hotel.name,
+        'Location': assignment.hotel.location || 'France',
+        'Department': assignment.application.preferredDepartment || assignment.hotel.natureOfActivity || 'Hospitality'
       });
 
       await notificationService.notify(

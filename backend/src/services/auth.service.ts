@@ -3,12 +3,21 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { Role } from '@prisma/client';
 import emailService from './email.service';
+import crypto from 'crypto';
 
 // Generate JWT Token
 const generateToken = (id: string) => {
   return jwt.sign({ id }, process.env.JWT_SECRET as string, {
     expiresIn: "7d"
   });
+};
+
+const generateSecureOtp = () => {
+  return crypto.randomInt(100000, 1000000).toString();
+};
+
+const hashOtp = (otp: string) => {
+  return crypto.createHash('sha256').update(otp).digest('hex');
 };
 
 class AuthService {
@@ -31,7 +40,8 @@ class AuthService {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // Generate OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = generateSecureOtp();
+    const hashedOtp = hashOtp(otp);
     const otpExpiry = new Date(Date.now() + 10 * 60000); // 10 minutes
 
     // Create user
@@ -42,9 +52,9 @@ class AuthService {
         email,
         profileImage: profileImage || null,
         password: hashedPassword,
-        role: (role as Role) || 'STUDENT',
+        role: 'STUDENT',
         isVerified: false,
-        otp,
+        otp: hashedOtp,
         otpExpiry
       }
     });
@@ -190,12 +200,13 @@ class AuthService {
       throw error;
     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = generateSecureOtp();
+    const hashedOtp = hashOtp(otp);
     const otpExpiry = new Date(Date.now() + 10 * 60000);
 
     await prisma.user.update({
       where: { email },
-      data: { otp, otpExpiry }
+      data: { otp: hashedOtp, otpExpiry }
     });
 
     await emailService.sendOtpEmail(email, otp);
@@ -217,7 +228,8 @@ class AuthService {
       throw error;
     }
 
-    if (!user.otp || user.otp !== otp) {
+    const hashedInput = hashOtp(otp);
+    if (!user.otp || user.otp !== hashedInput) {
       const error: any = new Error('Invalid OTP');
       error.statusCode = 401;
       throw error;
@@ -229,6 +241,8 @@ class AuthService {
       throw error;
     }
 
+    const wasVerified = user.isVerified;
+
     const updatedUser = await prisma.user.update({
       where: { email },
       data: {
@@ -237,6 +251,19 @@ class AuthService {
         otpExpiry: null
       }
     });
+
+    if (!wasVerified && updatedUser.role === 'STUDENT') {
+      const portalUrl = process.env.PORTAL_URL || 'http://localhost:3000/login';
+      emailService.sendEmail(updatedUser.email, 'WELCOME_PORTAL', {
+        'First Name': updatedUser.firstName || 'Student',
+        'portalUrl': portalUrl
+      }).catch((err) => console.error('Failed to send WELCOME_PORTAL email:', err));
+
+      emailService.sendEmail(updatedUser.email, 'PROFILE_BUILD', {
+        'First Name': updatedUser.firstName || 'Student',
+        'portalUrl': portalUrl
+      }).catch((err) => console.error('Failed to send PROFILE_BUILD email:', err));
+    }
 
     return {
       id: updatedUser.id,
@@ -252,21 +279,27 @@ class AuthService {
   async forgotPassword(email: string) {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      const error: any = new Error('User not found');
-      error.statusCode = 404;
+      // Return generic success to prevent email enumeration
+      return { success: true, message: 'If this email is registered, a password reset code has been sent.' };
+    }
+
+    if (user.isActive === false) {
+      const error: any = new Error('Your account has been disabled. Please contact support.');
+      error.statusCode = 403;
       throw error;
     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = generateSecureOtp();
+    const hashedOtp = hashOtp(otp);
     const otpExpiry = new Date(Date.now() + 10 * 60000); // 10 minutes
 
     await prisma.user.update({
       where: { email },
-      data: { otp, otpExpiry }
+      data: { otp: hashedOtp, otpExpiry }
     });
 
     await emailService.sendPasswordResetEmail(email, otp);
-    return { success: true, message: 'Password reset OTP sent successfully' };
+    return { success: true, message: 'If this email is registered, a password reset code has been sent.' };
   }
 
   async resetPassword(data: any) {
@@ -279,7 +312,8 @@ class AuthService {
       throw error;
     }
 
-    if (!user.otp || user.otp !== otp) {
+    const hashedInput = hashOtp(otp);
+    if (!user.otp || user.otp !== hashedInput) {
       const error: any = new Error('Invalid OTP');
       error.statusCode = 401;
       throw error;
@@ -306,6 +340,33 @@ class AuthService {
     });
 
     return { success: true, message: 'Password has been reset successfully' };
+  }
+
+  async changePassword(userId: string, currentPassword: string, newPassword: string) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user || !user.password) {
+      const error: any = new Error('User not found');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      const error: any = new Error('Incorrect current password');
+      error.statusCode = 400;
+      throw error;
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: { password: hashedPassword }
+    });
+
+    return { success: true, message: 'Password has been changed successfully' };
   }
 }
 

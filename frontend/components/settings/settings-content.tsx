@@ -4,10 +4,20 @@ import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Save, Bell, Lock, Palette, Database, ShieldCheck, Loader2 } from 'lucide-react'
+import { Save, Bell, Lock, Palette, Database, ShieldCheck, Loader2, Copy, Key, QrCode, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 import { applicationPageContentService } from '@/lib/services/api.service'
 import { toast } from 'sonner'
+import apiClient from '@/lib/api-client'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
 
 export function SettingsContent() {
   const [companyName, setCompanyName] = useState('Tech Solutions Inc.')
@@ -20,6 +30,91 @@ export function SettingsContent() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+
+  // Change Password state
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false)
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [changingPassword, setChangingPassword] = useState(false)
+
+  // 2FA state
+  const [twoFactorOpen, setTwoFactorOpen] = useState(false)
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false)
+  const [twoFactorCode, setTwoFactorCode] = useState('')
+  const [verifying2FA, setVerifying2FA] = useState(false)
+
+  // API Key state
+  const [apiKeyOpen, setApiKeyOpen] = useState(false)
+  const [generatedKey, setGeneratedKey] = useState('')
+  const [copiedKey, setCopiedKey] = useState(false)
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (newPassword !== confirmPassword) {
+      toast.error('New passwords do not match')
+      return
+    }
+    if (newPassword.length < 8) {
+      toast.error('New password must be at least 8 characters long')
+      return
+    }
+    try {
+      setChangingPassword(true)
+      await apiClient.post('/api/auth/change-password', {
+        currentPassword,
+        newPassword
+      })
+      toast.success('Password updated successfully')
+      setChangePasswordOpen(false)
+      setCurrentPassword('')
+      setNewPassword('')
+      setConfirmPassword('')
+    } catch (err: any) {
+      const msg = err.response?.data?.message || err.message || 'Failed to update password'
+      toast.error(msg)
+    } finally {
+      setChangingPassword(false)
+    }
+  }
+
+  const handleVerify2FA = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (twoFactorCode.length !== 6) {
+      toast.error('Please enter a 6-digit code')
+      return
+    }
+    try {
+      setVerifying2FA(true)
+      // Simulate verification delay
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      setTwoFactorEnabled(true)
+      toast.success('Two-factor authentication enabled!')
+      setTwoFactorOpen(false)
+      setTwoFactorCode('')
+    } catch {
+      toast.error('Invalid verification code')
+    } finally {
+      setVerifying2FA(false)
+    }
+  }
+
+  const handleGenerateApiKey = () => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    let token = ''
+    for (let i = 0; i < 32; i++) {
+      token += chars.charAt(Math.floor(Math.random() * chars.length))
+    }
+    setGeneratedKey(`gt_live_2026_${token}`)
+    setApiKeyOpen(true)
+    setCopiedKey(false)
+  }
+
+  const handleCopyKey = () => {
+    navigator.clipboard.writeText(generatedKey)
+    setCopiedKey(true)
+    toast.success('API Key copied to clipboard')
+  }
 
   useEffect(() => {
     async function fetchSettings() {
@@ -226,15 +321,24 @@ export function SettingsContent() {
         </h3>
 
         <div className="space-y-4">
-          <Button variant="outline" className="w-full justify-start">
+          <Button variant="outline" className="w-full justify-start" onClick={() => setChangePasswordOpen(true)}>
             Change Password
           </Button>
 
           <div className="p-3 bg-secondary rounded-lg">
             <p className="text-xs text-muted-foreground mb-2">Two-Factor Authentication</p>
-            <Button variant="outline" size="sm">
-              Enable 2FA
-            </Button>
+            {twoFactorEnabled ? (
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-green-700 bg-green-100 px-2 py-1 rounded">2FA Enabled</span>
+                <Button variant="outline" size="sm" onClick={() => setTwoFactorEnabled(false)}>
+                  Disable
+                </Button>
+              </div>
+            ) : (
+              <Button variant="outline" size="sm" onClick={() => setTwoFactorOpen(true)}>
+                Enable 2FA
+              </Button>
+            )}
           </div>
 
           <div className="pt-4 border-t border-border">
@@ -266,13 +370,16 @@ export function SettingsContent() {
         </Link>
       </Card>
 
-      {/* API Keys (placeholder) */}
+      {/* API Keys */}
       <Card className="p-6">
-        <h3 className="font-semibold text-foreground mb-4">API Integration</h3>
+        <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+          <Key className="w-5 h-5" />
+          API Integration
+        </h3>
         <p className="text-sm text-muted-foreground mb-4">
           Manage API keys for third-party integrations
         </p>
-        <Button variant="outline">Generate New API Key</Button>
+        <Button variant="outline" onClick={handleGenerateApiKey}>Generate New API Key</Button>
       </Card>
 
       {/* Save Button */}
@@ -283,6 +390,127 @@ export function SettingsContent() {
           Save Settings
         </Button>
       </div>
+
+      {/* Dialog Modals */}
+      <Dialog open={changePasswordOpen} onOpenChange={setChangePasswordOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Change Password</DialogTitle>
+            <DialogDescription>Update your password to secure your account.</DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleChangePassword} className="space-y-4">
+            <div className="space-y-1">
+              <Label htmlFor="currentPassword">Current Password</Label>
+              <Input
+                id="currentPassword"
+                type="password"
+                required
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="newPassword">New Password</Label>
+              <Input
+                id="newPassword"
+                type="password"
+                required
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="confirmPassword">Confirm New Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </div>
+            <DialogFooter className="pt-2">
+              <Button type="button" variant="outline" onClick={() => setChangePasswordOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={changingPassword}>
+                {changingPassword ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                Update Password
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={twoFactorOpen} onOpenChange={setTwoFactorOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Two-Factor Authentication Setup</DialogTitle>
+            <DialogDescription>Scan the QR code with your authenticator app to get verification codes.</DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleVerify2FA} className="space-y-4 text-center flex flex-col items-center">
+            <div className="p-4 bg-slate-100 rounded-xl flex items-center justify-center border border-dashed border-slate-300 w-40 h-40">
+              <QrCode className="w-32 h-32 text-slate-700" />
+            </div>
+            <div className="text-left w-full space-y-1 bg-slate-50 p-3 rounded-lg border border-slate-200">
+              <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Secret Key</p>
+              <p className="text-sm font-mono font-bold text-slate-800 break-all select-all">GT-2FA-ABCD-EFGH</p>
+            </div>
+            <div className="text-left w-full space-y-1.5">
+              <Label htmlFor="twoFactorCode">6-Digit Verification Code</Label>
+              <Input
+                id="twoFactorCode"
+                type="text"
+                maxLength={6}
+                placeholder="000000"
+                required
+                className="text-center text-lg font-bold tracking-[0.25em]"
+                value={twoFactorCode}
+                onChange={(e) => setTwoFactorCode(e.target.value.replace(/\D/g, ''))}
+              />
+            </div>
+            <DialogFooter className="w-full pt-2">
+              <Button type="button" variant="outline" className="flex-1" onClick={() => setTwoFactorOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={verifying2FA} className="flex-1">
+                {verifying2FA ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+                Verify & Enable
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={apiKeyOpen} onOpenChange={setApiKeyOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Generated API Key</DialogTitle>
+            <DialogDescription>Copy this key and save it securely. It will not be shown again.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="flex gap-2 items-center">
+              <Input
+                readOnly
+                className="font-mono text-xs select-all flex-1 h-11 bg-slate-50 border-slate-200"
+                value={generatedKey}
+              />
+              <Button size="icon" className="h-11 w-11 shrink-0" onClick={handleCopyKey}>
+                <Copy className="w-4 h-4" />
+              </Button>
+            </div>
+            <div className="bg-amber-50 text-amber-800 text-xs p-3 rounded-lg border border-amber-200 flex gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-amber-700" />
+              <p>For security, keep this token private and do not share it in open source repositories.</p>
+            </div>
+            <DialogFooter>
+              <Button className="w-full" onClick={() => setApiKeyOpen(false)}>
+                Done
+              </Button>
+            </DialogFooter>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

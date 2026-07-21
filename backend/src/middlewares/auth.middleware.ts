@@ -25,12 +25,18 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
           firstName: true,
           lastName: true,
           role: true,
+          isActive: true,
         }
       });
 
       if (!user) {
         res.status(401);
         throw new Error('Not authorized, user not found');
+      }
+
+      if (user.isActive === false) {
+        res.status(401);
+        throw new Error('Not authorized, account is disabled');
       }
 
       req.user = user;

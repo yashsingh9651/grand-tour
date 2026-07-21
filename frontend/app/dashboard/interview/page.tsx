@@ -258,7 +258,7 @@ export default function InterviewPage() {
       <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-500 text-foreground">
         <div className="grid lg:grid-cols-12 gap-8">
           <div className="lg:col-span-7 space-y-8">
-            {!bookedInterview && (
+            {(!bookedInterview || bookedInterview.status === 'CANCELLED') && (
               <Card className="p-8 border border-border shadow-sm rounded-[2rem] bg-card">
                 <div className="flex items-center justify-between mb-8">
                   <div>
@@ -443,12 +443,12 @@ export default function InterviewPage() {
               </div>
 
               <Button
-                onClick={bookedInterview ? handleJoinMeeting : handleBook}
-                disabled={bookedInterview ? (resolvedStatus === 'COMPLETED') : (!selectedSlotId || bookingInProgress)}
+                onClick={bookedInterview && bookedInterview.status !== 'CANCELLED' ? handleJoinMeeting : handleBook}
+                disabled={bookedInterview && bookedInterview.status !== 'CANCELLED' ? (resolvedStatus === 'COMPLETED') : (!selectedSlotId || bookingInProgress)}
                 className="w-full bg-[#C6F16D] hover:bg-[#b5e359] text-[#1A1A1A] font-bold h-12 rounded-xl"
               >
                 {bookingInProgress ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
-                {bookedInterview 
+                {bookedInterview && bookedInterview.status !== 'CANCELLED'
                   ? (resolvedStatus === 'COMPLETED' ? 'Interview Completed' : 'Join Meeting') 
                   : bookingInProgress ? 'Booking...' : 'Book Selected Slot'}
               </Button>

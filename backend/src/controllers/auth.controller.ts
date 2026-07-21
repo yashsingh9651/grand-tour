@@ -84,3 +84,15 @@ export const resetPassword = async (req: Request, res: Response) => {
   const result = await authService.resetPassword(req.body);
   res.status(200).json(result);
 };
+
+// @desc    Change Password (logged-in)
+// @route   POST /api/auth/change-password
+// @access  Private
+export const changePassword = async (req: Request, res: Response) => {
+  if (!req.user) {
+    res.status(401);
+    throw new Error('Not authorized');
+  }
+  const result = await authService.changePassword(req.user.id, req.body.currentPassword, req.body.newPassword);
+  res.status(200).json(result);
+};

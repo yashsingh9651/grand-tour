@@ -45,7 +45,23 @@ class NotificationService {
     });
   }
 
-  async markAsRead(id: string) {
+  async markAsRead(id: string, userId: string) {
+    const notification = await prisma.notification.findUnique({
+      where: { id }
+    });
+
+    if (!notification) {
+      const error: any = new Error('Notification not found');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    if (notification.userId !== userId) {
+      const error: any = new Error('Forbidden: You do not own this notification');
+      error.statusCode = 403;
+      throw error;
+    }
+
     return await prisma.notification.update({
       where: { id },
       data: { isRead: true }
