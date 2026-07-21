@@ -477,4 +477,31 @@ export const studentCategoryService = {
   },
 };
 
+export const blogService = {
+  getAll: async () => {
+    const response = await apiClient.get('/api/blogs');
+    return response.data.data;
+  },
+  getById: async (id: string) => {
+    const response = await apiClient.get(`/api/blogs/${id}`);
+    return response.data.data;
+  },
+  getBySlug: async (slug: string) => {
+    const response = await apiClient.get(`/api/blogs/slug/${slug}`);
+    return response.data.data;
+  },
+  create: async (data: any) => {
+    const response = await apiClient.post('/api/blogs', data);
+    return response.data.data;
+  },
+  update: async (id: string, data: any) => {
+    const response = await apiClient.put(`/api/blogs/${id}`, data);
+    return response.data.data;
+  },
+  delete: async (id: string) => {
+    const response = await apiClient.delete(`/api/blogs/${id}`);
+    return response.data;
+  },
+};
+
 
