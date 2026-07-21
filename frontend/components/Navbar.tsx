@@ -64,8 +64,12 @@ export default function Navbar() {
             Contact Us
           </Link>
           <Link
-            href="/about"
-            className="text-sm font-medium text-white/80 hover:text-white transition-colors select-none"
+            href="/internship-in-france"
+            className={`text-sm font-medium transition-colors select-none ${
+              isActive("/internship-in-france")
+                ? "text-white border-b-2 border-white pb-0.5"
+                : "text-white/80 hover:text-white"
+            }`}
           >
             Internship in France
           </Link>
@@ -125,9 +129,9 @@ export default function Navbar() {
                 Contact Us
               </Link>
               <Link
-                href="/about"
+                href="/internship-in-france"
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-white/80 font-semibold"
+                className={`font-semibold ${isActive("/internship-in-france") ? "text-white" : "text-white/80"}`}
               >
                 Internship in France
               </Link>
