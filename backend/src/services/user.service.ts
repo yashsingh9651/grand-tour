@@ -40,6 +40,7 @@ class UserService {
         firstName,
         lastName,
         role: role as Role,
+        isVerified: true,
         whatsapp,
         dateOfBirth,
         address,

@@ -83,7 +83,7 @@ export function StudentSidebar({ currentStep, darkMode }: { currentStep?: string
 
   return (
     <aside
-      className="fixed top-0 left-0 w-56 h-screen flex flex-col lg:block transition-colors duration-300"
+      className="fixed top-0 left-0 w-56 h-screen flex flex-col transition-colors duration-300"
       style={{
         backgroundColor: 'var(--sp-sidebar-bg)',
         borderRight: '1px solid var(--sp-border)',

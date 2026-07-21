@@ -20,7 +20,8 @@ import {
   Clock,
   ExternalLink,
   Trash2,
-  Loader2
+  Loader2,
+  Pencil
 } from 'lucide-react'
 import { hotelService, uploadService } from '@/lib/services/api.service'
 import { toast } from 'sonner'
@@ -48,6 +49,7 @@ export default function HotelsAdminPage() {
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false)
   
   // New Hotel State
@@ -63,6 +65,7 @@ export default function HotelsAdminPage() {
     siretNo: '',
     proposalPdf: ''
   })
+  const [editingHotel, setEditingHotel] = useState<any>(null)
   const [uploading, setUploading] = useState(false)
 
   // Assignment State
@@ -130,6 +133,56 @@ export default function HotelsAdminPage() {
     try {
       const result = await uploadService.upload(file)
       setNewHotel(prev => ({ ...prev, proposalPdf: result.url }))
+      toast.success('Proposal uploaded successfully')
+    } catch (error) {
+      toast.error('Upload failed')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  const handleEditClick = (hotel: any) => {
+    setEditingHotel({
+      id: hotel.id,
+      name: hotel.name,
+      location: hotel.location,
+      representedBy: hotel.representedBy || '',
+      position: hotel.position || '',
+      address: hotel.address || '',
+      phone: hotel.phone || '',
+      email: hotel.email || '',
+      natureOfActivity: hotel.natureOfActivity || '',
+      siretNo: hotel.siretNo || '',
+      proposalPdf: hotel.proposalPdf || ''
+    })
+    setIsEditDialogOpen(true)
+  }
+
+  const handleUpdateHotel = async () => {
+    if (!editingHotel.name || !editingHotel.location) {
+      toast.error('Please fill name and location fields')
+      return
+    }
+
+    try {
+      await hotelService.update(editingHotel.id, editingHotel)
+      toast.success('Hotel updated successfully')
+      setIsEditDialogOpen(false)
+      setEditingHotel(null)
+      fetchData()
+    } catch (error) {
+      toast.error('Failed to update hotel')
+    }
+  }
+
+  const handleEditFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    try {
+      const result = await uploadService.upload(file)
+      setEditingHotel((prev: any) => ({ ...prev, proposalPdf: result.url }))
       toast.success('Proposal uploaded successfully')
     } catch (error) {
       toast.error('Upload failed')
@@ -318,6 +371,119 @@ export default function HotelsAdminPage() {
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
+
+              <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Edit Hotel</DialogTitle>
+                    <DialogDescription>Modify hotel details and update the proposal PDF.</DialogDescription>
+                  </DialogHeader>
+                  {editingHotel && (
+                    <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto pr-2">
+                      <div className="space-y-2">
+                        <Label>Hotel Name</Label>
+                        <Input 
+                          placeholder="e.g. Hilton Garden Inn" 
+                          value={editingHotel.name}
+                          onChange={e => setEditingHotel((prev: any) => ({ ...prev, name: e.target.value }))}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Location</Label>
+                        <Input 
+                          placeholder="e.g. London, UK" 
+                          value={editingHotel.location}
+                          onChange={e => setEditingHotel((prev: any) => ({ ...prev, location: e.target.value }))}
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Represented By</Label>
+                          <Input 
+                            placeholder="e.g. Jean Dupont" 
+                            value={editingHotel.representedBy}
+                            onChange={e => setEditingHotel((prev: any) => ({ ...prev, representedBy: e.target.value }))}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Position</Label>
+                          <Input 
+                            placeholder="e.g. General Manager" 
+                            value={editingHotel.position}
+                            onChange={e => setEditingHotel((prev: any) => ({ ...prev, position: e.target.value }))}
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Address</Label>
+                        <Input 
+                          placeholder="e.g. 15 Rue de la Paix, Paris" 
+                          value={editingHotel.address}
+                          onChange={e => setEditingHotel((prev: any) => ({ ...prev, address: e.target.value }))}
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Phone</Label>
+                          <Input 
+                            placeholder="e.g. +33 1 23 45 67 89" 
+                            value={editingHotel.phone}
+                            onChange={e => setEditingHotel((prev: any) => ({ ...prev, phone: e.target.value }))}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>Email</Label>
+                          <Input 
+                            type="email"
+                            placeholder="e.g. contact@hotel.com" 
+                            value={editingHotel.email}
+                            onChange={e => setEditingHotel((prev: any) => ({ ...prev, email: e.target.value }))}
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label>Nature of Activity</Label>
+                          <Input 
+                            placeholder="e.g. Hospitality & Catering" 
+                            value={editingHotel.natureOfActivity}
+                            onChange={e => setEditingHotel((prev: any) => ({ ...prev, natureOfActivity: e.target.value }))}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>SIRET No.</Label>
+                          <Input 
+                            placeholder="e.g. 123 456 789 00012" 
+                            value={editingHotel.siretNo}
+                            onChange={e => setEditingHotel((prev: any) => ({ ...prev, siretNo: e.target.value }))}
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Proposal PDF</Label>
+                        <div className="flex gap-2">
+                          <Input 
+                            type="file" 
+                            accept=".pdf"
+                            onChange={handleEditFileUpload}
+                            disabled={uploading}
+                          />
+                          {uploading && <Loader2 className="w-4 h-4 animate-spin self-center" />}
+                        </div>
+                        {editingHotel.proposalPdf && (
+                          <p className="text-xs text-success flex items-center gap-1 mt-1">
+                            <CheckCircle2 className="w-3 h-3" /> Proposal PDF uploaded
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
+                    <Button onClick={handleUpdateHotel} disabled={uploading}>Save Changes</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
           }
         />
@@ -364,6 +530,10 @@ export default function HotelsAdminPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
+                          <DropdownMenuItem onClick={() => handleEditClick(hotel)}>
+                            <Pencil className="w-4 h-4 mr-2" />
+                            Edit Details
+                          </DropdownMenuItem>
                           <DropdownMenuItem className="text-red-500" onClick={() => handleDeleteHotel(hotel.id)}>
                             <Trash2 className="w-4 h-4 mr-2" />
                             Delete
