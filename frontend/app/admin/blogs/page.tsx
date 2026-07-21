@@ -199,7 +199,7 @@ export default function AdminBlogsPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {blogs.map(blog => (
-                <Card key={blog.id} className="overflow-hidden flex flex-col justify-between rounded-3xl border border-slate-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-lg hover:shadow-xl transition-all duration-300">
+                <Card key={blog.id} className="overflow-hidden pt-0 flex flex-col justify-between rounded-3xl border border-slate-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-lg hover:shadow-xl transition-all duration-300">
                   <div>
                     {/* Cover image banner */}
                     <div className="relative aspect-video w-full bg-slate-100 dark:bg-zinc-850 flex items-center justify-center overflow-hidden border-b border-slate-100 dark:border-zinc-800">
@@ -257,7 +257,7 @@ export default function AdminBlogsPage() {
                     </div>
                   </div>
 
-                  <div className="p-6 pt-0 flex gap-3 border-t border-slate-100 dark:border-zinc-800/80 mt-4">
+                  <div className="px-5 flex gap-2">
                     <Button
                       onClick={() => openEditModal(blog)}
                       variant="outline"
