@@ -12,11 +12,11 @@ import { Badge } from '@/components/ui/badge'
 
 const defaultAmounts = {
   visaFee: 15000,
-  visaFeeName: 'Visa Processing Fee',
+  visaFeeName: 'VFS Appointment Fees',
   sevisFee: 25000,
-  sevisFeeName: 'SEVIS & Insurance Fee',
+  sevisFeeName: 'Insurance Fees',
   miscFee: 5000,
-  miscFeeName: 'Courier / Miscellaneous Fee'
+  miscFeeName: 'Dummy Ticket Fees'
 }
 
 export function VisaPaymentsStepEditor() {
@@ -191,7 +191,7 @@ export function VisaPaymentsStepEditor() {
               <Input
                 value={sevisFeeName}
                 onChange={(e) => setSevisFeeName(e.target.value)}
-                placeholder="e.g. SEVIS Fee"
+                placeholder="e.g. VFS Appointment Fees"
                 className="h-11 rounded-xl border-slate-200"
               />
             </div>
@@ -221,7 +221,7 @@ export function VisaPaymentsStepEditor() {
               <Input
                 value={miscFeeName}
                 onChange={(e) => setMiscFeeName(e.target.value)}
-                placeholder="e.g. Miscellaneous Fee"
+                placeholder="e.g. Dummy Ticket Fees"
                 className="h-11 rounded-xl border-slate-200"
               />
             </div>

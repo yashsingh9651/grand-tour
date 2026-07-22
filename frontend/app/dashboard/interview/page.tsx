@@ -220,9 +220,10 @@ export default function InterviewPage() {
   const interviewHeader = (
     <div className="flex flex-col">
       <span className="text-[9px] font-bold tracking-widest uppercase text-[#4D6B19]">PREPARATION PHASE</span>
-      <h1 className="text-3xl font-extrabold tracking-tight text-foreground leading-none mt-1">Interview Hub</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight text-foreground leading-none mt-1">Let's Get to Know You – Book Your Interview</h1>
     </div>
   )
+
 
   if (loading) {
     return (
@@ -262,7 +263,8 @@ export default function InterviewPage() {
               <Card className="p-4 sm:p-6 lg:p-8 border border-border shadow-sm rounded-2xl sm:rounded-[2rem] bg-card">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
                   <div>
-                    <h3 className="text-lg sm:text-xl font-bold text-foreground">Schedule Your Slot</h3>
+                    <h3 className="text-lg sm:text-xl font-bold text-foreground">Book Your Interview</h3>
+
                     <p className="text-xs sm:text-sm text-muted-foreground mt-1">Available interview times are synced directly from the backend.</p>
                   </div>
                   <div className="flex items-center gap-2 self-start sm:self-auto">
@@ -401,8 +403,9 @@ export default function InterviewPage() {
               <h2 className="text-2xl font-bold mb-3 text-white">
                 {bookedInterview 
                   ? (resolvedStatus === 'COMPLETED' ? 'Completed Interview' : 'Booked Interview') 
-                  : 'Interview Session'}
+                  : 'Interview slot'}
               </h2>
+
               <p className="text-sm text-gray-400 leading-relaxed mb-8">
                 {bookedInterview
                   ? (resolvedStatus === 'COMPLETED'

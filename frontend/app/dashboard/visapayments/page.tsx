@@ -54,12 +54,13 @@ export default function VisaPaymentsPage() {
   const visapaymentsStepConfig = workflow?.steps?.find((s: any) => s.id === 'visapayments')
   const amountsConfig = visapaymentsStepConfig?.amounts || {
     visaFee: 15000,
-    visaFeeName: 'Visa Processing Fee',
+    visaFeeName: 'VFS Appointment Fees',
     sevisFee: 25000,
-    sevisFeeName: 'SEVIS & Insurance Fee',
+    sevisFeeName: 'Insurance Fees',
     miscFee: 5000,
-    miscFeeName: 'Courier / Miscellaneous Fee'
+    miscFeeName: 'Dummy Ticket Fees'
   }
+
 
   const fetchData = async () => {
     try {

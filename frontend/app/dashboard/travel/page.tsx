@@ -84,9 +84,9 @@ export default function TravelPage() {
           <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mb-6">
             <Lock className="w-10 h-10 text-muted-foreground" />
           </div>
-          <h2 className="text-2xl font-bold">Travel — Locked</h2>
+          <h2 className="text-2xl font-bold">Visa Documentation — Locked</h2>
           <p className="text-muted-foreground mt-2 max-w-md">
-            Travel arrangements will be available after your visa appointment is completed.
+            Visa documentation will be available after your visa appointment is completed.
           </p>
           <Button className="mt-8" onClick={() => window.location.href = `/dashboard/${application?.currentStepId || 'application'}`}>
             Return to Current Step <ChevronRight className="w-4 h-4 ml-2" />
@@ -143,7 +143,7 @@ export default function TravelPage() {
               <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
                 <FileText className="w-5 h-5 text-violet-600" />
               </div>
-              Official Travel & Visa Templates (.docx)
+              Visa Application Documents (.docx)
             </h2>
             <span className="text-xs bg-violet-100 text-violet-800 font-bold px-2.5 py-1 rounded-full border border-violet-200">
               Auto-Filled & Customizable

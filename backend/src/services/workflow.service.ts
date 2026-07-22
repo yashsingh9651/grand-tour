@@ -81,16 +81,18 @@ class WorkflowService {
             ]
           },
           { id: 'interview', name: 'Interview Booking', description: 'Schedule your interview', order: 3, fields: [], isInterviewStep: true },
-          { id: 'payment1', name: 'First Payment', description: 'Complete your initial payment', order: 4, fields: [], isPaymentStep: true, amount: 50000, gstPercentage: 18, discountPercentage: 0, paymentConfig: { accountName: 'International Education Corp', accountNumber: process.env.BANK_ACCOUNT_NUMBER || 'ACCOUNT_NUMBER_PLACEHOLDER', ifsc: process.env.BANK_IFSC_CODE || 'IFSC_CODE_PLACEHOLDER', bankName: 'ICICI Bank', qrCodeUrl: '' } },
-          { id: 'hotel', name: 'Hotel Host', description: 'View your accommodation details', order: 5, fields: [] },
-          { id: 'payment2', name: 'Payment 2', description: 'Complete your second payment installment', order: 6, fields: [], isPaymentStep: true, amount: 100000, gstPercentage: 18, discountPercentage: 0, paymentConfig: { accountName: 'International Education Corp', accountNumber: process.env.BANK_ACCOUNT_NUMBER || 'ACCOUNT_NUMBER_PLACEHOLDER', ifsc: process.env.BANK_IFSC_CODE || 'IFSC_CODE_PLACEHOLDER', bankName: 'ICICI Bank', qrCodeUrl: '' } },
-          { id: 'contract', name: 'Contract Signing', description: 'Sign your internship contract', order: 7, fields: [], isContractStep: true },
-          { id: 'payment3', name: 'Payment 3', description: 'Complete your third payment installment', order: 8, fields: [], isPaymentStep: true, amount: 50000, gstPercentage: 18, discountPercentage: 0, paymentConfig: { accountName: 'International Education Corp', accountNumber: process.env.BANK_ACCOUNT_NUMBER || 'ACCOUNT_NUMBER_PLACEHOLDER', ifsc: process.env.BANK_IFSC_CODE || 'IFSC_CODE_PLACEHOLDER', bankName: 'ICICI Bank', qrCodeUrl: '' } },
-          { id: 'workpermit', name: 'Work Permit', description: 'Work permit processing', order: 9, fields: [] },
-          { id: 'visapayments', name: 'Visa Payments', description: 'Pay visa processing fees and SEVIS fees', order: 10, fields: [], isVisaPaymentsStep: true, amounts: { visaFee: 15000, sevisFee: 25000, miscFee: 5000 } },
-          { id: 'visa', name: 'Visa Stage', description: 'Visa application process', order: 11, fields: [] },
+          { id: 'payment1', name: 'First Installment', description: 'To complete your registration process, pay the first installment.', order: 4, fields: [], isPaymentStep: true, amount: 50000, gstPercentage: 18, discountPercentage: 0, paymentConfig: { accountName: 'International Education Corp', accountNumber: process.env.BANK_ACCOUNT_NUMBER || 'ACCOUNT_NUMBER_PLACEHOLDER', ifsc: process.env.BANK_IFSC_CODE || 'IFSC_CODE_PLACEHOLDER', bankName: 'ICICI Bank', qrCodeUrl: '' } },
+          { id: 'hotel', name: 'Property Confirmation', description: 'View your accommodation details', order: 5, fields: [] },
+          { id: 'payment2', name: 'Second Installment', description: 'Complete your second installment', order: 6, fields: [], isPaymentStep: true, amount: 100000, gstPercentage: 18, discountPercentage: 0, paymentConfig: { accountName: 'International Education Corp', accountNumber: process.env.BANK_ACCOUNT_NUMBER || 'ACCOUNT_NUMBER_PLACEHOLDER', ifsc: process.env.BANK_IFSC_CODE || 'IFSC_CODE_PLACEHOLDER', bankName: 'ICICI Bank', qrCodeUrl: '' } },
+          { id: 'contract', name: 'Convention', description: 'Sign your Convention de Stage', order: 7, fields: [], isContractStep: true },
+          { id: 'payment3', name: 'Third Installment', description: 'Complete your third installment', order: 8, fields: [], isPaymentStep: true, amount: 50000, gstPercentage: 18, discountPercentage: 0, paymentConfig: { accountName: 'International Education Corp', accountNumber: process.env.BANK_ACCOUNT_NUMBER || 'ACCOUNT_NUMBER_PLACEHOLDER', ifsc: process.env.BANK_IFSC_CODE || 'IFSC_CODE_PLACEHOLDER', bankName: 'ICICI Bank', qrCodeUrl: '' } },
+          { id: 'workpermit', name: 'Work Permit / DREET', description: 'Work Permit / DREET Documents processing', order: 9, fields: [] },
+          { id: 'visapayments', name: 'VFS & Visa Fees', description: 'Pay VFS Appointment fees, Insurance Fees, and Dummy Ticket Fees', order: 10, fields: [], isVisaPaymentsStep: true, amounts: { visaFee: 15000, visaFeeName: 'VFS Appointment Fees', sevisFee: 25000, sevisFeeName: 'Insurance Fees', miscFee: 5000, miscFeeName: 'Dummy Ticket Fees' } },
+
+          { id: 'visa', name: 'Visa Stage', description: 'Visa Appointment booking process', order: 11, fields: [] },
           { id: 'googlerate', name: 'Google Rating', description: 'Rate us on Google & upload screenshot', order: 12, fields: [], isGoogleRateStep: true },
-          { id: 'travel', name: 'Travel Details', description: 'Your travel itinerary', order: 13, fields: [] },
+          { id: 'travel', name: 'Visa Documentation', description: 'Visa Application Documents', order: 13, fields: [] },
+
         ]
       }
     });

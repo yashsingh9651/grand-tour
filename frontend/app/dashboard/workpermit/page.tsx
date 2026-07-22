@@ -69,9 +69,9 @@ export default function WorkPermitPage() {
           <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mb-6">
             <Lock className="w-10 h-10 text-muted-foreground" />
           </div>
-          <h2 className="text-2xl font-bold">Work Permit — Locked</h2>
+          <h2 className="text-2xl font-bold">Work Permit / DREET — Locked</h2>
           <p className="text-muted-foreground mt-2 max-w-md">
-            Your work permit will be processed after your <strong>Payment 3</strong> is approved.
+            Your Work Permit / DREET documents will be processed after your <strong>Third Installment</strong> is approved.
           </p>
           <Button className="mt-8" onClick={() => window.location.href = `/dashboard/${application?.currentStepId || 'application'}`}>
             Return to Current Step <ChevronRight className="w-4 h-4 ml-2" />
@@ -93,8 +93,8 @@ export default function WorkPermitPage() {
               <Briefcase className="w-6 h-6 text-primary" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold">Work Permit</h1>
-              <p className="text-muted-foreground text-sm">Your work authorization document</p>
+              <h1 className="text-3xl font-bold">Work Permit / DREET</h1>
+              <p className="text-muted-foreground text-sm">Your work authorization and DREET documents</p>
             </div>
           </div>
         </div>
@@ -112,7 +112,7 @@ export default function WorkPermitPage() {
                   </div>
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h2 className="text-2xl font-bold">Work Permit Issued!</h2>
+                      <h2 className="text-2xl font-bold">Work Permit / DREET Issued!</h2>
                       <span className="px-3 py-1 bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-xs font-bold rounded-full uppercase tracking-wider">ACTIVE</span>
                     </div>
                     <p className="text-muted-foreground mb-6">
@@ -154,7 +154,7 @@ export default function WorkPermitPage() {
                     <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
                       <Briefcase className="w-5 h-5 text-primary" />
                     </div>
-                    <h3 className="font-bold text-foreground">Work Permit Document 1</h3>
+                    <h3 className="font-bold text-foreground">Work Permit / DREET Document 1</h3>
                     <p className="text-xs text-muted-foreground leading-relaxed">
                       Primary work permit authorization approved by the Ministry of Labour.
                     </p>

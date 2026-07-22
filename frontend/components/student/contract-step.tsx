@@ -178,18 +178,26 @@ export function ContractStep({ application, currentStepConfig, onSubmit, submitt
               <FileText className="w-8 h-8 text-amber-600 dark:text-amber-400" />
             </div>
             <h2 className="text-3xl font-black tracking-tight text-foreground">
-              {config.contractTitle || 'Internship Contract'}
+              {config.contractTitle || 'Convention'}
             </h2>
-            <p className="text-muted-foreground font-medium text-lg leading-relaxed">
-            Please download your contract, print it, sign every page, and upload a scanned copy back here.
-          </p>
+            <p className="text-muted-foreground font-medium text-base leading-relaxed">
+              Please download your Convention de Stage and have it signed by your college.
+            </p>
+            <ul className="text-left text-sm text-muted-foreground space-y-1.5 bg-muted rounded-xl p-4 border border-border">
+              <li>• The last page is signed and stamped by your college.</li>
+              <li>• You sign next to your name on the last page.</li>
+              <li>• All signatures and the college stamp are clearly visible.</li>
+            </ul>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Once completed, please upload a properly scanned copy of the fully signed Convention de Stage. Kindly avoid uploading photos; only clear scanned PDF copies will be accepted.
+            </p>
 
           {/* Template URL info — shown if admin has set one */}
           {unsignedContractDoc?.url ? (
             <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3 flex items-center gap-3 text-left">
               <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Custom Contract Ready</p>
+                <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Your Internship contract is ready to be signed!</p>
                 <p className="text-xs text-emerald-750 dark:text-emerald-350 truncate mt-0.5">{unsignedContractDoc.fileName || 'Your custom contract'}</p>
               </div>
               <a
@@ -207,7 +215,7 @@ export function ContractStep({ application, currentStepConfig, onSubmit, submitt
               <FileText className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Contract Template Ready</p>
-                <p className="text-xs text-amber-750 dark:text-amber-350 truncate mt-0.5">{config.contractTitle || 'Internship Contract'}</p>
+                <p className="text-xs text-amber-750 dark:text-amber-350 truncate mt-0.5">{config.contractTitle || 'Convention'}</p>
               </div>
               <a
                 href={config.templateUrl}
@@ -477,7 +485,7 @@ export function ContractStep({ application, currentStepConfig, onSubmit, submitt
           <div className="space-y-3">
             <h3 className="text-sm font-bold text-foreground">Instructions</h3>
             <div className="p-4 bg-muted border border-border rounded-2xl text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap font-medium">
-              {"1. Download the unsigned template of your internship contract from the 'Download Contract' slot.\n\n2. Carefully review all terms & conditions, including your role description, work duration, stipend (if applicable), and hotel assignment details.\n\n3. Print the contract document, physically sign and date the bottom of every page.\n\n4. Scan the fully signed document pages back into a single PDF or clear image file.\n\n5. Upload the signed copy in the 'Upload Signed Copy' slot and submit for administrative review.\n\n6. Once administrative staff verifies the document, your status will turn to APPROVED and you will advance to the next step."}
+              {"1. Download the Convention de Stage template from the 'Download Contract' slot.\n\n2. Have the last page signed and stamped by your college. You must also sign next to your name on the last page.\n\n3. Ensure all signatures and the college stamp are clearly visible.\n\n4. Scan the fully signed document into a single PDF — do NOT upload photos.\n\n5. Upload the scanned PDF in the 'Upload Signed Copy' slot and submit for administrative review.\n\n6. Once verified, your status will turn to APPROVED and you will advance to the next step."}
             </div>
           </div>
         </div>

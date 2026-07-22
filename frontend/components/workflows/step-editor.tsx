@@ -158,7 +158,8 @@ export function StepEditor({ step, onSave, onCancel }: StepEditorProps) {
   const [isContractStep, setIsContractStep] = useState(step.isContractStep || false)
   const [contractConfig, setContractConfig] = useState<any>(step.contractConfig || {
     templateUrl: '',
-    contractTitle: 'Internship Contract'
+    contractTitle: 'Convention'
+
   })
 
   const handleQrUploadComplete = (doc: any) => {

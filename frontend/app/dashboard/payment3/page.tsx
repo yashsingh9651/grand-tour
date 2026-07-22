@@ -274,7 +274,8 @@ export default function Payment3Page() {
                   <IndianRupee className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h2 className="text-base font-black">Base Amount</h2>
+                  <h2 className="text-base font-black">Registration fees</h2>
+
                   <p className="text-2xl font-black text-primary">{currencySymbol}{baseAmount.toLocaleString()}</p>
                 </div>
               </div>

@@ -99,10 +99,11 @@ export default function ContractPage() {
       <div className="max-w-4xl space-y-6">
         <div className="space-y-2">
           <h1 className="text-3xl font-bold">
-            {contractStepConfig?.contractConfig?.contractTitle || 'Contract Signing'}
+            {contractStepConfig?.contractConfig?.contractTitle || 'Convention'}
           </h1>
           <p className="text-muted-foreground">
-            {contractStepConfig?.description || 'Download, sign, and upload your internship contract'}
+            {contractStepConfig?.description || 'Download, sign, and upload your Convention de Stage'}
+
           </p>
         </div>
 

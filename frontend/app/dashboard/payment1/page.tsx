@@ -335,7 +335,7 @@ export default function Payment1Page() {
           1st Installment Payment
         </h1>
         <p className="text-xs sm:text-sm text-muted-foreground font-medium max-w-lg">
-          Please complete your first tuition payment installment to proceed to the hotel host step.
+          To complete your registration process, pay the first installment.
         </p>
       </div>
 
@@ -349,7 +349,8 @@ export default function Payment1Page() {
                 <IndianRupee className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h2 className="text-base sm:text-xl font-black">Base Amount</h2>
+                <h2 className="text-base sm:text-xl font-black">Registration fees</h2>
+
                 <p className="text-2xl sm:text-3xl font-black text-primary">{currencySymbol}{baseAmount.toLocaleString()}</p>
               </div>
             </div>

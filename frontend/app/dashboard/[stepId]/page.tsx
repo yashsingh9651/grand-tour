@@ -342,7 +342,8 @@ export default function DynamicStepPage({ params }: { params: Promise<{ stepId: 
                       <IndianRupee className="w-6 h-6 text-primary" />
                     </div>
                     <div>
-                      <h2 className="text-xl font-black">Base Amount</h2>
+                      <h2 className="text-xl font-black">Registration fees</h2>
+
                       <p className="text-3xl font-black text-primary">₹{(currentStepConfig.amount || 0).toLocaleString()}</p>
                     </div>
                   </div>
