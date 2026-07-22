@@ -177,14 +177,15 @@ export default function InternshipInFrancePage() {
               </p>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-4 pt-2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-2 w-full sm:w-auto">
                 <Link
                   href={isLoggedIn ? dashboardLink : "/login"}
-                  className="bg-[#0b9940] hover:bg-[#0b9940]/90 active:scale-95 text-white font-semibold text-xs px-8 py-4 rounded-full uppercase tracking-wider transition-all shadow-lg text-center"
+                  className="bg-[#0b9940] hover:bg-[#0b9940]/90 active:scale-95 text-white font-semibold text-xs px-8 py-4 rounded-full uppercase tracking-wider transition-all shadow-lg text-center w-full sm:w-auto"
                 >
                   Apply Now
                 </Link>
               </div>
+
 
               {/* Mobile Badges Row (Visible only on smaller screens) */}
               <div className="flex flex-wrap items-center gap-3 pt-4 xl:hidden">

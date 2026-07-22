@@ -146,20 +146,21 @@ const AboutPage = () => {
                 Grand Tour is the trusted bridge between ambitious students and international hospitality careers in France – real hotels, real kitchens, real global exposure, and memories that last a lifetime.
               </p>
               {/* CTAs */}
-              <div className="flex flex-wrap items-center gap-4 pt-2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-2 w-full sm:w-auto">
                 <Link
                   href={isLoggedIn ? dashboardLink : "/login"}
-                  className="bg-[#dea306] hover:bg-[#dea306]/90 active:scale-95 text-[#1A1A1A] font-bold text-xs sm:text-sm px-6 py-3 rounded-full uppercase tracking-wider transition-all shadow-lg"
+                  className="bg-[#dea306] hover:bg-[#dea306]/90 active:scale-95 text-[#1A1A1A] font-bold text-xs sm:text-sm px-6 py-3 rounded-full uppercase tracking-wider transition-all shadow-lg text-center"
                 >
                   Apply Now
                 </Link>
                 <Link
                   href="#"
-                  className="bg-white/10 hover:bg-white/20 border border-white/20 active:scale-95 text-white font-bold text-xs sm:text-sm px-6 py-3 rounded-full uppercase tracking-wider transition-all"
+                  className="bg-white/10 hover:bg-white/20 border border-white/20 active:scale-95 text-white font-bold text-xs sm:text-sm px-6 py-3 rounded-full uppercase tracking-wider transition-all text-center"
                 >
                   Meet Our Team
                 </Link>
               </div>
+
             </div>
             {/* Right Column: Layered Polaroid and Floating Stats Badge */}
             <div className="relative min-h-[300px] sm:min-h-[420px] w-full lg:w-auto pr-0 lg:pr-16 flex justify-center lg:block">

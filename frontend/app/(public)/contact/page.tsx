@@ -139,20 +139,21 @@ export default function ContactPage() {
               </p>
 
               {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-4 pt-2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 pt-2 w-full sm:w-auto">
                 <Link
                   href="mailto:contact@grandtour.in"
-                  className="bg-[#0b9940] hover:bg-[#0b9940]/90 active:scale-95 text-white font-semibold text-xs px-8 py-4 rounded-full uppercase tracking-wider transition-all shadow-lg text-center"
+                  className="bg-[#0b9940] hover:bg-[#0b9940]/90 active:scale-95 text-white font-semibold text-xs px-8 py-4 rounded-full uppercase tracking-wider transition-all shadow-lg text-center w-full sm:w-auto"
                 >
                   Contact Our Team
                 </Link>
                 <Link
                   href={isLoggedIn ? dashboardLink : "/login"}
-                  className="bg-white/10 hover:bg-white/20 border border-white/80 backdrop-blur-xl active:scale-95 text-white font-semibold text-xs px-8 py-4 rounded-full uppercase tracking-wider transition-all text-center"
+                  className="bg-white/10 hover:bg-white/20 border border-white/80 backdrop-blur-xl active:scale-95 text-white font-semibold text-xs px-8 py-4 rounded-full uppercase tracking-wider transition-all text-center w-full sm:w-auto"
                 >
                   Apply Now
                 </Link>
               </div>
+
 
               {/* Mobile Badges Row (Visible only on smaller screens) */}
               <div className="flex flex-wrap items-center gap-3 pt-4 xl:hidden">
