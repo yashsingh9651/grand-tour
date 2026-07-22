@@ -15,7 +15,7 @@ router.post('/', createApplication);
 router.patch('/:id', updateApplication);
 router.patch('/:id/status', restrictTo('ADMIN', 'SUPER_ADMIN', 'HR', 'TEAM_MEMBER', 'TEAM', 'MARKETING'), updateStatus);
 router.patch('/:id/notes', restrictTo('ADMIN', 'SUPER_ADMIN', 'HR', 'TEAM_MEMBER', 'TEAM', 'MARKETING'), updateNotes);
-router.patch('/:id/step', restrictTo('ADMIN', 'SUPER_ADMIN', 'HR', 'TEAM_MEMBER', 'TEAM', 'MARKETING'), updateStep);
+router.patch('/:id/step', updateStep);
 router.delete('/:id', restrictTo('ADMIN', 'SUPER_ADMIN'), deleteApplication);
 
 export default router;

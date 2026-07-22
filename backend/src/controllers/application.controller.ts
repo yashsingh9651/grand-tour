@@ -107,10 +107,24 @@ export const updateNotes = async (req: Request, res: Response) => {
 export const updateStep = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { currentStepId } = req.body;
+  const user = (req as any).user;
+
+  const existingApp = await applicationService.getApplicationById(id);
+  if (!existingApp) {
+    return res.status(404).json({ success: false, message: 'Application not found' });
+  }
+
+  if (user?.role === 'STUDENT' && existingApp.userId !== user.id) {
+    return res.status(403).json({ 
+      success: false, 
+      message: 'Forbidden: You can only update your own application step.' 
+    });
+  }
+
   const application = await applicationService.updateApplicationStep(id, currentStepId);
   
   // Log activity
-  await activityService.log(`Moved to workflow step: ${currentStepId}`, 'STEP_UPDATE', id, (req as any).user?.id);
+  await activityService.log(`Moved to workflow step: ${currentStepId}`, 'STEP_UPDATE', id, user?.id);
 
   res.status(200).json({
     success: true,
