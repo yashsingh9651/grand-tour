@@ -7,53 +7,76 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import UploadPopup from '@/components/UploadPopup'
-import { applicationPageContentService } from '@/lib/services/api.service'
-import { ApplicationPageContentEditor } from '@/components/admin/application-page-content-editor'
+import { applicationPageContentService, documentTemplateService } from '@/lib/services/api.service'
 import { toast } from 'sonner'
-import { 
-  Plus, 
-  Trash2, 
-  GripVertical, 
-  Settings2, 
-  X, 
-  Layout, 
-  Type, 
-  ChevronDown, 
-  ChevronUp,
-  Save,
-  Calendar,
-  CheckCircle,
-  FileText,
-  Hash,
-  Upload,
-  CreditCard,
-  Eye,
+import { DynamicPageContentEditor } from '@/components/admin/dynamic-page-content-editor'
+import {
   Sliders,
-  Sparkles
+  Eye,
+  Save,
+  Sparkles,
+  Calendar,
+  CreditCard,
+  FileText,
+  Upload,
+  Plus,
+  GripVertical,
+  Trash2,
+  CheckCircle,
+  Settings2,
+  Layout,
 } from 'lucide-react'
 
+const generateUniqueId = (prefix = 'id') => `${prefix}-${Math.random().toString(36).substring(2, 9)}`
+
 const FIELD_TYPES: { value: FieldType; label: string; icon: any }[] = [
-  { value: 'text', label: 'Short Text', icon: Type },
-  { value: 'textarea', label: 'Long Text', icon: Layout },
-  { value: 'select', label: 'Dropdown', icon: ChevronDown },
+  { value: 'text', label: 'Text Input', icon: FileText },
+  { value: 'textarea', label: 'Long Text', icon: FileText },
+  { value: 'select', label: 'Dropdown Select', icon: Settings2 },
   { value: 'checkbox', label: 'Checkbox', icon: CheckCircle },
-  { value: 'date', label: 'Date', icon: Calendar },
-  { value: 'number', label: 'Number', icon: Hash },
+  { value: 'date', label: 'Date Picker', icon: Calendar },
+  { value: 'number', label: 'Number Input', icon: Settings2 },
   { value: 'file', label: 'File Upload', icon: Upload },
 ]
 
-const generateUniqueId = (prefix: string) => {
-  return `${prefix}-${Date.now()}`
-}
+const DOCX_PRESET_FIELDS: { label: string; category: string; type: FieldType; key: string; placeholder: string; options?: string[] }[] = [
+  // Student Details
+  { category: 'Student Info', label: 'Passport Number', type: 'text', key: 'studentPassportNumber', placeholder: 'e.g. A1234567' },
+  { category: 'Student Info', label: 'Permanent Address', type: 'textarea', key: 'studentAddress', placeholder: 'Residential address' },
+  { category: 'Student Info', label: 'Pin Code / Zip', type: 'text', key: 'studentPincode', placeholder: 'e.g. 400001' },
+  { category: 'Student Info', label: 'Phone Number / WhatsApp', type: 'text', key: 'studentNumber', placeholder: 'e.g. +91 9876543210' },
+  { category: 'Student Info', label: 'Primary Email', type: 'text', key: 'studentEmail', placeholder: 'e.g. student@example.com' },
+  { category: 'Student Info', label: 'Date of Birth', type: 'date', key: 'studentBirthDate', placeholder: 'Select Date of Birth' },
+  { category: 'Student Info', label: 'Place of Birth', type: 'text', key: 'studentBirthPlace', placeholder: 'e.g. Mumbai, India' },
+  { category: 'Student Info', label: 'Nationality', type: 'text', key: 'studentNationality', placeholder: 'e.g. Indian' },
 
-const DOCX_PRESET_FIELDS: { label: string; type: FieldType; key: string; placeholder: string; options?: string[] }[] = [
-  { label: 'Passport Number', type: 'text', key: 'studentPassportNumber', placeholder: 'e.g. A1234567' },
-  { label: 'College / Institution', type: 'text', key: 'collegeName', placeholder: 'e.g. IHM Delhi' },
-  { label: 'Degree / Course Name', type: 'text', key: 'degreeName', placeholder: 'e.g. B.Sc Hospitality' },
-  { label: 'Current Year of Study', type: 'select', key: 'yearOfDegree', placeholder: 'Select Year', options: ['1st Year', '2nd Year', '3rd Year', '4th Year'] },
-  { label: 'Financial Sponsor Name', type: 'text', key: 'sponsorName', placeholder: 'e.g. Robert Morgan' },
-  { label: 'Sponsor Relationship', type: 'select', key: 'sponsorRelationToStudent', placeholder: 'Select Relationship', options: ['Father', 'Mother', 'Guardian', 'Self'] },
-  { label: 'Internship Duration', type: 'select', key: 'internshipDuration', placeholder: 'Select Duration', options: ['3 Months', '6 Months', '12 Months'] },
+  // Academic Details
+  { category: 'Academic', label: 'College / Institution Name', type: 'text', key: 'collegeName', placeholder: 'e.g. IHM Institute' },
+  { category: 'Academic', label: 'Degree / Course Name', type: 'text', key: 'degreeName', placeholder: 'e.g. B.Sc Hospitality & Hotel Admin' },
+  { category: 'Academic', label: 'Current Year of Study', type: 'select', key: 'yearOfDegree', placeholder: 'Select Year', options: ['1st Year', '2nd Year', '3rd Year', '4th Year'] },
+  { category: 'Academic', label: 'Course Batch', type: 'text', key: 'courseBatch', placeholder: 'e.g. 2024-2027' },
+  { category: 'Academic', label: 'Course Duration', type: 'text', key: 'courseDuration', placeholder: 'e.g. 3 Years' },
+  { category: 'Academic', label: 'Affiliated University', type: 'text', key: 'affiliatedUniversityName', placeholder: 'e.g. NCHMCT' },
+  { category: 'Academic', label: 'College Director / Principal Name', type: 'text', key: 'collegeDirectorName', placeholder: 'e.g. Dr. A. K. Sharma' },
+  { category: 'Academic', label: 'College / TPO Email', type: 'text', key: 'collegeEmail', placeholder: 'e.g. principal@college.edu' },
+  { category: 'Academic', label: 'College / TPO Phone', type: 'text', key: 'collegeNumber', placeholder: 'e.g. +91 22 2445 7200' },
+  { category: 'Academic', label: 'College Address', type: 'textarea', key: 'collegeAddress', placeholder: 'Campus address' },
+
+  // Financial & Sponsor
+  { category: 'Sponsor & Financial', label: 'Financial Sponsor Name', type: 'text', key: 'sponsorName', placeholder: 'e.g. Robert Morgan' },
+  { category: 'Sponsor & Financial', label: 'Sponsor Address', type: 'textarea', key: 'sponsorAddress', placeholder: 'Address of financial sponsor' },
+  { category: 'Sponsor & Financial', label: 'Sponsor Relation to Student', type: 'select', key: 'sponsorRelationToStudent', placeholder: 'Select Relationship', options: ['Father', 'Mother', 'Guardian', 'Self'] },
+  { category: 'Sponsor & Financial', label: 'Student Relation to Sponsor', type: 'text', key: 'studentRelationToSponsor', placeholder: 'e.g. Son / Daughter' },
+
+  // Internship & Travel Details
+  { category: 'Internship & Visa', label: 'Internship Duration', type: 'select', key: 'internshipDuration', placeholder: 'Select Duration', options: ['3 Months', '6 Months', '12 Months'] },
+  { category: 'Internship & Visa', label: 'Preferred Department', type: 'text', key: 'departmentName', placeholder: 'e.g. Food & Beverage / Culinary' },
+  { category: 'Internship & Visa', label: 'Monthly Stipend', type: 'text', key: 'monthlyStipend', placeholder: 'e.g. 600 EUR / Month' },
+  { category: 'Internship & Visa', label: 'Preferred Start Date', type: 'date', key: 'internshipDate', placeholder: 'Select Start Date' },
+  { category: 'Internship & Visa', label: 'Internship End Date', type: 'date', key: 'internshipEndDate', placeholder: 'Select End Date' },
+  { category: 'Internship & Visa', label: 'Revised Arrival Date (Visa)', type: 'date', key: 'revisedArrivalDate', placeholder: 'Select Arrival Date' },
+  { category: 'Internship & Visa', label: 'Next Degree / Academic Goal', type: 'text', key: 'nextDegree', placeholder: 'e.g. Final Year Degree' },
+  { category: 'Internship & Visa', label: 'Internship Benefits / Perks', type: 'textarea', key: 'internshipBenefits', placeholder: 'Accommodation & Meals provided' },
 ]
 
 
@@ -257,6 +280,8 @@ export function StepEditor({ step, onSave, onCancel }: StepEditorProps) {
   const isApplicationStep = step.id === 'application' || step.id === 'applications' || (name || '').toLowerCase().includes('application')
 
   const [viewMode, setViewMode] = useState<'quick' | 'builder'>('quick')
+  const [dynamicTemplateVariables, setDynamicTemplateVariables] = useState<{ key: string; label: string; count: number }[]>([])
+  const [activeCategoryFilter, setActiveCategoryFilter] = useState<string>('All')
 
   useEffect(() => {
     if (isApplicationStep) {
@@ -267,6 +292,27 @@ export function StepEditor({ step, onSave, onCancel }: StepEditorProps) {
             if (syncedFields.length > 0) {
               setFields(syncedFields)
             }
+          }
+        })
+        .catch(() => {})
+
+      documentTemplateService.getAll()
+        .then((templates: any[]) => {
+          if (Array.isArray(templates) && templates.length > 0) {
+            const map: Record<string, number> = {}
+            templates.forEach((t: any) => {
+              if (Array.isArray(t.variables)) {
+                t.variables.forEach((v: string) => {
+                  map[v] = (map[v] || 0) + 1
+                })
+              }
+            })
+            const list = Object.entries(map).map(([key, count]) => {
+              const preset = DOCX_PRESET_FIELDS.find(p => p.key === key)
+              const label = preset?.label || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).trim()
+              return { key, label, count }
+            })
+            setDynamicTemplateVariables(list)
           }
         })
         .catch(() => {})
@@ -358,7 +404,7 @@ export function StepEditor({ step, onSave, onCancel }: StepEditorProps) {
             <Sparkles className="w-4 h-4 shrink-0 text-emerald-600" />
             <span>Using Live Student Application Page Builder. Any changes saved here update the student-facing Step 1 form in real-time.</span>
           </Card>
-          <ApplicationPageContentEditor />
+          <DynamicPageContentEditor pageKey="student-application" />
         </div>
       ) : (
         <>
@@ -648,37 +694,115 @@ export function StepEditor({ step, onSave, onCancel }: StepEditorProps) {
             </Button>
           </div>
 
-          {/* 📄 .docx Travel Template Presets Helper Box */}
+          {/* 📄 .docx Travel & Uploaded Template Presets Helper Box */}
           {isApplicationStep && (
-            <Card className="p-5 bg-gradient-to-br from-violet-50/80 via-white to-indigo-50/50 border border-violet-200 shadow-sm space-y-3">
+            <Card className="p-5 bg-gradient-to-br from-violet-50/80 via-white to-indigo-50/50 border border-violet-200 shadow-sm space-y-4">
 
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-violet-600" />
-                  <h4 className="font-bold text-violet-950 text-sm">Recommended Presets for 1-Click .docx Document Auto-Generation</h4>
+                  <FileText className="w-5 h-5 text-violet-600 shrink-0" />
+                  <div>
+                    <h4 className="font-bold text-violet-950 text-sm">DOCX Template Field Auto-Suggestions</h4>
+                    <p className="text-[11px] text-violet-700 font-medium">Click any variable to add it to your Step 1 Form Builder.</p>
+                  </div>
                 </div>
-                <span className="text-[10px] font-extrabold uppercase bg-violet-100 text-violet-800 px-2 py-0.5 rounded border border-violet-200">
-                  Click to Add
-                </span>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className="text-[10px] font-extrabold uppercase bg-violet-100 text-violet-800 px-2.5 py-1 rounded-full border border-violet-200">
+                    {DOCX_PRESET_FIELDS.length} Presets Available
+                  </span>
+                </div>
               </div>
-              <p className="text-xs text-violet-800/80 leading-relaxed">
-                Click any preset button below to automatically insert the standardized form field. This guarantees that student data collected in Step 1 maps cleanly into the 4 official Travel & Visa .docx templates!
-              </p>
-              <div className="flex flex-wrap gap-2 pt-1">
-                {DOCX_PRESET_FIELDS.map((preset) => (
-                  <Button
-                    key={preset.key}
+
+              {/* Category Filters */}
+              <div className="flex flex-wrap gap-1.5 pt-1 border-t border-violet-100">
+                {['All', 'Student Info', 'Academic', 'Sponsor & Financial', 'Internship & Visa'].map((cat) => (
+                  <button
+                    key={cat}
                     type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleAddPresetField(preset)}
-                    className="gap-1.5 bg-white hover:bg-violet-50 text-violet-900 border-violet-200 text-xs font-semibold shadow-2xs transition-all hover:scale-102"
+                    onClick={() => setActiveCategoryFilter(cat)}
+                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                      activeCategoryFilter === cat
+                        ? 'bg-violet-600 text-white shadow-sm'
+                        : 'bg-white text-violet-800 border border-violet-200 hover:bg-violet-50'
+                    }`}
                   >
-                    <Plus className="w-3.5 h-3.5 text-violet-600" />
-                    {preset.label}
-                  </Button>
+                    {cat}
+                  </button>
                 ))}
               </div>
+
+              {/* Preset Buttons Grid */}
+              <div className="flex flex-wrap gap-2 pt-1 max-h-[220px] overflow-y-auto pr-1">
+                {DOCX_PRESET_FIELDS
+                  .filter((preset) => activeCategoryFilter === 'All' || preset.category === activeCategoryFilter)
+                  .map((preset) => {
+                    const isAdded = fields.some(f => f.name?.toLowerCase().includes(preset.label.toLowerCase()) || f.id === preset.key)
+                    return (
+                      <Button
+                        key={preset.key}
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={isAdded}
+                        onClick={() => handleAddPresetField(preset)}
+                        className={`gap-1.5 text-xs font-semibold rounded-xl border transition-all ${
+                          isAdded
+                            ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
+                            : 'bg-white hover:bg-violet-50 text-violet-900 border-violet-200 shadow-2xs hover:scale-102'
+                        }`}
+                      >
+                        <Plus className={`w-3.5 h-3.5 ${isAdded ? 'text-slate-400' : 'text-violet-600'}`} />
+                        <span>{preset.label}</span>
+                        {isAdded && <span className="text-[9px] font-bold text-slate-500 ml-1">(Added)</span>}
+                      </Button>
+                    )
+                  })}
+              </div>
+
+              {/* Dynamic Variables Detected from Admin Uploaded .docx Templates */}
+              {dynamicTemplateVariables.length > 0 && (
+                <div className="pt-3 border-t border-violet-100 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-violet-900">
+                      ⚡ {dynamicTemplateVariables.length} Variables Found in Uploaded Admin Templates
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {dynamicTemplateVariables.map((dyn) => {
+                      const matchedPreset = DOCX_PRESET_FIELDS.find(p => p.key === dyn.key)
+                      const isAdded = fields.some(f => f.id === dyn.key || f.name?.toLowerCase() === dyn.label.toLowerCase())
+                      return (
+                        <button
+                          key={dyn.key}
+                          type="button"
+                          disabled={isAdded}
+                          onClick={() => {
+                            if (matchedPreset) {
+                              handleAddPresetField(matchedPreset)
+                            } else {
+                              handleAddPresetField({
+                                category: 'Uploaded Templates',
+                                label: dyn.label,
+                                type: 'text',
+                                key: dyn.key,
+                                placeholder: `Enter ${dyn.label}`
+                              })
+                            }
+                          }}
+                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-mono font-bold transition-all border ${
+                            isAdded
+                              ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+                              : 'bg-violet-100/70 hover:bg-violet-200 text-violet-900 border-violet-300'
+                          }`}
+                        >
+                          <span>{`{{${dyn.key}}}`}</span>
+                          {isAdded && <span className="text-[9px] font-sans font-normal text-gray-400">✓</span>}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
             </Card>
           )}
 

@@ -36,7 +36,6 @@ export interface TravelDocumentData {
   employerNumber?: string
   employerEmail?: string
   collegeDirectorName?: string
-  collegeNumber?: string
   sponsorName?: string
   sponsorAddress?: string
   sponsorRelationToStudent?: string
@@ -334,6 +333,12 @@ export function resolveData(inputData: any = {}): Required<TravelDocumentData> {
     ''
   )
 
+  const dateVal = findValueByKeyAliases(
+    sources,
+    ['date', 'currentDate', 'todayDate'],
+    new Date().toLocaleDateString('en-GB')
+  )
+
   return {
     studentName: studentNameVal,
     studentAddress: studentAddressVal,
@@ -376,7 +381,7 @@ export function resolveData(inputData: any = {}): Required<TravelDocumentData> {
     affiliatedUniversityName: affiliatedUniversityNameVal,
     courseBatch: courseBatchVal,
     courseDuration: courseDurationVal,
-    date: currentDate,
+    date: dateVal,
   }
 }
 
