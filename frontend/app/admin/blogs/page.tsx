@@ -167,19 +167,20 @@ export default function AdminBlogsPage() {
       <div className="flex flex-col flex-1 overflow-y-auto">
         <Header title="Blogs & Stories Manager" description="Create and edit blog posts" />
         
-        <main className="flex-1 p-6 space-y-6">
-          <div className="flex justify-between items-center">
+        <main className="flex-1 p-3 sm:p-6 space-y-4 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
             <div>
-              <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Blog Posts</h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
+              <h2 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white">Blog Posts</h2>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
                 Publish articles, guides, and student stories on your website.
               </p>
             </div>
-            <Button onClick={openCreateModal} className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 rounded-xl">
+            <Button onClick={openCreateModal} className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 rounded-xl w-full sm:w-auto justify-center">
               <Plus className="w-4 h-4" />
               Add Blog Post
             </Button>
           </div>
+
 
           {loading ? (
             <div className="flex items-center justify-center h-64">

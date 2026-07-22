@@ -176,23 +176,24 @@ export default function Home() {
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.45 }}
-                className="flex items-center gap-4"
+                className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full sm:w-auto"
               >
                 <Link
                   href={isLoggedIn ? dashboardLink : "/login"}
                   id="btn-apply-now"
-                  className="bg-[#E1000F] border border-[#E1000F] hover:bg-[#E1000F]/90 active:scale-95 text-white text-xs font-medium px-7 py-2.5 rounded-full tracking-widest transition-all shadow-lg select-none"
+                  className="bg-[#E1000F] border border-[#E1000F] hover:bg-[#E1000F]/90 active:scale-95 text-white text-xs font-medium px-7 py-2.5 rounded-full tracking-widest transition-all shadow-lg select-none w-full sm:w-auto text-center"
                 >
                   Apply Now
                 </Link>
                 <a
                   href="#"
                   id="btn-know-more"
-                  className="border border-white/40 bg-white/15 hover:bg-white/20 active:scale-95 text-white text-xs font-medium px-7 py-2.5 rounded-full tracking-widest transition-all select-none"
+                  className="border border-white/40 bg-white/15 hover:bg-white/20 active:scale-95 text-white text-xs font-medium px-7 py-2.5 rounded-full tracking-widest transition-all select-none w-full sm:w-auto text-center"
                 >
                   Know More
                 </a>
               </motion.div>
+
             </div>
 
             {/* Mobile-only: Polaroid row below text */}

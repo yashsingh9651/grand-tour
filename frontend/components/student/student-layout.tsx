@@ -128,7 +128,6 @@ export function StudentLayout({ children, currentStep = 'application', headerCon
             >
               {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
-
             {/* Avatar */}
             {status === 'loading' ? (
               <Loader2 className="w-4 h-4 animate-spin" style={{ color: 'var(--sp-text-soft)' }} />
