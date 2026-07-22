@@ -46,6 +46,17 @@ const generateUniqueId = (prefix: string) => {
   return `${prefix}-${Date.now()}`
 }
 
+const DOCX_PRESET_FIELDS: { label: string; type: FieldType; key: string; placeholder: string; options?: string[] }[] = [
+  { label: 'Passport Number', type: 'text', key: 'studentPassportNumber', placeholder: 'e.g. A1234567' },
+  { label: 'College / Institution', type: 'text', key: 'collegeName', placeholder: 'e.g. IHM Delhi' },
+  { label: 'Degree / Course Name', type: 'text', key: 'degreeName', placeholder: 'e.g. B.Sc Hospitality' },
+  { label: 'Current Year of Study', type: 'select', key: 'yearOfDegree', placeholder: 'Select Year', options: ['1st Year', '2nd Year', '3rd Year', '4th Year'] },
+  { label: 'Financial Sponsor Name', type: 'text', key: 'sponsorName', placeholder: 'e.g. Robert Morgan' },
+  { label: 'Sponsor Relationship', type: 'select', key: 'sponsorRelationToStudent', placeholder: 'Select Relationship', options: ['Father', 'Mother', 'Guardian', 'Self'] },
+  { label: 'Internship Duration', type: 'select', key: 'internshipDuration', placeholder: 'Select Duration', options: ['3 Months', '6 Months', '12 Months'] },
+]
+
+
 function convertPageBlocksToWorkflowFields(blocks: any[]): WorkflowField[] {
   if (!Array.isArray(blocks)) return []
   return blocks.map((block: any, idx: number) => {
@@ -219,6 +230,28 @@ export function StepEditor({ step, onSave, onCancel }: StepEditorProps) {
   const handleUpdateField = (id: string, updates: Partial<WorkflowField>) => {
     setFields(fields.map((f) => (f.id === id ? { ...f, ...updates } : f)))
   }
+
+  const handleAddPresetField = (preset: typeof DOCX_PRESET_FIELDS[0]) => {
+    const exists = fields.some(f => f.name?.toLowerCase().includes(preset.label.toLowerCase()) || f.id === preset.key)
+    if (exists) {
+      toast.info(`Field "${preset.label}" is already in your form!`)
+      return
+    }
+
+    const newField: WorkflowField = {
+      id: preset.key,
+      type: preset.type,
+      name: preset.label,
+      required: true,
+      placeholder: preset.placeholder,
+      options: preset.options,
+      order: fields.length + 1,
+    }
+
+    setFields([...fields, newField])
+    toast.success(`Added preset field "${preset.label}" for .docx template matching!`)
+  }
+
 
   const isApplicationStep = step.id === 'application' || step.id === 'applications' || (name || '').toLowerCase().includes('application')
 
@@ -614,8 +647,43 @@ export function StepEditor({ step, onSave, onCancel }: StepEditorProps) {
             </Button>
           </div>
 
+          {/* 📄 .docx Travel Template Presets Helper Box */}
+          {isApplicationStep && (
+            <Card className="p-5 bg-gradient-to-br from-violet-50/80 via-white to-indigo-50/50 border border-violet-200 shadow-sm space-y-3">
+
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-violet-600" />
+                  <h4 className="font-bold text-violet-950 text-sm">Recommended Presets for 1-Click .docx Document Auto-Generation</h4>
+                </div>
+                <span className="text-[10px] font-extrabold uppercase bg-violet-100 text-violet-800 px-2 py-0.5 rounded border border-violet-200">
+                  Click to Add
+                </span>
+              </div>
+              <p className="text-xs text-violet-800/80 leading-relaxed">
+                Click any preset button below to automatically insert the standardized form field. This guarantees that student data collected in Step 1 maps cleanly into the 4 official Travel & Visa .docx templates!
+              </p>
+              <div className="flex flex-wrap gap-2 pt-1">
+                {DOCX_PRESET_FIELDS.map((preset) => (
+                  <Button
+                    key={preset.key}
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleAddPresetField(preset)}
+                    className="gap-1.5 bg-white hover:bg-violet-50 text-violet-900 border-violet-200 text-xs font-semibold shadow-2xs transition-all hover:scale-102"
+                  >
+                    <Plus className="w-3.5 h-3.5 text-violet-600" />
+                    {preset.label}
+                  </Button>
+                ))}
+              </div>
+            </Card>
+          )}
+
           {sections.length > 0 && (
             <div className="space-y-6 mt-6">
+
               {sections.map((section) => (
                 <div key={section.id} className="space-y-4 group">
                   <Card className="overflow-hidden border-2 border-primary/20 shadow-md">

@@ -6,10 +6,21 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
-import { Loader2, Plus, Save, Trash2, RotateCcw, Eye, ChevronDown, Sliders } from 'lucide-react'
+import { Loader2, Plus, Save, Trash2, RotateCcw, Eye, ChevronDown, Sliders, FileText } from 'lucide-react'
 import { toast } from 'sonner'
 import { applicationPageContentService } from '@/lib/services/api.service'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+
+const DOCX_PRESET_BLOCKS = [
+  { label: 'Passport Number', type: 'text', fieldKey: 'passportNumber', placeholder: 'e.g. A1234567', section: 'Personal Credentials' },
+  { label: 'College / Institution', type: 'text', fieldKey: 'collegeName', placeholder: 'e.g. IHM Delhi', section: 'Academic Nexus' },
+  { label: 'Degree / Course Name', type: 'text', fieldKey: 'degreeName', placeholder: 'e.g. B.Sc Hospitality', section: 'Academic Nexus' },
+  { label: 'Current Year of Study', type: 'select', fieldKey: 'yearOfDegree', placeholder: 'Select Year', options: ['1st Year', '2nd Year', '3rd Year', '4th Year'], section: 'Academic Nexus' },
+  { label: 'Financial Sponsor Name', type: 'text', fieldKey: 'sponsorName', placeholder: 'e.g. Robert Morgan', section: 'Financial Sponsorship' },
+  { label: 'Sponsor Relationship', type: 'select', fieldKey: 'sponsorRelationToStudent', placeholder: 'Select Relationship', options: ['Father', 'Mother', 'Guardian', 'Self'], section: 'Financial Sponsorship' },
+  { label: 'Preferred Internship Duration', type: 'select', fieldKey: 'internshipDuration', placeholder: 'Select Duration', options: ['3 Months', '6 Months', '12 Months'], section: 'Journey Intent' },
+]
+
 
 interface DynamicPageContentEditorProps {
   pageKey: string
@@ -155,6 +166,41 @@ export function DynamicPageContentEditor({
     }))
   }
 
+  const addPresetBlock = (preset: typeof DOCX_PRESET_BLOCKS[0]) => {
+    const currentBlocks = content?.blocks || []
+    const exists = currentBlocks.some((b: any) => b.fieldKey === preset.fieldKey || b.label?.toLowerCase() === preset.label.toLowerCase())
+    if (exists) {
+      toast.info(`Field "${preset.label}" is already in your form!`)
+      return
+    }
+
+    const nextOrder = Math.max(...currentBlocks.map((block: any) => Number(block.order || 0)), 0) + 1
+    const newBlock = {
+      id: `field-${Date.now()}`,
+      type: preset.type,
+      label: preset.label,
+      fieldKey: preset.fieldKey,
+      placeholder: preset.placeholder,
+      options: preset.options || [],
+      section: preset.section || 'General',
+      column: 'left',
+      order: nextOrder,
+      enabled: true,
+    }
+
+    setContent((current: any) => ({
+      ...current,
+      blocks: [...(current?.blocks || []), newBlock],
+    }))
+
+    setExpandedBlocks(() => ({
+      [newBlock.id]: true,
+    }))
+
+    toast.success(`Added preset field "${preset.label}" for .docx template matching!`)
+  }
+
+
   const removeBlock = (blockId: string) => {
     setContent((current: any) => ({
       ...current,
@@ -267,10 +313,43 @@ export function DynamicPageContentEditor({
                   className="rounded-xl text-sm resize-none"
                 />
               </div>
-            </div>
 
-            <div className="space-y-4">
+
+              {/* 📄 .docx Travel Template Presets Helper Box */}
+              {(pageKey === 'application' || pageKey === 'applications') && (
+                <Card className="p-4 bg-gradient-to-br from-violet-50/80 via-white to-indigo-50/50 border border-violet-200 rounded-2xl space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-violet-600" />
+                      <h4 className="font-bold text-violet-950 text-xs sm:text-sm">Recommended Presets for 1-Click .docx Document Auto-Generation</h4>
+                    </div>
+                    <span className="text-[10px] font-extrabold uppercase bg-violet-100 text-violet-800 px-2 py-0.5 rounded border border-violet-200">
+                      Click to Add
+                    </span>
+                  </div>
+                  <p className="text-xs text-violet-800/80 leading-relaxed">
+                    Click any preset button below to automatically insert the standardized form field. This ensures student data collected on this step maps cleanly into the 4 official Travel & Visa .docx templates!
+                  </p>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {DOCX_PRESET_BLOCKS.map((preset) => (
+                      <Button
+                        key={preset.fieldKey}
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => addPresetBlock(preset)}
+                        className="gap-1.5 bg-white hover:bg-violet-50 text-violet-900 border-violet-200 text-xs font-semibold rounded-xl h-8 shadow-2xs transition-all hover:scale-102"
+                      >
+                        <Plus className="w-3.5 h-3.5 text-violet-600" />
+                        {preset.label}
+                      </Button>
+                    ))}
+                  </div>
+                </Card>
+              )}
+
               <div className="flex items-center justify-between gap-3 border-t pt-4">
+
                 <div>
                   <h3 className="text-base font-bold text-slate-800">Dynamic Fields List</h3>
                   <p className="text-xs text-muted-foreground">Add sections or input fields, then expand each card to edit its properties.</p>
