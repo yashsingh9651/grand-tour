@@ -73,7 +73,7 @@ model User {
 model Application {
   id            String            @id @default(uuid())
   userId        String            @unique
-  user          User              @relation(fields: [userId], references: [id])
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   status        ApplicationStatus @default(PENDING)
   currentStepId String?
   category      String            @default("STUDENT")
@@ -85,11 +85,11 @@ model Application {
   statementOfPurpose     String?
 
   payment1Id String?  @unique
-  payment1   Payment? @relation("Payment1", fields: [payment1Id], references: [id])
+  payment1   Payment? @relation("Payment1", fields: [payment1Id], references: [id], onDelete: SetNull)
   payment2Id String?  @unique
-  payment2   Payment? @relation("Payment2", fields: [payment2Id], references: [id])
+  payment2   Payment? @relation("Payment2", fields: [payment2Id], references: [id], onDelete: SetNull)
   payment3Id String?  @unique
-  payment3   Payment? @relation("Payment3", fields: [payment3Id], references: [id])
+  payment3   Payment? @relation("Payment3", fields: [payment3Id], references: [id], onDelete: SetNull)
 
   notes         String?
   data          Json?
@@ -121,10 +121,10 @@ model Workflow {
 model Payment {
   id            String        @id @default(uuid())
   userId        String
-  user          User          @relation(fields: [userId], references: [id])
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   amount        Float
   applicationId String
-  application   Application   @relation(fields: [applicationId], references: [id])
+  application   Application   @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   status        PaymentStatus @default(PENDING)
   description   String?
   utrNumber     String?
@@ -155,7 +155,7 @@ model InterviewSlot {
   endTime       DateTime
   isBooked      Boolean  @default(false)
   applicationId String?  @unique
-  application   Application? @relation(fields: [applicationId], references: [id])
+  application   Application? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
   meetLink      String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -164,9 +164,9 @@ model InterviewSlot {
 model Interview {
   id            String      @id @default(uuid())
   applicationId String
-  application   Application @relation(fields: [applicationId], references: [id])
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   interviewerId String
-  interviewer   User        @relation(fields: [interviewerId], references: [id])
+  interviewer   User        @relation(fields: [interviewerId], references: [id], onDelete: Cascade)
   scheduledAt   DateTime
   locationUrl   String?
   status        String      @default("PENDING") // PENDING, COMPLETED, CANCELLED
@@ -181,7 +181,7 @@ model ActivityLog {
   description   String
   type          String      // e.g., "APPLICATION_MOVE", "PAYMENT_RECEIVED"
   applicationId String?
-  application   Application? @relation(fields: [applicationId], references: [id])
+  application   Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   userId        String?     // The user who performed the action
   createdAt     DateTime    @default(now())
 }
@@ -189,7 +189,7 @@ model ActivityLog {
 model Notification {
   id          String   @id @default(uuid())
   userId      String
-  user        User     @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   title       String
   message     String
   type        String   // e.g., "INFO", "SUCCESS", "WARNING", "ERROR"
@@ -210,7 +210,7 @@ model RolePermission {
 model Document {
   id            String         @id @default(uuid())
   applicationId String
-  application   Application    @relation(fields: [applicationId], references: [id])
+  application   Application    @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   name          String
   type          String         // e.g., "cv", "photo", "passport", "itar", "iti", "gst", "visa"
   url           String
@@ -247,7 +247,7 @@ model HotelAssignment {
   hotelId         String
   hotel           Hotel       @relation(fields: [hotelId], references: [id])
   applicationId   String      @unique
-  application     Application @relation(fields: [applicationId], references: [id])
+  application     Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   checkIn         DateTime
   checkOut        DateTime
   studentResponse String?     // ACCEPTED | DECLINED | null
@@ -259,7 +259,7 @@ model HotelAssignment {
 model WorkPermit {
   id            String      @id @default(uuid())
   applicationId String      @unique
-  application   Application @relation(fields: [applicationId], references: [id])
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   documentUrl   String?
   documentUrl2  String?
   status        String      @default("PENDING") // PENDING | ISSUED
@@ -275,7 +275,7 @@ model VisaSlot {
   capacity      Int         @default(1)
   isBooked      Boolean     @default(false)
   applicationId String?     @unique
-  application   Application? @relation(fields: [applicationId], references: [id])
+  application   Application? @relation(fields: [applicationId], references: [id], onDelete: SetNull)
   meetLink      String?
   location      String?
   documentUrl   String?     // Admin-uploaded document for this slot
@@ -287,7 +287,7 @@ model VisaSlot {
 model TravelDocument {
   id            String      @id @default(uuid())
   applicationId String
-  application   Application @relation(fields: [applicationId], references: [id])
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   name          String
   url           String
   isPublished   Boolean     @default(false)
