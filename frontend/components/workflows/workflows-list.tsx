@@ -1,8 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+
 import { workflowService } from '@/lib/services/api.service'
 import { Edit2, Loader2, Settings } from 'lucide-react'
 import { WorkflowBuilder } from './workflow-builder'
@@ -89,18 +91,31 @@ export function WorkflowsList() {
                 Workflow Steps ({workflow.steps?.length || 0})
               </p>
               <div className="flex flex-wrap gap-2">
-                {workflow.steps?.map((step: any, index: number) => (
-                  <div 
-                    key={step.id} 
-                    className="flex items-center gap-2 bg-secondary/50 px-3 py-1.5 rounded-lg border border-border"
-                  >
-                    <span className="text-xs font-bold bg-primary text-primary-foreground w-5 h-5 rounded-full flex items-center justify-center">
-                      {index + 1}
-                    </span>
-                    <span className="text-sm font-medium">{step.name}</span>
-                  </div>
-                ))}
+                {workflow.steps?.map((step: any, index: number) => {
+                  const slug = step.id === 'application' ? 'applications' : step.id
+                  const hasEditor = ['applications', 'documents', 'payment', 'visapayments'].includes(slug)
+                  return (
+                    <div 
+                      key={step.id} 
+                      className="flex items-center gap-2 bg-secondary/50 px-3 py-1.5 rounded-lg border border-border group hover:border-primary transition-all"
+                    >
+                      <span className="text-xs font-bold bg-primary text-primary-foreground w-5 h-5 rounded-full flex items-center justify-center shrink-0">
+                        {index + 1}
+                      </span>
+                      <span className="text-sm font-medium">{step.name}</span>
+                      {hasEditor && (
+                        <Link 
+                          href={`/admin/steps/${slug}`}
+                          className="text-[10px] font-bold text-primary hover:underline bg-primary/10 px-2 py-0.5 rounded ml-1"
+                        >
+                          Edit Form
+                        </Link>
+                      )}
+                    </div>
+                  )
+                })}
               </div>
+
             </div>
 
             <div className="flex gap-4 mt-6">

@@ -1,12 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { WorkflowStep, WorkflowField, FieldType } from '@/lib/workflow-schema'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import UploadPopup from '@/components/UploadPopup'
+import { applicationPageContentService } from '@/lib/services/api.service'
+import { ApplicationPageContentEditor } from '@/components/admin/application-page-content-editor'
+import { toast } from 'sonner'
 import { 
   Plus, 
   Trash2, 
@@ -23,7 +26,10 @@ import {
   FileText,
   Hash,
   Upload,
-  CreditCard
+  CreditCard,
+  Eye,
+  Sliders,
+  Sparkles
 } from 'lucide-react'
 
 const FIELD_TYPES: { value: FieldType; label: string; icon: any }[] = [
@@ -40,11 +46,76 @@ const generateUniqueId = (prefix: string) => {
   return `${prefix}-${Date.now()}`
 }
 
+function convertPageBlocksToWorkflowFields(blocks: any[]): WorkflowField[] {
+  if (!Array.isArray(blocks)) return []
+  return blocks.map((block: any, idx: number) => {
+    if (block.type === 'section') {
+      return {
+        id: block.id || `sec-${idx}`,
+        type: 'section' as FieldType,
+        name: block.label || block.section || 'Section',
+        required: false,
+        order: block.order || idx + 1,
+      }
+    }
+    return {
+      id: block.id || `field-${idx}`,
+      type: (block.type === 'upload' ? 'file' : block.type || 'text') as FieldType,
+      name: block.label || block.fieldKey || 'Field',
+      required: Boolean(block.required),
+      placeholder: block.placeholder || '',
+      options: Array.isArray(block.options) ? block.options : [],
+      order: block.order || idx + 1,
+    }
+  })
+}
+
+function convertWorkflowFieldsToPageBlocks(fields: WorkflowField[]): any[] {
+  let currentSectionName = 'General Information'
+  let orderCounter = 1
+  const blocks: any[] = []
+
+  ;(fields || []).forEach((field: any) => {
+    if (field.type === 'section') {
+      currentSectionName = field.name || field.label || 'Section'
+      blocks.push({
+        id: field.id || `section-${orderCounter}`,
+        type: 'section',
+        label: currentSectionName,
+        section: currentSectionName,
+        column: 'left',
+        order: orderCounter++,
+        enabled: true,
+      })
+    } else {
+      const sanitizedKey = (field.name || field.id || `field_${orderCounter}`)
+        .toLowerCase()
+        .replace(/[^a-zA-Z0-9]/g, '')
+      blocks.push({
+        id: field.id || `field-${orderCounter}`,
+        type: field.type === 'file' ? 'upload' : (field.type || 'text'),
+        label: field.name || 'Field',
+        fieldKey: sanitizedKey,
+        placeholder: field.placeholder || '',
+        section: currentSectionName,
+        column: 'left',
+        order: orderCounter++,
+        required: Boolean(field.required),
+        options: Array.isArray(field.options) ? field.options : [],
+        enabled: true,
+      })
+    }
+  })
+
+  return blocks
+}
+
 interface StepEditorProps {
   step: WorkflowStep
   onSave: (step: WorkflowStep) => void
   onCancel: () => void
 }
+
 
 export function StepEditor({ step, onSave, onCancel }: StepEditorProps) {
   const { data: session } = useSession()
@@ -149,8 +220,27 @@ export function StepEditor({ step, onSave, onCancel }: StepEditorProps) {
     setFields(fields.map((f) => (f.id === id ? { ...f, ...updates } : f)))
   }
 
-  const handleSave = () => {
-    onSave({ 
+  const isApplicationStep = step.id === 'application' || step.id === 'applications' || (name || '').toLowerCase().includes('application')
+
+  const [viewMode, setViewMode] = useState<'quick' | 'builder'>('quick')
+
+  useEffect(() => {
+    if (isApplicationStep) {
+      applicationPageContentService.get('application')
+        .then((contentData: any) => {
+          if (contentData?.blocks && Array.isArray(contentData.blocks) && contentData.blocks.length > 0) {
+            const syncedFields = convertPageBlocksToWorkflowFields(contentData.blocks)
+            if (syncedFields.length > 0) {
+              setFields(syncedFields)
+            }
+          }
+        })
+        .catch(() => {})
+    }
+  }, [isApplicationStep])
+
+  const handleSave = async () => {
+    const updatedStep = {
       ...step, 
       name, 
       description, 
@@ -163,17 +253,63 @@ export function StepEditor({ step, onSave, onCancel }: StepEditorProps) {
       paymentConfig,
       isContractStep,
       contractConfig
-    })
+    }
+
+    if (isApplicationStep) {
+      try {
+        const pageBlocks = convertWorkflowFieldsToPageBlocks(fields)
+        await applicationPageContentService.update('application', {
+          title: name,
+          subtitle: description,
+          blocks: pageBlocks,
+        })
+        toast.success('Synced step with Student Application Form!')
+      } catch (error) {
+        console.error('Failed to sync page content:', error)
+      }
+    }
+
+    onSave(updatedStep)
   }
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-border pb-6">
         <div>
-          <h2 className="text-3xl font-extrabold tracking-tight text-foreground">Step Designer</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-3xl font-extrabold tracking-tight text-foreground">Step Designer</h2>
+            {isApplicationStep && (
+              <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full border border-emerald-200">
+                Synced with Student Step 1
+              </span>
+            )}
+          </div>
           <p className="text-muted-foreground mt-1 text-lg">Configure sections and fields for &ldquo;{name}&rdquo;</p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          {isApplicationStep && (
+            <div className="flex bg-slate-100 dark:bg-zinc-800 p-1 rounded-xl border border-slate-200 dark:border-zinc-700">
+              <button
+                type="button"
+                onClick={() => setViewMode('quick')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+                  viewMode === 'quick' ? 'bg-white shadow text-slate-900' : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <Sliders className="w-3.5 h-3.5" /> Fields & Settings
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode('builder')}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+                  viewMode === 'builder' ? 'bg-white shadow text-slate-900' : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <Eye className="w-3.5 h-3.5 text-emerald-600" /> Live Student Builder & Preview
+              </button>
+            </div>
+          )}
+
           <Button variant="outline" onClick={onCancel} className="px-6">Cancel</Button>
           <Button onClick={handleSave} className="px-6 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/20">
             <Save className="w-4 h-4 mr-2" />
@@ -182,7 +318,18 @@ export function StepEditor({ step, onSave, onCancel }: StepEditorProps) {
         </div>
       </div>
 
-      <Card className="p-8 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 border-primary/10 shadow-sm">
+      {viewMode === 'builder' && isApplicationStep ? (
+        <div className="space-y-4">
+          <Card className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-semibold rounded-2xl flex items-center gap-2">
+            <Sparkles className="w-4 h-4 shrink-0 text-emerald-600" />
+            <span>Using Live Student Application Page Builder. Any changes saved here update the student-facing Step 1 form in real-time.</span>
+          </Card>
+          <ApplicationPageContentEditor />
+        </div>
+      ) : (
+        <>
+          <Card className="p-8 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 border-primary/10 shadow-sm">
+
         <div className="grid md:grid-cols-2 gap-8">
           <div className="space-y-2">
             <label className="text-sm font-bold uppercase tracking-wider text-muted-foreground ml-1">Step Name</label>
@@ -798,6 +945,10 @@ export function StepEditor({ step, onSave, onCancel }: StepEditorProps) {
 
         </Card>
       )}
+        </>
+      )}
     </div>
   )
 }
+
+
