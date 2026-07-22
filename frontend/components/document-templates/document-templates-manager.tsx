@@ -41,11 +41,18 @@ const CATEGORIES = [
 ]
 
 const SYSTEM_TEMPLATES = [
+  // Student Visa Documentation Templates
   { type: 'COVER_LETTER_FR', label: 'Cover Letter (French)', description: 'Demande de Visa Long Séjour pour un Stage (French Cover Letter template).' },
   { type: 'SPONSORSHIP_FR', label: 'Financial Sponsorship Letter (French)', description: 'Lettre de Parrainage Financier (French Financial Sponsorship template).' },
   { type: 'SPONSORSHIP_EN', label: 'Financial Sponsorship Letter (English)', description: 'Financial Sponsorship Letter for Visa Application (English template).' },
   { type: 'AFFIDAVIT', label: 'Affidavit Template', description: 'Financial support and travel affidavit for French Visa Consulate.' },
+
+  // Admin Hotel Convention Templates
+  { type: 'KITCHEN_CONVENTION', label: 'Kitchen Convention Template', description: 'Convention de Stage pour la Cuisine (Kitchen Department for Hotel).' },
+  { type: 'FOOD_BEVERAGE_CONVENTION', label: 'Food & Beverage Convention Template', description: 'Convention de Stage pour le Service F&B (Food & Beverage Department for Hotel).' },
+  { type: 'HOUSEKEEPING_CONVENTION', label: 'Housekeeping Convention Template', description: 'Convention de Stage pour l’Hébergement (Housekeeping Department for Hotel).' },
 ]
+
 
 
 const SUGGESTED_VARIABLES = [
@@ -964,7 +971,12 @@ export default function DocumentTemplatesManager() {
     SPONSORSHIP_FR: 'bg-emerald-500/10 text-emerald-600',
     SPONSORSHIP_EN: 'bg-purple-500/10 text-purple-600',
     AFFIDAVIT: 'bg-amber-500/10 text-amber-600',
+
+    KITCHEN_CONVENTION: 'bg-orange-500/10 text-orange-600',
+    FOOD_BEVERAGE_CONVENTION: 'bg-teal-500/10 text-teal-600',
+    HOUSEKEEPING_CONVENTION: 'bg-indigo-500/10 text-indigo-600',
   }
+
 
 
   return (

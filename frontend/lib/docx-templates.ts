@@ -8,31 +8,45 @@ export interface TravelDocumentData {
   studentNumber?: string
   studentEmail?: string
   studentPassportNumber?: string
+  studentBirthDate?: string
+  studentBirthPlace?: string
+  studentNationality?: string
   internshipDuration?: string
   hotelName?: string
   hotelAddress?: string
+  hotelSiretNumber?: string
+  hotelType?: string
   yearOfDegree?: string
   degreeName?: string
   collegeName?: string
+  collegeAddress?: string
+  collegeEmail?: string
+  collegeNumber?: string
+  collegeRepresentativeName?: string
+  collegeRepresentativeDesignation?: string
   departmentName?: string
   monthlyStipend?: string
   internshipDate?: string
+  internshipEndDate?: string
+  internshipBenefits?: string
   revisedArrivalDate?: string
   nextDegree?: string
   employerName?: string
+  employerDesignation?: string
   employerNumber?: string
   employerEmail?: string
   collegeDirectorName?: string
   collegeNumber?: string
-  collegeEmail?: string
   sponsorName?: string
   sponsorAddress?: string
   sponsorRelationToStudent?: string
   studentRelationToSponsor?: string
   affiliatedUniversityName?: string
   courseBatch?: string
+  courseDuration?: string
   date?: string
 }
+
 
 function findValueByKeyAliases(sources: any[], aliases: string[], fallback: string = ''): string {
   for (const src of sources) {
@@ -248,11 +262,77 @@ export function resolveData(inputData: any = {}): Required<TravelDocumentData> {
     '2024-2027'
   )
 
-  const currentDate = new Date().toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-  })
+  const employerDesignationVal = findValueByKeyAliases(
+    sources,
+    ['employerDesignation', 'position', 'employerPosition', 'designation', 'jobTitle'],
+    hotel.position || 'Directeur Général'
+  )
+
+  const hotelSiretNumberVal = findValueByKeyAliases(
+    sources,
+    ['hotelSiretNumber', 'siretNo', 'siret', 'siren', 'siretNumber'],
+    hotel.siretNo || '123 456 789 00012'
+  )
+
+  const hotelTypeVal = findValueByKeyAliases(
+    sources,
+    ['hotelType', 'natureOfActivity', 'activityType', 'businessType'],
+    hotel.natureOfActivity || 'Hôtellerie et Restauration'
+  )
+
+  const collegeRepresentativeNameVal = findValueByKeyAliases(
+    sources,
+    ['collegeRepresentativeName', 'collegeDirectorName', 'tpoName', 'representativeName', 'principalName'],
+    'Directeur de l’établissement'
+  )
+
+  const collegeRepresentativeDesignationVal = findValueByKeyAliases(
+    sources,
+    ['collegeRepresentativeDesignation', 'representativeDesignation', 'tpoDesignation', 'directorDesignation'],
+    'Chef d’établissement / Directeur'
+  )
+
+  const collegeAddressVal = findValueByKeyAliases(
+    sources,
+    ['collegeAddress', 'institutionAddress', 'universityAddress', 'schoolAddress'],
+    'Campus Address, India'
+  )
+
+  const studentBirthDateVal = findValueByKeyAliases(
+    sources,
+    ['studentBirthDate', 'dateOfBirth', 'dob', 'birthDate'],
+    user.dateOfBirth || '01/01/2002'
+  )
+
+  const studentBirthPlaceVal = findValueByKeyAliases(
+    sources,
+    ['studentBirthPlace', 'placeOfBirth', 'birthPlace', 'cityOfBirth'],
+    user.city || 'Mumbai, India'
+  )
+
+  const studentNationalityVal = findValueByKeyAliases(
+    sources,
+    ['studentNationality', 'nationality', 'citizenship'],
+    'Indienne'
+  )
+
+  const courseDurationVal = findValueByKeyAliases(
+    sources,
+    ['courseDuration', 'programDuration', 'degreeDuration', 'totalDuration'],
+    '3 Ans'
+  )
+
+  const internshipEndDateVal = findValueByKeyAliases(
+    sources,
+    ['internshipEndDate', 'endDate', 'completionDate', 'preferredEndDate'],
+    '31 January 2027'
+  )
+
+  const internshipBenefitsVal = findValueByKeyAliases(
+    sources,
+    ['internshipBenefits', 'benefits', 'perks', 'facilities', 'advantages'],
+    'Hébergement et restauration fournis selon les modalités de l’entreprise d’accueil.'
+  )
 
   return {
     studentName: studentNameVal,
@@ -261,32 +341,45 @@ export function resolveData(inputData: any = {}): Required<TravelDocumentData> {
     studentNumber: studentNumberVal,
     studentEmail: studentEmailVal,
     studentPassportNumber: studentPassportNumberVal,
+    studentBirthDate: studentBirthDateVal,
+    studentBirthPlace: studentBirthPlaceVal,
+    studentNationality: studentNationalityVal,
     internshipDuration: internshipDurationVal,
     hotelName: hotelNameVal,
     hotelAddress: hotelAddressVal,
+    hotelSiretNumber: hotelSiretNumberVal,
+    hotelType: hotelTypeVal,
     yearOfDegree: yearOfDegreeVal,
     degreeName: degreeNameVal,
     collegeName: collegeNameVal,
+    collegeAddress: collegeAddressVal,
+    collegeEmail: collegeEmailVal,
+    collegeNumber: collegeNumberVal,
+    collegeRepresentativeName: collegeRepresentativeNameVal,
+    collegeRepresentativeDesignation: collegeRepresentativeDesignationVal,
     departmentName: departmentNameVal,
     monthlyStipend: monthlyStipendVal,
     internshipDate: internshipDateVal,
+    internshipEndDate: internshipEndDateVal,
+    internshipBenefits: internshipBenefitsVal,
     revisedArrivalDate: revisedArrivalDateVal,
     nextDegree: nextDegreeVal,
     employerName: employerNameVal,
+    employerDesignation: employerDesignationVal,
     employerNumber: employerNumberVal,
     employerEmail: employerEmailVal,
     collegeDirectorName: collegeDirectorNameVal,
-    collegeNumber: collegeNumberVal,
-    collegeEmail: collegeEmailVal,
     sponsorName: sponsorNameVal,
     sponsorAddress: sponsorAddressVal,
     sponsorRelationToStudent: sponsorRelationToStudentVal,
     studentRelationToSponsor: studentRelationToSponsorVal,
     affiliatedUniversityName: affiliatedUniversityNameVal,
     courseBatch: courseBatchVal,
+    courseDuration: courseDurationVal,
     date: currentDate,
   }
 }
+
 
 
 // 1. Cover Letter French Template
@@ -841,8 +934,35 @@ export const OFFICIAL_TRAVEL_TEMPLATES = [
     name: 'Financial Sponsorship Letter (English)',
     filename: 'Financial_Sponsorship_Letter_English.docx',
     language: 'English',
-    description: 'Financial Sponsorship Letter in English for Visa Application',
-    generateFallback: generateFinancialSponsorshipEnglishDocx,
   },
 ]
+
+export const ADMIN_CONVENTION_TEMPLATES = [
+
+  {
+    id: 'kitchen_convention',
+    category: 'KITCHEN_CONVENTION',
+    name: 'Kitchen Convention Template',
+    filename: 'Convention_de_Stage_Kitchen.docx',
+    department: 'Kitchen / Culinary',
+    description: 'Convention de Stage Étudiant pour le département Cuisine (Kitchen)',
+  },
+  {
+    id: 'food_beverage_convention',
+    category: 'FOOD_BEVERAGE_CONVENTION',
+    name: 'Food & Beverage Convention Template',
+    filename: 'Convention_de_Stage_Food_Beverage.docx',
+    department: 'Food & Beverage / Restaurant',
+    description: 'Convention de Stage Étudiant pour le département Service (Food & Beverage)',
+  },
+  {
+    id: 'housekeeping_convention',
+    category: 'HOUSEKEEPING_CONVENTION',
+    name: 'Housekeeping Convention Template',
+    filename: 'Convention_de_Stage_Housekeeping.docx',
+    department: 'Housekeeping / Accommodation',
+    description: 'Convention de Stage Étudiant pour le département Hébergement (Housekeeping)',
+  },
+]
+
 

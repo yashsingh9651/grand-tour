@@ -20,9 +20,11 @@ import {
   uploadService,
   applicationPageContentService,
   interviewService,
-  studentCategoryService
+  studentCategoryService,
+  documentTemplateService
 } from '@/lib/services/api.service'
 import { toast } from 'sonner'
+import { ADMIN_CONVENTION_TEMPLATES, resolveData, fillDocxFromTemplateUrl } from '@/lib/docx-templates'
 import {
   Loader2, Check, X, ArrowLeft, Mail, Phone, Calendar,
   Clock, MapPin, FileText, Download, Building, Landmark,
@@ -32,6 +34,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import DocumentUploadDialog from '@/components/documents/document-upload-dialog'
+
 
 const fallbackPageContent = {
   title: 'Build Your Editorial Profile',
@@ -277,7 +280,31 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null)
   const [lightboxTitle, setLightboxTitle] = useState('')
 
+  const handleAdminDownloadConvention = async (tmpl: typeof ADMIN_CONVENTION_TEMPLATES[0]) => {
+    try {
+      toast.info(`Generating ${tmpl.name}...`)
+      const resolvedForm = resolveData(application)
+      const dbTemplates = await documentTemplateService.getAll().catch(() => [])
+      const uploaded = Array.isArray(dbTemplates) ? dbTemplates.find((t: any) => t.category === tmpl.category) : null
+
+      if (uploaded && uploaded.fileUrl) {
+        await fillDocxFromTemplateUrl(
+          uploaded.fileUrl,
+          uploaded.fileName || tmpl.filename,
+          resolvedForm
+        )
+        toast.success(`${tmpl.name} downloaded successfully!`)
+      } else {
+        toast.error(`Please upload the template file for ${tmpl.name} in Document Templates Manager`)
+      }
+    } catch (err: any) {
+      console.error('Convention download error:', err)
+      toast.error('Failed to generate document: ' + (err?.message || 'Unknown error'))
+    }
+  }
+
   const fetchDetails = async () => {
+
     try {
       setLoading(true)
       const [appData, wfData, hotelData, contentData, catData] = await Promise.all([
@@ -1622,17 +1649,50 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
           )
 
         case 'visa':
-          // Search slot bookings
           return (
-            <div className="space-y-4">
-              <h4 className="font-bold text-slate-900 border-b pb-2 flex items-center gap-2"><Sparkles className="w-4 h-4 text-primary" /> Visa Slot Booking</h4>
-              <p className="text-xs text-slate-500">Manage candidate appointments. Advancing to travel step indicates successful visa appointments.</p>
-              <div className="bg-slate-50 border p-4 rounded-xl text-xs space-y-1">
-                <p className="font-bold text-slate-700">Workflow current: <Badge className="capitalize">Visa Stage</Badge></p>
-                <p className="text-slate-400 font-semibold mt-1">To approve this slot and advance, use the force step controls or use the main Visa slot calendar to manage scheduled slots.</p>
+            <div className="space-y-6">
+              <div className="space-y-4">
+                <h4 className="font-bold text-slate-900 border-b pb-2 flex items-center gap-2"><Sparkles className="w-4 h-4 text-primary" /> Visa Slot Booking</h4>
+                <p className="text-xs text-slate-500">Manage candidate appointments. Advancing to travel step indicates successful visa appointments.</p>
+                <div className="bg-slate-50 border p-4 rounded-xl text-xs space-y-1">
+                  <p className="font-bold text-slate-700">Workflow current: <Badge className="capitalize">Visa Stage</Badge></p>
+                  <p className="text-slate-400 font-semibold mt-1">To approve this slot and advance, use the force step controls or use the main Visa slot calendar to manage scheduled slots.</p>
+                </div>
               </div>
+
+              {/* Admin Hotel Convention Documents Card */}
+              <Card className="p-5 border border-slate-200 bg-white rounded-3xl space-y-4 shadow-sm">
+                <div>
+                  <h4 className="font-bold text-sm text-slate-800 flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-violet-600" /> Admin Hotel Convention Documents (Auto-Filled)
+                  </h4>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Download auto-populated Convention de Stage documents for this candidate to send to the host hotel.
+                  </p>
+                </div>
+
+                <div className="grid sm:grid-cols-3 gap-3">
+                  {ADMIN_CONVENTION_TEMPLATES.map((tmpl) => (
+                    <div key={tmpl.id} className="p-3.5 border border-slate-200 bg-slate-50/50 rounded-2xl flex flex-col justify-between space-y-3">
+                      <div>
+                        <p className="font-bold text-xs text-slate-800">{tmpl.name}</p>
+                        <p className="text-[10px] text-slate-500 mt-0.5">{tmpl.department}</p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleAdminDownloadConvention(tmpl)}
+                        className="w-full gap-1.5 text-xs font-bold border-violet-200 text-violet-700 hover:bg-violet-50 rounded-xl"
+                      >
+                        <Download className="w-3.5 h-3.5" /> Download .docx
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </Card>
             </div>
           )
+
 
         case 'googlerate':
           const ratingDoc = documentsList.find((d: any) => d.type === 'google_review_screenshot')
@@ -1888,8 +1948,40 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
                   </Button>
                 </Card>
               )}
+
+              {/* Admin Hotel Convention Documents Card */}
+              <Card className="p-5 border border-slate-200 bg-white rounded-3xl space-y-4 shadow-sm">
+                <div>
+                  <h4 className="font-bold text-sm text-slate-800 flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-violet-600" /> Admin Hotel Convention Documents (Auto-Filled)
+                  </h4>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Download auto-populated Convention de Stage documents for this candidate to send to the host hotel.
+                  </p>
+                </div>
+
+                <div className="grid sm:grid-cols-3 gap-3">
+                  {ADMIN_CONVENTION_TEMPLATES.map((tmpl) => (
+                    <div key={tmpl.id} className="p-3.5 border border-slate-200 bg-slate-50/50 rounded-2xl flex flex-col justify-between space-y-3">
+                      <div>
+                        <p className="font-bold text-xs text-slate-800">{tmpl.name}</p>
+                        <p className="text-[10px] text-slate-500 mt-0.5">{tmpl.department}</p>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleAdminDownloadConvention(tmpl)}
+                        className="w-full gap-1.5 text-xs font-bold border-violet-200 text-violet-700 hover:bg-violet-50 rounded-xl"
+                      >
+                        <Download className="w-3.5 h-3.5" /> Download .docx
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </Card>
             </div>
           )
+
 
         default:
           return <p className="text-sm text-slate-500 italic py-6 text-center">Unrecognized stage. Use override control panel.</p>
