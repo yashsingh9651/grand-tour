@@ -10,7 +10,7 @@ class PaymentService {
     applicationId: string;
     amount: number;
     description?: string;
-    utrNumber: string;
+    utrNumber?: string;
     screenshotUrl: string;
   }) {
     const payment = await prisma.payment.create({

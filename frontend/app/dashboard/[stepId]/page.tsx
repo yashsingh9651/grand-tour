@@ -27,7 +27,7 @@ export default function DynamicStepPage({ params }: { params: Promise<{ stepId: 
   const [workflow, setWorkflow] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
-  const [utrNumber, setUtrNumber] = useState('')
+
   const [screenshotUrl, setScreenshotUrl] = useState('')
   const [videoUrl, setVideoUrl] = useState('')
   const [isUploadOpen, setIsUploadOpen] = useState(false)

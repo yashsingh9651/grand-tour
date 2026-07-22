@@ -8,10 +8,9 @@ export const submitPayment = async (req: Request, res: Response) => {
   const userId = (req as any).user?.id;
   const { amount, description, utrNumber, screenshotUrl } = req.body;
 
-  if (!utrNumber || typeof utrNumber !== 'string' || utrNumber.trim() === '' || utrNumber.trim().toUpperCase() === 'N/A') {
-    res.status(400).json({ success: false, message: 'Please provide a valid transaction UTR number.' });
-    return;
-  }
+  const finalUtr = (utrNumber && typeof utrNumber === 'string' && utrNumber.trim() !== '') 
+    ? utrNumber.trim() 
+    : 'N/A';
 
   const application = await prisma.application.findUnique({
     where: { userId }
@@ -27,13 +26,13 @@ export const submitPayment = async (req: Request, res: Response) => {
     applicationId: application.id,
     amount: parseFloat(amount),
     description,
-    utrNumber: utrNumber.trim(),
+    utrNumber: finalUtr,
     screenshotUrl,
   });
 
   // Log activity
   await activityService.log(
-    `Payment submitted: ₹${amount} (UTR: ${utrNumber})`,
+    `Payment submitted: ₹${amount}${finalUtr !== 'N/A' ? ` (UTR: ${finalUtr})` : ''}`,
     'PAYMENT_SUBMITTED',
     undefined,
     userId

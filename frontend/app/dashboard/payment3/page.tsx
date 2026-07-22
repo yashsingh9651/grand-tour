@@ -28,7 +28,7 @@ export default function Payment3Page() {
   const [workflow, setWorkflow] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
-  const [utrNumber, setUtrNumber] = useState('')
+
   const [screenshotUrl, setScreenshotUrl] = useState('')
   const [isUploadOpen, setIsUploadOpen] = useState(false)
   const [submittingPayment, setSubmittingPayment] = useState(false)
