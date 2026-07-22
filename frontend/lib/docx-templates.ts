@@ -781,37 +781,68 @@ export async function generateFinancialSponsorshipEnglishDocx(rawInput: any) {
   saveAs(buffer, 'Financial_Sponsorship_Letter_English.docx')
 }
 
+export async function fillDocxFromTemplateUrl(fileUrl: string, fileName: string, data: Record<string, any>) {
+  const response = await fetch(fileUrl)
+  if (!response.ok) {
+    throw new Error('Failed to fetch template file from server')
+  }
+  const arrayBuffer = await response.arrayBuffer()
+  const PizZip = (await import('pizzip')).default
+  const Docxtemplater = (await import('docxtemplater')).default
+
+  const zip = new PizZip(arrayBuffer)
+  const doc = new Docxtemplater(zip, {
+    paragraphLoop: true,
+    linebreaks: true,
+    nullGetter() {
+      return ''
+    },
+  })
+
+  doc.render(data)
+  const out = doc.getZip().generate({
+    type: 'blob',
+    mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  })
+  saveAs(out, fileName.endsWith('.docx') ? fileName : `${fileName}.docx`)
+}
+
 export const OFFICIAL_TRAVEL_TEMPLATES = [
   {
     id: 'cover_letter_french',
+    category: 'COVER_LETTER_FR',
     name: 'Cover Letter (French Visa)',
     filename: 'Cover_Letter_French_Template.docx',
     language: 'French',
     description: 'Official Long Stay Visa Cover Letter in French for Consulat Général de France',
-    generate: generateCoverLetterFrenchDocx,
+    generateFallback: generateCoverLetterFrenchDocx,
   },
   {
     id: 'affidavit',
+    category: 'AFFIDAVIT',
     name: 'Affidavit of Financial Support',
     filename: 'Affidavit_Template.docx',
     language: 'English',
     description: 'Financial Support Affidavit for French Consulate Visa Application',
-    generate: generateAffidavitDocx,
+    generateFallback: generateAffidavitDocx,
   },
   {
     id: 'financial_sponsorship_french',
+    category: 'SPONSORSHIP_FR',
     name: 'Financial Sponsorship Letter (French)',
     filename: 'Financial_Sponsorship_Letter_French.docx',
     language: 'French',
     description: 'Lettre de Parrainage Financier in French for Visa Sponsorship',
-    generate: generateFinancialSponsorshipFrenchDocx,
+    generateFallback: generateFinancialSponsorshipFrenchDocx,
   },
   {
     id: 'financial_sponsorship_english',
+    category: 'SPONSORSHIP_EN',
     name: 'Financial Sponsorship Letter (English)',
     filename: 'Financial_Sponsorship_Letter_English.docx',
     language: 'English',
     description: 'Financial Sponsorship Letter in English for Visa Application',
-    generate: generateFinancialSponsorshipEnglishDocx,
+    generateFallback: generateFinancialSponsorshipEnglishDocx,
   },
 ]
+

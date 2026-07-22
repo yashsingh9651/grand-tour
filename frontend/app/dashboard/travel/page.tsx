@@ -5,9 +5,9 @@ import { StudentLayout } from '@/components/student/student-layout'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { applicationService, travelService } from '@/lib/services/api.service'
+import { applicationService, travelService, documentTemplateService } from '@/lib/services/api.service'
 import { toast } from 'sonner'
-import { OFFICIAL_TRAVEL_TEMPLATES, resolveData } from '@/lib/docx-templates'
+import { OFFICIAL_TRAVEL_TEMPLATES, resolveData, fillDocxFromTemplateUrl } from '@/lib/docx-templates'
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter
 } from '@/components/ui/dialog'
@@ -19,6 +19,7 @@ import {
 export default function TravelPage() {
   const [application, setApplication] = useState<any>(null)
   const [travelDocs, setTravelDocs] = useState<any[]>([])
+  const [uploadedTemplates, setUploadedTemplates] = useState<Record<string, any>>({})
   const [loading, setLoading] = useState(true)
   
   // Interactive Document Edit Modal state
@@ -33,8 +34,21 @@ export default function TravelPage() {
       const appData = await applicationService.getMy()
       setApplication(appData)
       if (appData?.currentStepId === 'travel') {
-        const docs = await travelService.getMyDocuments().catch(() => [])
+        const [docs, dbTemplates] = await Promise.all([
+          travelService.getMyDocuments().catch(() => []),
+          documentTemplateService.getAll().catch(() => [])
+        ])
         setTravelDocs(docs || [])
+        
+        const tmplMap: Record<string, any> = {}
+        if (Array.isArray(dbTemplates)) {
+          dbTemplates.forEach((t: any) => {
+            if (t.category) {
+              tmplMap[t.category] = t
+            }
+          })
+        }
+        setUploadedTemplates(tmplMap)
       }
     } catch {
       toast.error('Failed to load travel data')
@@ -54,16 +68,28 @@ export default function TravelPage() {
     try {
       setIsGenerating(true)
       toast.info(`Generating ${selectedTemplate.name}...`)
-      await selectedTemplate.generate(documentForm)
+
+      const uploaded = uploadedTemplates[selectedTemplate.category]
+      if (uploaded && uploaded.fileUrl) {
+        await fillDocxFromTemplateUrl(
+          uploaded.fileUrl,
+          uploaded.fileName || selectedTemplate.filename,
+          documentForm
+        )
+      } else {
+        await selectedTemplate.generateFallback(documentForm)
+      }
+
       toast.success(`${selectedTemplate.name} downloaded successfully!`)
       setSelectedTemplate(null)
     } catch (err: any) {
       console.error('Docx generation error:', err)
-      toast.error('Failed to generate document')
+      toast.error('Failed to generate document: ' + (err?.message || 'Unknown error'))
     } finally {
       setIsGenerating(false)
     }
   }
+
 
   if (loading) {
     return (
@@ -151,39 +177,50 @@ export default function TravelPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {OFFICIAL_TRAVEL_TEMPLATES.map((tmpl) => (
-              <Card key={tmpl.id} className="p-5 border border-border bg-gradient-to-br from-card to-secondary/30 shadow-sm hover:shadow-md transition-all duration-300 group flex flex-col justify-between">
-                <div className="space-y-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/10 via-violet-500/10 to-indigo-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <FileDown className="w-6 h-6 text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-foreground text-sm sm:text-base leading-snug">{tmpl.name}</h3>
-                        <span className="inline-block text-[10px] font-extrabold uppercase tracking-wider bg-primary/10 text-primary px-2 py-0.5 rounded mt-1">
-                          {tmpl.language}
-                        </span>
+            {OFFICIAL_TRAVEL_TEMPLATES.map((tmpl) => {
+              const uploaded = uploadedTemplates[tmpl.category]
+              return (
+                <Card key={tmpl.id} className="p-5 border border-border bg-gradient-to-br from-card to-secondary/30 shadow-sm hover:shadow-md transition-all duration-300 group flex flex-col justify-between">
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/10 via-violet-500/10 to-indigo-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                          <FileDown className="w-6 h-6 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-foreground text-sm sm:text-base leading-snug">{tmpl.name}</h3>
+                          <div className="flex items-center gap-1.5 mt-1">
+                            <span className="inline-block text-[10px] font-extrabold uppercase tracking-wider bg-primary/10 text-primary px-2 py-0.5 rounded">
+                              {tmpl.language}
+                            </span>
+                            {uploaded?.fileUrl && (
+                              <span className="inline-block text-[10px] font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded">
+                                Custom Template Uploaded
+                              </span>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">{tmpl.description}</p>
                   </div>
-                  <p className="text-xs text-muted-foreground leading-relaxed">{tmpl.description}</p>
-                </div>
 
-                <div className="mt-4 pt-3 border-t border-border flex items-center justify-between">
-                  <span className="text-[11px] font-mono text-muted-foreground">{tmpl.filename}</span>
-                  <Button
-                    size="sm"
-                    className="gap-2 shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-sm"
-                    onClick={() => openTemplateModal(tmpl)}
-                  >
-                    <Download className="w-4 h-4" />
-                    Review & Download .docx
-                  </Button>
-                </div>
-              </Card>
-            ))}
+                  <div className="mt-4 pt-3 border-t border-border flex items-center justify-between">
+                    <span className="text-[11px] font-mono text-muted-foreground">{uploaded?.fileName || tmpl.filename}</span>
+                    <Button
+                      size="sm"
+                      className="gap-2 shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground font-bold shadow-sm"
+                      onClick={() => openTemplateModal(tmpl)}
+                    >
+                      <Download className="w-4 h-4" />
+                      Review & Download .docx
+                    </Button>
+                  </div>
+                </Card>
+              )
+            })}
           </div>
+
         </div>
 
         {/* Admin Uploaded Travel Documents */}

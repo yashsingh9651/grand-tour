@@ -174,7 +174,7 @@ export function StudentSidebar({ currentStep, darkMode, isMobile = false }: { cu
           <span>Settings</span>
         </Link>
 
-        <Link
+        {/* <Link
           href="/dashboard/faq"
           className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[11px] font-semibold tracking-widest uppercase transition-all duration-200"
           style={
@@ -185,15 +185,15 @@ export function StudentSidebar({ currentStep, darkMode, isMobile = false }: { cu
         >
           <HelpCircle className="w-3.5 h-3.5 shrink-0" />
           <span>Support</span>
-        </Link>
+        </Link> */}
 
         {/* FAQ Link - Unlocked when 1st Payment (payment1) is completed */}
         {(() => {
           const isPayment1Completed = currentStepOrder >= (WORKFLOW_STEP_ORDER['hotel'] ?? 4)
-          const isFaqActive = pathname === '/dashboard/faq-page'
+          const isFaqActive = pathname === '/dashboard/faq'
           return (
             <Link
-              href={isPayment1Completed ? '/dashboard/faq-page' : '#'}
+              href={isPayment1Completed ? '/dashboard/faq' : '#'}
               onClick={(e) => {
                 if (!isPayment1Completed) {
                   e.preventDefault()

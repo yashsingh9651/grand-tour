@@ -41,13 +41,12 @@ const CATEGORIES = [
 ]
 
 const SYSTEM_TEMPLATES = [
-  { type: 'UNSIGNED_CONTRACT', label: 'Main Contract Template', description: 'Used for the main contract signed by students.' },
-  { type: 'CONTRACT_EXTRA_1', label: 'Contract Additional Document 1', description: 'Predefined slot for additional document 1.' },
-  { type: 'CONTRACT_EXTRA_2', label: 'Contract Additional Document 2', description: 'Predefined slot for additional document 2.' },
-  { type: 'CONTRACT_EXTRA_3', label: 'Contract Additional Document 3', description: 'Predefined slot for additional document 3.' },
-  { type: 'PAYMENT2_DOCUMENT', label: 'Payment 2 Document Template', description: 'Predefined slot for documents sent in Installment 2.' },
-  { type: 'PAYMENT3_DOCUMENT', label: 'Payment 3 Document Template', description: 'Predefined slot for documents sent in Installment 3.' },
+  { type: 'COVER_LETTER_FR', label: 'Cover Letter (French)', description: 'Demande de Visa Long Séjour pour un Stage (French Cover Letter template).' },
+  { type: 'SPONSORSHIP_FR', label: 'Financial Sponsorship Letter (French)', description: 'Lettre de Parrainage Financier (French Financial Sponsorship template).' },
+  { type: 'SPONSORSHIP_EN', label: 'Financial Sponsorship Letter (English)', description: 'Financial Sponsorship Letter for Visa Application (English template).' },
+  { type: 'AFFIDAVIT', label: 'Affidavit Template', description: 'Financial support and travel affidavit for French Visa Consulate.' },
 ]
+
 
 const SUGGESTED_VARIABLES = [
   'studentName', 'firstName', 'lastName', 'email',
@@ -961,14 +960,12 @@ export default function DocumentTemplatesManager() {
     contract: 'bg-red-500/10 text-red-600',
     other: 'bg-gray-500/10 text-gray-600',
 
-    UNSIGNED_CONTRACT: 'bg-violet-500/10 text-violet-600',
-    CONTRACT_EXTRA_1: 'bg-fuchsia-500/10 text-fuchsia-600',
-    CONTRACT_EXTRA_2: 'bg-fuchsia-500/10 text-fuchsia-600',
-    CONTRACT_EXTRA_3: 'bg-fuchsia-500/10 text-fuchsia-600',
-    PAYMENT1_DOCUMENT: 'bg-emerald-500/10 text-emerald-600',
-    PAYMENT2_DOCUMENT: 'bg-emerald-500/10 text-emerald-600',
-    PAYMENT3_DOCUMENT: 'bg-emerald-500/10 text-emerald-600',
+    COVER_LETTER_FR: 'bg-blue-500/10 text-blue-600',
+    SPONSORSHIP_FR: 'bg-emerald-500/10 text-emerald-600',
+    SPONSORSHIP_EN: 'bg-purple-500/10 text-purple-600',
+    AFFIDAVIT: 'bg-amber-500/10 text-amber-600',
   }
+
 
   return (
     <div className="space-y-10">
