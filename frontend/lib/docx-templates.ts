@@ -13,6 +13,7 @@ export interface TravelDocumentData {
   studentNationality?: string
   internshipDuration?: string
   hotelName?: string
+  hotelLocation?: string
   hotelAddress?: string
   hotelSiretNumber?: string
   hotelType?: string
@@ -137,8 +138,14 @@ export function resolveData(inputData: any = {}): Required<TravelDocumentData> {
 
   const hotelAddressVal = findValueByKeyAliases(
     sources,
-    ['hotelAddress', 'hotelLocation', 'address', 'location', 'city'],
-    hotel.address || hotel.location || ''
+    ['hotelAddress', 'address', 'fullAddress'],
+    hotel.address || ''
+  )
+
+  const hotelLocationVal = findValueByKeyAliases(
+    sources,
+    ['hotelLocation', 'location', 'city', 'cityCountry'],
+    hotel.location || hotel.city || ''
   )
 
   const yearOfDegreeVal = findValueByKeyAliases(
@@ -351,6 +358,7 @@ export function resolveData(inputData: any = {}): Required<TravelDocumentData> {
     studentNationality: studentNationalityVal,
     internshipDuration: internshipDurationVal,
     hotelName: hotelNameVal,
+    hotelLocation: hotelLocationVal,
     hotelAddress: hotelAddressVal,
     hotelSiretNumber: hotelSiretNumberVal,
     hotelType: hotelTypeVal,

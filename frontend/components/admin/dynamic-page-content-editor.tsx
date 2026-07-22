@@ -52,6 +52,32 @@ const DOCX_PRESET_BLOCKS = [
 ]
 
 
+const AUTO_FETCHED_SYSTEM_VARIABLES = new Set([
+  // Hotel fields (Auto-fetched from assigned Hotel record)
+  'hotelName',
+  'hotelLocation',
+  'hotelAddress',
+  'employerName',
+  'employerDesignation',
+  'employerNumber',
+  'employerEmail',
+  'hotelSiretNumber',
+  'hotelType',
+  'location',
+  'representedBy',
+  'position',
+  'phone',
+  'email',
+  'siretNo',
+  'natureOfActivity',
+
+  // System & Profile auto-filled fields
+  'date',
+  'currentDate',
+  'todayDate',
+  'studentName',
+])
+
 interface PresetBlock {
   label: string
   type: string
@@ -108,7 +134,7 @@ export function DynamicPageContentEditor({
   const [activeCategoryFilter, setActiveCategoryFilter] = useState<string>('All')
 
   useEffect(() => {
-    if (pageKey === 'application' || pageKey === 'applications') {
+    if (pageKey.toLowerCase().includes('application')) {
       documentTemplateService.getAll()
         .then((templates: any[]) => {
           if (Array.isArray(templates) && templates.length > 0) {
@@ -120,11 +146,13 @@ export function DynamicPageContentEditor({
                 })
               }
             })
-            const list = Object.entries(map).map(([key, count]) => {
-              const preset = DOCX_PRESET_BLOCKS.find(p => p.fieldKey === key)
-              const label = preset?.label || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).trim()
-              return { key, label, count }
-            })
+            const list = Object.entries(map)
+              .filter(([key]) => !AUTO_FETCHED_SYSTEM_VARIABLES.has(key))
+              .map(([key, count]) => {
+                const preset = DOCX_PRESET_BLOCKS.find(p => p.fieldKey === key)
+                const label = preset?.label || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).trim()
+                return { key, label, count }
+              })
             setDynamicTemplateVariables(list)
           }
         })
@@ -438,7 +466,7 @@ export function DynamicPageContentEditor({
                             className={`gap-1.5 text-xs font-semibold rounded-xl h-8.5 border transition-all ${
                               isAdded
                                 ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
-                                : 'bg-white hover:bg-violet-50 text-violet-900 border-violet-200 shadow-2xs hover:scale-102'
+                                : 'bg-white hover:bg-violet-50 hover:text-violet-900 text-violet-900 border-violet-200 shadow-2xs hover:scale-102'
                             }`}
                           >
                             <Plus className={`w-3.5 h-3.5 ${isAdded ? 'text-slate-400' : 'text-violet-600'}`} />
