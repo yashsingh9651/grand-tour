@@ -182,6 +182,10 @@ export default function Payment2Page() {
     ? Number(installmentsList[1].amount)
     : Math.round(totalPayable / 3)
 
+  const categoryTotalFee = hasAdminInstallments
+    ? installmentsList.reduce((sum: number, inst: any) => sum + Number(inst?.amount || 0), 0)
+    : totalPayable
+
   const currencySymbol = paymentConfig.currency?.toUpperCase().includes('USD') ? '$' : '₹'
   const qrCodeUrl = paymentConfig.qrCodeUrl || `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(`${paymentConfig.accountName}|${paymentConfig.accountNumber}|${paymentConfig.ifsc}|${installmentAmount}`)}`
 
@@ -238,9 +242,9 @@ export default function Payment2Page() {
                 <IndianRupee className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h2 className="text-xl font-black">Registration fees</h2>
+                <h2 className="text-xl font-black">2nd Installment Fee</h2>
 
-                <p className="text-3xl font-black text-primary">{currencySymbol}{baseAmount.toLocaleString()}</p>
+                <p className="text-3xl font-black text-primary">{currencySymbol}{installmentAmount.toLocaleString()}</p>
               </div>
             </div>
 
@@ -260,7 +264,7 @@ export default function Payment2Page() {
                 )}
                 <div className="pt-2 border-t border-border flex justify-between items-center font-semibold text-sm text-foreground">
                   <span>Total Course Fee</span>
-                  <span>{currencySymbol}{totalPayable.toLocaleString()}</span>
+                  <span>{currencySymbol}{categoryTotalFee.toLocaleString()}</span>
                 </div>
                 <div className="pt-2 border-t border-border flex justify-between items-center font-black text-lg text-primary">
                   <span>Installment Due</span>
