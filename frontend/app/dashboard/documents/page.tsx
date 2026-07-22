@@ -183,21 +183,21 @@ export default function DocumentsPage() {
           )}
         </div>
 
-        <div className="flex items-center justify-between pt-8 border-t border-border">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pt-6 sm:pt-8 border-t border-border">
           <Button
             variant="ghost"
-            className="text-muted-foreground font-medium hover:bg-muted rounded-xl gap-2"
+            className="text-muted-foreground font-medium hover:bg-muted rounded-xl gap-2 justify-center sm:justify-start"
             onClick={() => router.push('/dashboard/application')}
           >
             <ArrowLeft className="w-4 h-4" />
             Previous: Personal Details
           </Button>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <Button
               variant="ghost"
               onClick={handleSaveDraft}
-              className="text-muted-foreground font-medium hover:bg-muted rounded-xl"
+              className="text-muted-foreground font-medium hover:bg-muted rounded-xl justify-center"
             >
               Save Draft
             </Button>
@@ -205,13 +205,14 @@ export default function DocumentsPage() {
             <Button
               onClick={handleContinue}
               disabled={submitting || !canContinue}
-              className="bg-[#C6F16D] hover:bg-[#b5e359] text-[#1A1A1A] font-bold h-12 px-8 rounded-full tracking-wide gap-2 disabled:opacity-50"
+              className="bg-[#C6F16D] hover:bg-[#b5e359] text-[#1A1A1A] font-bold h-12 px-6 sm:px-8 rounded-full tracking-wide gap-2 disabled:opacity-50 justify-center"
             >
               {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : null}
               Continue to Step {nextStepIndex + 1}
             </Button>
           </div>
         </div>
+
       </div>
 
       {/* Upload Popup */}

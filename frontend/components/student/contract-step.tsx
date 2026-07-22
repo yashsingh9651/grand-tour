@@ -225,18 +225,18 @@ export function ContractStep({ application, currentStepConfig, onSubmit, submitt
             </div>
           )}
 
-          <div className="grid md:grid-cols-2 gap-6 pt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 pt-4">
             {/* Step 1: Download */}
-            <Card className="p-6 border border-border border-dashed hover:border-primary/50 transition-colors bg-muted/20 space-y-4">
+            <Card className="p-4 sm:p-6 border border-border border-dashed hover:border-primary/50 transition-colors bg-muted/20 space-y-4">
               <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
                 <Download className="w-6 h-6 text-primary" />
               </div>
               <h3 className="font-bold text-foreground">1. Download Contract</h3>
-              <p className="text-sm text-muted-foreground">Get your contract document, print and sign every page.</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Get your contract document, print and sign every page.</p>
               <Button
                 onClick={handleDownload}
                 disabled={isGenerating || (!config.templateUrl && !unsignedContractDoc?.url)}
-                className="w-full gap-2 rounded-xl bg-primary text-[#1A1A1A] font-bold hover:bg-primary/90"
+                className="w-full gap-2 rounded-xl bg-primary text-[#1A1A1A] font-bold hover:bg-primary/90 text-xs sm:text-sm"
               >
                 {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4 text-[#1A1A1A]" />}
                 {unsignedContractDoc?.url 
@@ -248,7 +248,8 @@ export function ContractStep({ application, currentStepConfig, onSubmit, submitt
             </Card>
 
             {/* Step 2: Upload Signed */}
-            <Card className="p-6 border border-border border-dashed hover:border-amber-500/50 transition-colors bg-muted/20 space-y-4">
+            <Card className="p-4 sm:p-6 border border-border border-dashed hover:border-amber-500/50 transition-colors bg-muted/20 space-y-4">
+
               <div className="w-12 h-12 bg-amber-500/10 rounded-full flex items-center justify-center mx-auto">
                 <Upload className="w-6 h-6 text-amber-600 dark:text-amber-400" />
               </div>

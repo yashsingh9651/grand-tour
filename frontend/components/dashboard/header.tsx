@@ -66,7 +66,7 @@ export function Header({ title, description, actions }: HeaderProps) {
     <>
       {/* ── Topbar ─────────────────────────────────────────────── */}
       <div
-        className="flex items-center justify-between gap-4 px-6 py-3 border-b"
+        className="flex items-center justify-between gap-2 sm:gap-4 px-3 sm:px-6 py-3 border-b"
         style={{
           backgroundColor: "#F7F7F2",
           borderColor: "#E8E8E2",
@@ -76,7 +76,7 @@ export function Header({ title, description, actions }: HeaderProps) {
         }}
       >
         {/* Left: Brand label + Mobile nav */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <MobileNav />
           <span
             className="text-sm font-bold tracking-tight hidden sm:block"
@@ -100,12 +100,12 @@ export function Header({ title, description, actions }: HeaderProps) {
             }}
           >
             <Search className="w-3.5 h-3.5 shrink-0" />
-            <span>Global Search...</span>
+            <span className="truncate">Search...</span>
           </div>
         </div>
 
         {/* Right: Nav tabs + icons */}
-        <div className="flex items-center gap-5">
+        <div className="flex items-center gap-3 sm:gap-5">
           {/* Nav Tabs */}
           <div className="hidden md:flex items-center gap-5">
             <Link
@@ -151,16 +151,6 @@ export function Header({ title, description, actions }: HeaderProps) {
             )}
           </button>
 
-          {/* Dark mode toggle */}
-          {/* <button
-            id="admin-darkmode-btn"
-            onClick={() => setDarkMode(!darkMode)}
-            className="transition-all duration-200 hover:scale-110"
-            style={{ color: "#555" }}
-          >
-            {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-          </button> */}
-
           {/* Avatar */}
           {status === "loading" ? (
             <Loader2 className="w-4 h-4 animate-spin" style={{ color: "#888" }} />
@@ -189,26 +179,27 @@ export function Header({ title, description, actions }: HeaderProps) {
       </div>
 
       {/* ── Page heading ───────────────────────────────────────── */}
-      <div className="px-6 pt-6 pb-4 animate-slide-in-up">
-        <div className="flex items-start justify-between gap-4">
+      <div className="px-3 sm:px-6 pt-4 sm:pt-6 pb-3 sm:pb-4 animate-slide-in-up">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
           <div className="flex-1">
             <h1
-              className="text-3xl font-bold tracking-tight mb-1"
+              className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight mb-1"
               style={{ color: "#111", fontFamily: "Gilroy, sans-serif" }}
             >
               {title}
             </h1>
-            <p className="text-sm" style={{ color: "#888" }}>
+            <p className="text-xs sm:text-sm" style={{ color: "#888" }}>
               {description}
             </p>
           </div>
           {actions && (
-            <div className="flex items-center gap-2 flex-shrink-0">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
               {actions}
             </div>
           )}
         </div>
       </div>
+
 
       {/* Modals */}
       {showSearchModal && (

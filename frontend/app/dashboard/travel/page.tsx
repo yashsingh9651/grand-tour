@@ -68,7 +68,7 @@ export default function TravelPage() {
     <StudentLayout currentStep="travel">
       <div className="max-w-5xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 text-foreground">
         {/* 🎉 Congratulations Banner */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-violet-600 to-indigo-700 p-8 text-white">
+        <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-br from-primary via-violet-600 to-indigo-700 p-4 sm:p-6 lg:p-8 text-white">
           {/* Background decoration */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4" />
@@ -77,17 +77,17 @@ export default function TravelPage() {
           <div className="absolute top-12 right-20 w-1.5 h-1.5 rounded-full bg-yellow-300/70 animate-ping" style={{ animationDelay: '0.5s' }} />
           <div className="absolute bottom-8 left-12 w-2 h-2 rounded-full bg-white/40 animate-ping" style={{ animationDelay: '1s' }} />
 
-          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-6">
-            <div className="w-20 h-20 rounded-3xl bg-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0 shadow-xl">
-              <PartyPopper className="w-10 h-10 text-white" />
+          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-4 sm:gap-6">
+            <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0 shadow-xl">
+              <PartyPopper className="w-7 h-7 sm:w-10 sm:h-10 text-white" />
             </div>
             <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
-                <Sparkles className="w-5 h-5 text-yellow-300 animate-pulse" />
-                <span className="text-xs font-black tracking-widest text-yellow-300 uppercase">Congratulations!</span>
+              <div className="flex items-center gap-2 sm:gap-3 mb-1.5 sm:mb-2">
+                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-300 animate-pulse" />
+                <span className="text-[10px] sm:text-xs font-black tracking-widest text-yellow-300 uppercase">Congratulations!</span>
               </div>
-              <h1 className="text-4xl font-black leading-tight mb-2">You're Almost There!</h1>
-              <p className="text-white/80 max-w-lg leading-relaxed">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black leading-tight mb-1.5 sm:mb-2">You're Almost There!</h1>
+              <p className="text-xs sm:text-sm text-white/80 max-w-lg leading-relaxed">
                 You've successfully completed all the required steps. Your travel documents are ready. 
                 Download them below and get ready for your Grand Tour!
               </p>
@@ -96,6 +96,7 @@ export default function TravelPage() {
               <div className="text-6xl font-black text-white/20">🌍</div>
             </div>
           </div>
+
 
           {/* Progress bar */}
           <div className="relative z-10 mt-6 pt-6 border-t border-white/20">

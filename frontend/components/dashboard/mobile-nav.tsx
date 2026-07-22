@@ -14,9 +14,10 @@ export function MobileNav() {
           <span className="sr-only">Open menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="p-0 w-64">
-        <Sidebar />
+      <SheetContent side="left" className="p-0 w-64 border-r border-[#E8E8E2] bg-[#F5F5F0]">
+        <Sidebar isMobile />
       </SheetContent>
+
     </Sheet>
   )
 }

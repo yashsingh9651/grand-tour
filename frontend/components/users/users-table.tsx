@@ -147,21 +147,21 @@ export function UsersTable() {
   return (
     <div className="space-y-4">
       <Card className="p-4 space-y-4">
-        <div className="flex gap-2 flex-wrap items-center">
-          <div className="flex-1 min-w-[200px] relative">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 items-stretch sm:items-center">
+          <div className="flex-1 min-w-0 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
               placeholder="Search by name or email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 text-xs sm:text-sm"
             />
           </div>
 
           <select
             value={filterRole}
             onChange={(e) => setFilterRole(e.target.value as 'all' | UserRole)}
-            className="px-3 py-2 border border-border rounded-lg text-sm text-foreground"
+            className="px-3 py-2 border border-border rounded-lg text-xs sm:text-sm bg-background text-foreground w-full sm:w-auto"
           >
             <option value="all">All Roles</option>
             {roles.map((role) => (
@@ -173,7 +173,7 @@ export function UsersTable() {
 
           <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
             <DialogTrigger asChild>
-              <Button className="gap-2" size="sm">
+              <Button className="gap-2 shrink-0 justify-center" size="sm">
                 <Plus className="w-4 h-4" />
                 Add User
               </Button>
@@ -186,13 +186,14 @@ export function UsersTable() {
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleAddUser} className="space-y-4 py-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="firstName">First Name</Label>
                     <Input
                       id="firstName"
                       placeholder="John"
                       value={newUser.firstName}
+
                       onChange={(e) => setNewUser({ ...newUser, firstName: e.target.value })}
                       required
                     />

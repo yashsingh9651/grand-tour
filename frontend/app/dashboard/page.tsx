@@ -113,26 +113,26 @@ export default function StudentDashboard() {
     <StudentLayout currentStep={application.currentStepId}>
       <div className="space-y-6 max-w-6xl">
         {/* Welcome Card */}
-        <Card className="bg-gradient-to-br from-primary/10 via-accent/5 to-transparent border border-border p-6 md:p-8">
-          <div className="flex items-start justify-between gap-4">
-            <div className="space-y-2">
-              <h1 className="text-3xl md:text-4xl font-bold text-foreground">Welcome back, {application.user?.firstName}!</h1>
-              <p className="text-muted-foreground max-w-2xl">You&apos;re {progressPercent}% through your internship onboarding journey. Keep up the great work!</p>
+        <Card className="bg-gradient-to-br from-primary/10 via-accent/5 to-transparent border border-border p-4 sm:p-6 md:p-8">
+          <div className="flex items-start justify-between gap-3">
+            <div className="space-y-1.5">
+              <h1 className="text-xl sm:text-2xl md:text-4xl font-bold text-foreground">Welcome back, {application.user?.firstName}!</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl">You&apos;re {progressPercent}% through your internship onboarding journey. Keep up the great work!</p>
             </div>
             <Zap className="w-8 h-8 text-primary flex-shrink-0 hidden md:block animate-pulse" />
           </div>
         </Card>
 
         {/* Progress Overview */}
-        <div className="grid md:grid-cols-3 gap-4">
-          <Card className="p-6 border border-border bg-card hover:shadow-md transition-shadow text-foreground">
-            <div className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+          <Card className="p-4 sm:p-6 border border-border bg-card hover:shadow-md transition-shadow text-foreground">
+            <div className="space-y-3 sm:space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-muted-foreground">Overall Progress</span>
+                <span className="text-xs sm:text-sm font-semibold text-muted-foreground">Overall Progress</span>
                 <CheckCircle className="w-5 h-5 text-emerald-500" />
               </div>
               <div>
-                <div className="text-4xl font-bold text-primary mb-2">{progressPercent}%</div>
+                <div className="text-3xl sm:text-4xl font-bold text-primary mb-2">{progressPercent}%</div>
                 <div className="w-full bg-muted rounded-full h-2.5 overflow-hidden">
                   <div className="bg-gradient-to-r from-primary to-accent h-full transition-all" style={{ width: `${progressPercent}%` }} />
                 </div>
@@ -141,15 +141,15 @@ export default function StudentDashboard() {
             </div>
           </Card>
 
-          <Card className="p-6 border border-border bg-card hover:shadow-md transition-shadow text-foreground">
-            <div className="space-y-4">
+          <Card className="p-4 sm:p-6 border border-border bg-card hover:shadow-md transition-shadow text-foreground">
+            <div className="space-y-3 sm:space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-muted-foreground">Current Step</span>
+                <span className="text-xs sm:text-sm font-semibold text-muted-foreground">Current Step</span>
                 <ArrowRight className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <div className="text-lg font-bold text-foreground">{currentStep?.title}</div>
-                <p className="text-xs text-muted-foreground mt-1">{currentStep?.description}</p>
+                <div className="text-base sm:text-lg font-bold text-foreground truncate">{currentStep?.title}</div>
+                <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{currentStep?.description}</p>
               </div>
               <Link href={`/dashboard/${currentStep?.id}`} className="block">
                 <Button size="sm" className="w-full bg-primary text-[#1A1A1A] font-bold hover:bg-primary/90">Continue Step</Button>
@@ -157,17 +157,18 @@ export default function StudentDashboard() {
             </div>
           </Card>
 
-          <Card className="p-6 border border-border bg-card hover:shadow-md transition-shadow text-foreground">
-            <div className="space-y-4">
+          <Card className="p-4 sm:p-6 border border-border bg-card hover:shadow-md transition-shadow text-foreground sm:col-span-2 md:col-span-1">
+            <div className="space-y-3 sm:space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-muted-foreground">Status</span>
+                <span className="text-xs sm:text-sm font-semibold text-muted-foreground">Status</span>
                 <AlertCircle className="w-5 h-5 text-amber-500" />
               </div>
-              <div className="text-2xl font-bold text-amber-600 dark:text-amber-400 uppercase">{application.status}</div>
+              <div className="text-xl sm:text-2xl font-bold text-amber-600 dark:text-amber-400 uppercase">{application.status}</div>
               <p className="text-xs text-muted-foreground">Application ID: {application.id.split('-')[0]}</p>
             </div>
           </Card>
         </div>
+
 
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Notifications */}

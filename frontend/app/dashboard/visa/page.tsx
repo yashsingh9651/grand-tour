@@ -96,18 +96,18 @@ export default function VisaPage() {
     <StudentLayout currentStep="visa">
       <div className="max-w-5xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 text-foreground">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
-              <Stamp className="w-7 h-7 text-primary" />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-primary/10 flex items-center justify-center shrink-0">
+              <Stamp className="w-6 h-6 sm:w-7 sm:h-7 text-primary" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold">Visa Appointment</h1>
-              <p className="text-muted-foreground">Schedule your visa processing appointment</p>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">Visa Appointment</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground">Schedule your visa processing appointment</p>
             </div>
           </div>
           {hasBooked && (
-            <span className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-sm font-bold rounded-full">
+            <span className="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm font-bold rounded-full self-start sm:self-auto">
               <CheckCircle2 className="w-4 h-4" /> Appointment Booked
             </span>
           )}
@@ -117,7 +117,8 @@ export default function VisaPage() {
         {hasBooked && (
           <Card className="p-0 overflow-hidden border border-border shadow-md bg-card">
             <div className="h-2 bg-gradient-to-r from-blue-500 to-violet-600" />
-            <div className="p-8">
+            <div className="p-4 sm:p-6 lg:p-8">
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {/* Date & Time */}
                 <div className="space-y-1">

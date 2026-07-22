@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { DashboardLayout } from '@/components/dashboard/layout-wrapper'
 import { 
   Table, 
   TableBody, 
@@ -9,6 +10,7 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table'
+
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -92,64 +94,63 @@ export default function AdminPaymentsPage() {
   )
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
-      <Sidebar />
-      <main className="flex-1 ml-64 p-8">
-        <div className="max-w-7xl mx-auto space-y-8">
-          <div className="flex justify-between items-end">
+    <DashboardLayout>
+      <div className="max-w-7xl mx-auto space-y-8 text-slate-900">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+
             <div className="space-y-1">
-              <h1 className="text-3xl font-black tracking-tight text-slate-900">Payment Approvals</h1>
-              <p className="text-slate-500 font-medium">Review and verify student payment submissions</p>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-slate-900">Payment Approvals</h1>
+              <p className="text-xs sm:text-sm text-slate-500 font-medium">Review and verify student payment submissions</p>
             </div>
             
-            <div className="flex gap-3">
-              <div className="relative">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+              <div className="relative flex-1 sm:flex-none">
                 <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <Input 
                   placeholder="Search student or UTR..." 
-                  className="pl-9 w-64 bg-white border-slate-200"
+                  className="pl-9 w-full sm:w-64 bg-white border-slate-200"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
               </div>
-              <Button variant="outline" className="gap-2 border-slate-200">
+              <Button variant="outline" className="gap-2 border-slate-200 justify-center">
                 <Filter className="w-4 h-4" />
                 Filter
               </Button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="p-6 bg-white border-slate-100 shadow-sm rounded-3xl">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6">
+            <Card className="p-4 sm:p-6 bg-white border-slate-100 shadow-sm rounded-2xl sm:rounded-3xl">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-amber-50 flex items-center justify-center">
-                  <Loader2 className="w-6 h-6 text-amber-500" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-amber-50 flex items-center justify-center shrink-0">
+                  <Loader2 className="w-5 h-5 sm:w-6 sm:h-6 text-amber-500" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-slate-500 uppercase tracking-wider">Pending</p>
-                  <p className="text-2xl font-black text-slate-900">{payments.filter(p => p.status === 'PENDING').length}</p>
+                  <p className="text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-wider">Pending</p>
+                  <p className="text-xl sm:text-2xl font-black text-slate-900">{payments.filter(p => p.status === 'PENDING').length}</p>
                 </div>
               </div>
             </Card>
-            <Card className="p-6 bg-white border-slate-100 shadow-sm rounded-3xl">
+            <Card className="p-4 sm:p-6 bg-white border-slate-100 shadow-sm rounded-2xl sm:rounded-3xl">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center">
-                  <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-emerald-50 flex items-center justify-center shrink-0">
+                  <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-slate-500 uppercase tracking-wider">Approved</p>
-                  <p className="text-2xl font-black text-slate-900">{payments.filter(p => p.status === 'COMPLETED').length}</p>
+                  <p className="text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-wider">Approved</p>
+                  <p className="text-xl sm:text-2xl font-black text-slate-900">{payments.filter(p => p.status === 'COMPLETED').length}</p>
                 </div>
               </div>
             </Card>
-            <Card className="p-6 bg-white border-slate-100 shadow-sm rounded-3xl">
+            <Card className="p-4 sm:p-6 bg-white border-slate-100 shadow-sm rounded-2xl sm:rounded-3xl">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-rose-50 flex items-center justify-center">
-                  <XCircle className="w-6 h-6 text-rose-500" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-rose-50 flex items-center justify-center shrink-0">
+                  <XCircle className="w-5 h-5 sm:w-6 sm:h-6 text-rose-500" />
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-slate-500 uppercase tracking-wider">Rejected</p>
-                  <p className="text-2xl font-black text-slate-900">{payments.filter(p => p.status === 'FAILED').length}</p>
+                  <p className="text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-wider">Rejected</p>
+                  <p className="text-xl sm:text-2xl font-black text-slate-900">{payments.filter(p => p.status === 'FAILED').length}</p>
                 </div>
               </div>
             </Card>
@@ -262,10 +263,12 @@ export default function AdminPaymentsPage() {
             )}
           </Card>
         </div>
-      </main>
-    </div>
+    </DashboardLayout>
   )
 }
+
+
+
 
 function cn(...inputs: any[]) {
   return inputs.filter(Boolean).join(' ')

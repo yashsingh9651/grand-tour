@@ -329,33 +329,33 @@ export default function Payment1Page() {
       }
     >
       {/* Page Title */}
-      <div className="mb-8">
-        <p className="text-[10px] font-black tracking-[0.2em] text-muted-foreground uppercase mb-2">MANAGEMENT</p>
-        <h1 className="text-4xl font-extrabold tracking-tight text-foreground leading-none mb-3">
+      <div className="mb-6 sm:mb-8">
+        <p className="text-[10px] font-black tracking-[0.2em] text-muted-foreground uppercase mb-1 sm:mb-2">MANAGEMENT</p>
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-foreground leading-none mb-2 sm:mb-3">
           1st Installment Payment
         </h1>
-        <p className="text-sm text-muted-foreground font-medium max-w-lg">
+        <p className="text-xs sm:text-sm text-muted-foreground font-medium max-w-lg">
           Please complete your first tuition payment installment to proceed to the hotel host step.
         </p>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6 items-start mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 items-start mb-8">
 
         {/* Left Column: Payment details */}
-        <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-foreground">
+        <Card className="p-4 sm:p-6 lg:p-8 border border-border bg-card rounded-2xl sm:rounded-[2.5rem] shadow-sm text-foreground">
           <div className="space-y-6">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center shrink-0">
                 <IndianRupee className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h2 className="text-xl font-black">Base Amount</h2>
-                <p className="text-3xl font-black text-primary">{currencySymbol}{baseAmount.toLocaleString()}</p>
+                <h2 className="text-base sm:text-xl font-black">Base Amount</h2>
+                <p className="text-2xl sm:text-3xl font-black text-primary">{currencySymbol}{baseAmount.toLocaleString()}</p>
               </div>
             </div>
 
             <div className="space-y-4">
-              <div className="space-y-2 text-sm bg-muted p-4 rounded-xl border border-border">
+              <div className="space-y-2 text-xs sm:text-sm bg-muted p-3 sm:p-4 rounded-xl border border-border">
                 {discountPercentage > 0 && (
                   <div className="flex justify-between items-center text-emerald-600 dark:text-emerald-400 font-medium">
                     <span>Discount ({discountPercentage}%)</span>
@@ -368,49 +368,50 @@ export default function Payment1Page() {
                     <span>+{currencySymbol}{gstAmount.toLocaleString()}</span>
                   </div>
                 )}
-                <div className="pt-2 border-t border-border flex justify-between items-center font-semibold text-sm text-foreground">
+                <div className="pt-2 border-t border-border flex justify-between items-center font-semibold text-xs sm:text-sm text-foreground">
                   <span>Total Course Fee</span>
                   <span>{currencySymbol}{totalPayable.toLocaleString()}</span>
                 </div>
-                <div className="pt-2 border-t border-border flex justify-between items-center font-black text-lg text-primary">
+                <div className="pt-2 border-t border-border flex justify-between items-center font-black text-base sm:text-lg text-primary">
                   <span>Installment Due</span>
                   <span>{currencySymbol}{installmentAmount.toLocaleString()}</span>
                 </div>
               </div>
 
-              <div className="p-4 bg-muted border border-border rounded-2xl space-y-3">
-                <div className="flex justify-between items-center text-sm">
+              <div className="p-3 sm:p-4 bg-muted border border-border rounded-2xl space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs sm:text-sm">
                   <span className="text-muted-foreground font-medium">Account Name</span>
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-bold">{paymentConfig.accountName}</span>
-                    <Button variant="ghost" size="icon" className="h-6 w-6 text-foreground" onClick={() => copyToClipboard(paymentConfig.accountName, 'Account name')}>
+                  <div className="flex items-center gap-1.5 self-start sm:self-auto">
+                    <span className="font-bold truncate max-w-[200px]">{paymentConfig.accountName}</span>
+                    <Button variant="ghost" size="icon" className="h-6 w-6 text-foreground shrink-0" onClick={() => copyToClipboard(paymentConfig.accountName, 'Account name')}>
                       <Copy className="w-3 h-3" />
                     </Button>
                   </div>
                 </div>
-                <div className="flex justify-between items-center text-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs sm:text-sm">
                   <span className="text-muted-foreground font-medium">Bank Name</span>
                   <span className="font-bold">{paymentConfig.bankName}</span>
                 </div>
-                <div className="flex justify-between items-center text-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs sm:text-sm">
                   <span className="text-muted-foreground font-medium">Account Number</span>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 self-start sm:self-auto">
                     <span className="font-mono font-bold text-primary">{paymentConfig.accountNumber}</span>
-                    <Button variant="ghost" size="icon" className="h-6 w-6 text-foreground" onClick={() => copyToClipboard(paymentConfig.accountNumber.replace(/\s/g, ''), 'Account number')}>
+                    <Button variant="ghost" size="icon" className="h-6 w-6 text-foreground shrink-0" onClick={() => copyToClipboard(paymentConfig.accountNumber.replace(/\s/g, ''), 'Account number')}>
                       <Copy className="w-3 h-3" />
                     </Button>
                   </div>
                 </div>
-                <div className="flex justify-between items-center text-sm">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs sm:text-sm">
                   <span className="text-muted-foreground font-medium">SWIFT / IFSC</span>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 self-start sm:self-auto">
                     <span className="font-mono font-bold text-primary">{paymentConfig.ifsc}</span>
-                    <Button variant="ghost" size="icon" className="h-6 w-6 text-foreground" onClick={() => copyToClipboard(paymentConfig.ifsc, 'SWIFT code')}>
+                    <Button variant="ghost" size="icon" className="h-6 w-6 text-foreground shrink-0" onClick={() => copyToClipboard(paymentConfig.ifsc, 'SWIFT code')}>
                       <Copy className="w-3 h-3" />
                     </Button>
                   </div>
                 </div>
               </div>
+
 
               <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex gap-3">
                 <Info className="w-5 h-5 text-amber-600 flex-shrink-0" />

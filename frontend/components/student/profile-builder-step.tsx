@@ -447,18 +447,18 @@ export function ProfileBuilderStep({ application, onSubmit, submitting, pageCont
           ← Save & Exit Journey
         </Button>
 
-        <div className="flex items-center">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-0 w-full sm:w-auto">
           <Button
             type="button"
             onClick={handleFormSubmit}
             disabled={submitting || wordCount > maxWords}
-            className="bg-[#C6F16D] hover:bg-[#b5e359] text-[#1A1A1A] font-bold h-12 px-8 rounded-l-2xl rounded-r-none tracking-widest uppercase"
+            className="bg-[#C6F16D] hover:bg-[#b5e359] text-[#1A1A1A] font-bold h-12 px-6 sm:px-8 rounded-xl sm:rounded-l-2xl sm:rounded-r-none tracking-widest uppercase"
           >
             {submitting ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : null}
             Next
           </Button>
-          <div className="bg-[#1A1A1A] text-white h-12 px-6 rounded-r-2xl rounded-l-none flex items-center justify-center border-l border-white/20">
-            <div className="flex flex-col">
+          <div className="bg-[#1A1A1A] text-white h-12 px-4 sm:px-6 rounded-xl sm:rounded-r-2xl sm:rounded-l-none flex items-center justify-center border-t sm:border-t-0 sm:border-l border-white/20">
+            <div className="flex flex-col text-center sm:text-left">
               <span className="text-[8px] text-gray-400 font-bold uppercase tracking-widest leading-none mb-0.5">Overall Completion</span>
               <span className="text-xs font-bold leading-none">{completion}% Completed</span>
             </div>
@@ -500,7 +500,8 @@ function SectionCard({ title, icon: Icon, accentClass, fields, formData, onField
   const wordCount = (formData.statementOfPurpose || '').trim().split(/\s+/).filter((word: string) => word.length > 0).length
 
   return (
-    <Card className={`p-8 border border-border shadow-sm rounded-[2rem] ${accentClass}`}>
+    <Card className={`p-4 sm:p-6 lg:p-8 border border-border shadow-sm rounded-2xl sm:rounded-[2rem] ${accentClass}`}>
+
       <h3 className="text-xl font-bold mb-6 flex items-center gap-3 text-foreground">
         <Icon className={`w-5 h-5 ${title.includes('Academic') ? 'text-[#C6F16D] dark:text-[#C6F16D]' : 'text-[#8B48F6]'}`} />
         {title}

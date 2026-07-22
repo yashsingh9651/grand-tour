@@ -1,11 +1,13 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Sidebar } from "@/components/dashboard/sidebar"
+import { DashboardLayout } from '@/components/dashboard/layout-wrapper'
+
 import { Header } from "@/components/dashboard/header"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+
 import { 
   Building2, 
   MapPin, 
@@ -243,12 +245,9 @@ export default function HotelsAdminPage() {
   )
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <div className="hidden lg:block">
-        <Sidebar />
-      </div>
+    <DashboardLayout>
+      <div className="flex flex-col gap-6">
 
-      <main className="flex-1 p-3 md:p-4 lg:p-5 lg:ml-64">
         <Header
           title="Hotel Management"
           description="Manage hotels and assign them to candidates"
@@ -696,7 +695,9 @@ export default function HotelsAdminPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   )
 }
+
+

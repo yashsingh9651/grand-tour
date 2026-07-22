@@ -201,23 +201,24 @@ export default function HotelPage() {
                 <MapPin className="w-4 h-4" /> {assignment.hotel.location}
               </p>
             </div>
-            <div className="p-6 bg-card divide-y divide-border text-foreground space-y-4">
-              <div className="grid grid-cols-2 gap-8 pb-2">
+            <div className="p-4 sm:p-6 bg-card divide-y divide-border text-foreground space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8 pb-2">
                 <div className="space-y-1">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Check-in</p>
                   <div className="flex items-center gap-2">
-                    <CalendarIcon className="w-5 h-5 text-primary" />
-                    <p className="text-lg font-bold">{format(new Date(assignment.checkIn), 'PPP')}</p>
+                    <CalendarIcon className="w-5 h-5 text-primary shrink-0" />
+                    <p className="text-base sm:text-lg font-bold">{format(new Date(assignment.checkIn), 'PPP')}</p>
                   </div>
                 </div>
                 <div className="space-y-1">
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Check-out</p>
                   <div className="flex items-center gap-2">
-                    <CalendarIcon className="w-5 h-5 text-primary" />
-                    <p className="text-lg font-bold">{format(new Date(assignment.checkOut), 'PPP')}</p>
+                    <CalendarIcon className="w-5 h-5 text-primary shrink-0" />
+                    <p className="text-base sm:text-lg font-bold">{format(new Date(assignment.checkOut), 'PPP')}</p>
                   </div>
                 </div>
               </div>
+
 
               {/* Extended Hotel Details */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 pt-4 text-sm">
@@ -294,13 +295,14 @@ export default function HotelPage() {
                   Please review the hotel details above and either accept or decline this allocation. 
                   Accepting will move you to the next payment step. Declining will notify our team to find an alternative.
                 </p>
-                <div className="flex gap-3">
-                  <Button onClick={handleAccept} disabled={responding} className="bg-green-600 hover:bg-green-700 text-white gap-2">
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <Button onClick={handleAccept} disabled={responding} className="bg-green-600 hover:bg-green-700 text-white gap-2 w-full sm:w-auto justify-center">
                     {responding ? <Loader2 className="w-4 h-4 animate-spin" /> : <ThumbsUp className="w-4 h-4" />}
                     Accept Hotel
                   </Button>
-                  <Button onClick={() => setShowDeclineModal(true)} variant="outline" className="border-rose-500/30 text-rose-500 hover:bg-rose-500/10 gap-2">
-                    <ThumbsDown className="w-4 h-4" /> Decline
+                  <Button onClick={() => setShowDeclineModal(true)} disabled={responding} variant="outline" className="gap-2 border-rose-500/30 text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 w-full sm:w-auto justify-center">
+                    <ThumbsDown className="w-4 h-4" />
+                    Decline
                   </Button>
                 </div>
               </div>

@@ -97,63 +97,62 @@ export default function ApplicationsPortalListPage() {
         />
 
         {/* Stats Section */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="p-5 flex items-center justify-between border border-slate-100 bg-white rounded-3xl shadow-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+          <Card className="p-4 sm:p-5 flex items-center justify-between border border-slate-100 bg-white rounded-2xl sm:rounded-3xl shadow-sm">
             <div>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Applications</p>
-              <h3 className="text-2xl font-black text-slate-900 mt-1">{totalApps}</h3>
+              <h3 className="text-xl sm:text-2xl font-black text-slate-900 mt-1">{totalApps}</h3>
             </div>
-            <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-600">
+            <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-600 shrink-0">
               <Inbox className="w-5 h-5" />
             </div>
           </Card>
-          <Card className="p-5 flex items-center justify-between border border-slate-100 bg-white rounded-3xl shadow-sm">
+          <Card className="p-4 sm:p-5 flex items-center justify-between border border-slate-100 bg-white rounded-2xl sm:rounded-3xl shadow-sm">
             <div>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Awaiting Review</p>
-              <h3 className="text-2xl font-black text-amber-600 mt-1">{pendingApps}</h3>
+              <h3 className="text-xl sm:text-2xl font-black text-amber-600 mt-1">{pendingApps}</h3>
             </div>
-            <div className="w-10 h-10 bg-amber-50 rounded-full flex items-center justify-center text-amber-600">
+            <div className="w-10 h-10 bg-amber-50 rounded-full flex items-center justify-center text-amber-600 shrink-0">
               <AlertCircle className="w-5 h-5" />
             </div>
           </Card>
-          <Card className="p-5 flex items-center justify-between border border-slate-100 bg-white rounded-3xl shadow-sm">
+          <Card className="p-4 sm:p-5 flex items-center justify-between border border-slate-100 bg-white rounded-2xl sm:rounded-3xl shadow-sm">
             <div>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Accepted Candidates</p>
-              <h3 className="text-2xl font-black text-emerald-600 mt-1">{acceptedApps}</h3>
+              <h3 className="text-xl sm:text-2xl font-black text-emerald-600 mt-1">{acceptedApps}</h3>
             </div>
-            <div className="w-10 h-10 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-600">
+            <div className="w-10 h-10 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-600 shrink-0">
               <CheckCircle2 className="w-5 h-5" />
             </div>
           </Card>
-          <Card className="p-5 flex items-center justify-between border border-slate-100 bg-white rounded-3xl shadow-sm">
+          <Card className="p-4 sm:p-5 flex items-center justify-between border border-slate-100 bg-white rounded-2xl sm:rounded-3xl shadow-sm">
             <div>
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Draft Enrollees</p>
-              <h3 className="text-2xl font-black text-slate-600 mt-1">{draftApps}</h3>
+              <h3 className="text-xl sm:text-2xl font-black text-slate-600 mt-1">{draftApps}</h3>
             </div>
-            <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-400">
+            <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 shrink-0">
               <FolderLock className="w-5 h-5" />
             </div>
           </Card>
         </div>
 
         {/* Filter bar */}
-        <Card className="p-5 bg-white border border-slate-200 rounded-3xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <Card className="p-4 sm:p-5 bg-white border border-slate-200 rounded-2xl sm:rounded-3xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <Input 
-              placeholder="Search by candidate name, email, or passport number..."
+              placeholder="Search candidate name, email, passport..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 h-11 bg-white border-slate-200 rounded-xl w-full"
+              className="pl-10 h-11 bg-white border-slate-200 rounded-xl w-full text-xs sm:text-sm"
             />
-
           </div>
-          <div className="flex gap-3 flex-wrap">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full md:w-auto">
             <div className="space-y-1">
               <select
                 value={filterStep}
                 onChange={(e) => setFilterStep(e.target.value)}
-                className="h-11 px-3 border border-slate-200 rounded-xl bg-white text-xs font-semibold text-slate-700 outline-none w-48"
+                className="h-11 px-3 border border-slate-200 rounded-xl bg-white text-xs font-semibold text-slate-700 outline-none w-full sm:w-48"
               >
                 <option value="all">All Steps</option>
                 {workflow?.steps?.map((step: any) => (
@@ -165,7 +164,7 @@ export default function ApplicationsPortalListPage() {
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="h-11 px-3 border border-slate-200 rounded-xl bg-white text-xs font-semibold text-slate-700 outline-none w-40"
+                className="h-11 px-3 border border-slate-200 rounded-xl bg-white text-xs font-semibold text-slate-700 outline-none w-full sm:w-40"
               >
                 <option value="all">All Statuses</option>
                 <option value="DRAFT">DRAFT</option>
@@ -176,6 +175,7 @@ export default function ApplicationsPortalListPage() {
             </div>
           </div>
         </Card>
+
 
         {/* Candidates Table List */}
         <Card className="border border-slate-100 shadow-sm rounded-3xl overflow-hidden bg-white">

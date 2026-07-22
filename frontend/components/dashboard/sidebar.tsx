@@ -134,7 +134,7 @@ const filterMenuSections = (sections: MenuSection[], allowedFeatures: string[], 
   }, [])
 }
 
-export function Sidebar() {
+export function Sidebar({ isMobile = false }: { isMobile?: boolean }) {
   const { data: session } = useSession()
   const [allowedFeatures, setAllowedFeatures] = useState<string[]>([])
   const [loading, setLoading] = useState(true)
@@ -196,9 +196,13 @@ export function Sidebar() {
 
   return (
     <aside
-      className="fixed top-0 left-0 w-56 h-screen flex flex-col"
-      style={{ backgroundColor: "#F5F5F0", borderRight: "1px solid #E8E8E2" }}
+      className={cn(
+        "flex flex-col",
+        isMobile ? "w-full h-full" : "fixed top-0 left-0 w-56 h-screen"
+      )}
+      style={{ backgroundColor: "#F5F5F0", borderRight: isMobile ? "none" : "1px solid #E8E8E2" }}
     >
+
       {/* Brand */}
       <Link href="/" className="py-2 px-3">
         <Image

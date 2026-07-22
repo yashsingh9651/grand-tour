@@ -63,25 +63,26 @@ export function WorkflowsList() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold text-foreground">Main Application Process</h2>
-          <p className="text-sm text-muted-foreground">
+          <h2 className="text-base sm:text-lg font-semibold text-foreground">Main Application Process</h2>
+          <p className="text-xs sm:text-sm text-muted-foreground">
             Configure the steps and fields for the Grand Tour internship process.
           </p>
         </div>
       </div>
 
-      <Card className="p-6 border-l-4 border-l-primary">
-        <div className="flex items-start justify-between gap-4">
+      <Card className="p-4 sm:p-6 border-l-4 border-l-primary">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <Settings className="w-5 h-5 text-primary" />
-              <h3 className="font-bold text-xl text-foreground">{workflow.name}</h3>
+              <Settings className="w-5 h-5 text-primary shrink-0" />
+              <h3 className="font-bold text-lg sm:text-xl text-foreground">{workflow.name}</h3>
             </div>
-            <p className="text-sm text-muted-foreground mb-4">
+            <p className="text-xs sm:text-sm text-muted-foreground mb-4">
               {workflow.description || 'Manage the core steps for all internship applications.'}
             </p>
+
             
             <div className="space-y-3">
               <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">

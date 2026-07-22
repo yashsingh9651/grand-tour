@@ -55,14 +55,14 @@ export function StudentLayout({ children, currentStep = 'application', headerCon
       <main className="flex-1 min-w-0">
         {/* ── Topbar ─────────────────────────────────────────────── */}
         <div
-          className="flex items-center justify-between gap-4 px-6 py-3 border-b sticky top-0 z-40 transition-colors duration-300"
+          className="flex items-center justify-between gap-2 sm:gap-4 px-3 sm:px-6 py-3 border-b sticky top-0 z-40 transition-colors duration-300"
           style={{
             backgroundColor: 'var(--sp-topbar-bg)',
             borderColor: 'var(--sp-border)',
           }}
         >
           {/* Left: Brand label */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="lg:hidden hover:bg-secondary transition-all duration-300">
@@ -70,7 +70,7 @@ export function StudentLayout({ children, currentStep = 'application', headerCon
                   <span className="sr-only">Open menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="p-0 w-56 bg-[var(--sp-sidebar-bg)] border-r border-[var(--sp-border)]">
+              <SheetContent side="left" className="p-0 w-64 bg-[var(--sp-sidebar-bg)] border-r border-[var(--sp-border)]">
                 <StudentSidebar currentStep={currentStep} darkMode={darkMode} isMobile />
               </SheetContent>
             </Sheet>
@@ -83,7 +83,7 @@ export function StudentLayout({ children, currentStep = 'application', headerCon
           </div>
 
           {/* Right: Nav tabs + icons */}
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-3 sm:gap-5">
             {/* Nav Tabs */}
             <div className="hidden md:flex items-center gap-5">
               <Link
@@ -157,10 +157,11 @@ export function StudentLayout({ children, currentStep = 'application', headerCon
         </div>
 
         {/* ── Page Content ───────────────────────────────────────── */}
-        <div className="p-6">
+        <div className="p-3 sm:p-6 lg:p-8 max-w-full overflow-x-hidden">
           {children}
         </div>
       </main>
     </div>
   )
 }
+

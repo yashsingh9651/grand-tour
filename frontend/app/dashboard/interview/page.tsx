@@ -259,20 +259,20 @@ export default function InterviewPage() {
         <div className="grid lg:grid-cols-12 gap-8">
           <div className="lg:col-span-7 space-y-8">
             {(!bookedInterview || bookedInterview.status === 'CANCELLED') && (
-              <Card className="p-8 border border-border shadow-sm rounded-[2rem] bg-card">
-                <div className="flex items-center justify-between mb-8">
+              <Card className="p-4 sm:p-6 lg:p-8 border border-border shadow-sm rounded-2xl sm:rounded-[2rem] bg-card">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
                   <div>
-                    <h3 className="text-xl font-bold text-foreground">Schedule Your Slot</h3>
-                    <p className="text-sm text-muted-foreground mt-1">Available interview times are synced directly from the backend.</p>
+                    <h3 className="text-lg sm:text-xl font-bold text-foreground">Schedule Your Slot</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground mt-1">Available interview times are synced directly from the backend.</p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 self-start sm:self-auto">
                     <button
                       className="w-8 h-8 flex items-center justify-center text-foreground hover:bg-muted rounded-full transition-colors"
                       onClick={() => setCurrentMonth((current) => new Date(current.getFullYear(), current.getMonth() - 1, 1))}
                     >
                       <ChevronLeft className="w-5 h-5" />
                     </button>
-                    <div className="bg-muted px-4 py-2 rounded-xl text-sm font-bold text-foreground">
+                    <div className="bg-muted px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-foreground">
                       {format(currentMonth, 'MMMM yyyy')}
                     </div>
                     <button
@@ -284,16 +284,16 @@ export default function InterviewPage() {
                   </div>
                 </div>
 
-                <div className="space-y-6">
+                <div className="space-y-4 sm:space-y-6">
                   <div className="grid grid-cols-7 text-center">
                     {['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'].map((day) => (
-                      <div key={day} className="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">
+                      <div key={day} className="text-[9px] sm:text-[10px] font-bold tracking-widest uppercase text-muted-foreground">
                         {day}
                       </div>
                     ))}
                   </div>
 
-                  <div className="grid grid-cols-7 gap-y-6 text-center text-sm font-bold text-foreground">
+                  <div className="grid grid-cols-7 gap-y-3 sm:gap-y-6 text-center text-xs sm:text-sm font-bold text-foreground">
                     {calendarDays.map((day) => {
                       const dayKey = format(day, 'yyyy-MM-dd')
                       const availableCount = slotCountByDate.get(dayKey) || 0
@@ -305,7 +305,7 @@ export default function InterviewPage() {
                           key={dayKey}
                           type="button"
                           onClick={() => setSelectedDate(day)}
-                          className={`relative mx-auto flex h-12 w-12 items-center justify-center rounded-xl text-sm font-bold transition-all ${
+                          className={`relative mx-auto flex h-8 w-8 sm:h-12 sm:w-12 items-center justify-center rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold transition-all ${
                             isSelected
                               ? 'bg-[#C6F16D] text-[#1A1A1A] shadow-lg shadow-[#C6F16D]/30'
                               : isSameMonth(day, currentMonth)
@@ -313,6 +313,7 @@ export default function InterviewPage() {
                                 : 'text-muted-foreground/45'
                           }`}
                         >
+
                           <span>{format(day, 'd')}</span>
                           {hasAvailableSlots && (
                             <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-1.5 w-1.5 rounded-full bg-[#C6F16D]" />

@@ -81,10 +81,11 @@ export default function FAQPage() {
   return (
     <StudentLayout currentStep={application?.currentStepId}>
       <div className="max-w-3xl space-y-6 text-foreground">
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold">Frequently Asked Questions</h1>
-          <p className="text-muted-foreground">Find answers to common questions about our internship program</p>
+        <div className="space-y-1.5 sm:space-y-2">
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">Frequently Asked Questions</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">Find answers to common questions about our internship program</p>
         </div>
+
 
         <div className="space-y-6">
           {faqs.map((section, sectionIndex) => (

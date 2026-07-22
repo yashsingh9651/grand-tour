@@ -58,24 +58,25 @@ export default function ProfilePage() {
         </div>
 
         {/* Profile Header */}
-        <Card className="p-8 border border-border bg-card">
+        <Card className="p-4 sm:p-6 lg:p-8 border border-border bg-card">
           <div className="flex items-start justify-between gap-6 flex-wrap">
-            <div className="flex items-center gap-6 flex-1 min-w-[300px]">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-6 flex-1 w-full min-w-0">
               {user.profileImage ? (
-                <img src={user.profileImage} alt={user.firstName} className="w-24 h-24 rounded-full object-cover border-4 border-primary/20" />
+                <img src={user.profileImage} alt={user.firstName} className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-4 border-primary/20 shrink-0" />
               ) : (
-                <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center flex-shrink-0 border border-primary/30">
-                  <span className="text-4xl font-bold text-primary">{user.firstName[0]}{user.lastName[0]}</span>
+                <div className="w-20 h-20 sm:w-24 sm:h-24 bg-primary/10 rounded-full flex items-center justify-center shrink-0 border border-primary/30">
+                  <span className="text-2xl sm:text-4xl font-bold text-primary">{user.firstName?.[0]}{user.lastName?.[0]}</span>
                 </div>
               )}
-              <div>
-                <h2 className="text-2xl font-bold text-foreground">{user.firstName} {user.lastName}</h2>
-                <p className="text-muted-foreground mt-1">{application.department || 'Student'} • {application.currentYear || 'N/A'}</p>
-                <p className="text-sm text-muted-foreground mt-2">{application.collegeName || 'Grand Tour Student'}</p>
+              <div className="min-w-0">
+                <h2 className="text-xl sm:text-2xl font-bold text-foreground">{user.firstName} {user.lastName}</h2>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1">{application.department || 'Student'} • {application.currentYear || 'N/A'}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1 truncate">{application.collegeName || 'Grand Tour Student'}</p>
               </div>
             </div>
           </div>
         </Card>
+
 
         {/* Contact Information */}
         <Card className="p-6 border border-border bg-card">

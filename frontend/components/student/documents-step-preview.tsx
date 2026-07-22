@@ -165,10 +165,10 @@ export function DocumentsStepPreview({
             </span>
             <span className="text-sm font-bold text-muted-foreground">Document Repository</span>
           </div>
-          <h1 className="text-4xl font-extrabold tracking-tight text-foreground leading-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-foreground leading-tight">
             {resolvedPageContent?.title || fallbackPageContent.title}
           </h1>
-          <p className="text-muted-foreground text-base max-w-lg mt-2">
+          <p className="text-muted-foreground text-xs sm:text-base max-w-lg mt-1 sm:mt-2">
             {resolvedPageContent?.subtitle || fallbackPageContent.subtitle}
           </p>
         </div>
@@ -207,10 +207,10 @@ export function DocumentsStepPreview({
           {leftBlocks.map((block: any) => {
             if (block.type === 'section') {
               return (
-                <Card key={block.id} className="p-6 border border-border shadow-sm rounded-[2rem] bg-card text-foreground">
+                <Card key={block.id} className="p-4 sm:p-6 border border-border shadow-sm rounded-2xl sm:rounded-[2rem] bg-card text-foreground">
                   <div className="space-y-2">
-                    <h3 className="text-xl font-bold">{block.label || 'Section'}</h3>
-                    {block.description && <p className="text-sm text-muted-foreground">{block.description}</p>}
+                    <h3 className="text-lg sm:text-xl font-bold">{block.label || 'Section'}</h3>
+                    {block.description && <p className="text-xs sm:text-sm text-muted-foreground">{block.description}</p>}
                   </div>
                 </Card>
               )
@@ -221,19 +221,19 @@ export function DocumentsStepPreview({
               const status = getDocStatus(block.fieldKey)
 
               return (
-                <Card key={block.id} className="p-8 border border-border shadow-sm rounded-[2rem] bg-card text-foreground">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-xl font-bold flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Card key={block.id} className="p-4 sm:p-6 lg:p-8 border border-border shadow-sm rounded-2xl sm:rounded-[2rem] bg-card text-foreground">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                    <h3 className="text-lg sm:text-xl font-bold flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                         <Icon className="w-5 h-5 text-primary" />
                       </div>
-                      {block.label}
+                      <span className="truncate">{block.label}</span>
                     </h3>
-                    <span className={`text-[9px] font-bold tracking-widest uppercase px-3 py-1.5 rounded-full border ${getStatusColor(status)}`}>
+                    <span className={`text-[9px] font-bold tracking-widest uppercase px-3 py-1.5 rounded-full border self-start sm:self-auto ${getStatusColor(status)}`}>
                       {status}
                     </span>
                   </div>
-                  <p className="text-sm text-muted-foreground mb-6">{block.description || 'Document upload guidance'}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground mb-6">{block.description || 'Document upload guidance'}</p>
 
                   {(status === 'NOT UPLOADED' || status === 'REJECTED') ? (
                     <>
@@ -250,10 +250,11 @@ export function DocumentsStepPreview({
                           </div>
                         </div>
                       )}
-                      <div className="border-2 border-dashed border-border rounded-2xl py-12 px-8 flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-[#C6F16D] hover:bg-muted/50 transition-all group"
+                      <div className="border-2 border-dashed border-border rounded-2xl py-8 px-4 sm:py-12 sm:px-8 flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-[#C6F16D] hover:bg-muted/50 transition-all group text-center"
                         onClick={() => onUpload?.(block.fieldKey, block.label)}
                       >
                         <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center group-hover:bg-[#C6F16D]/20 transition-colors">
+
                           <Upload className="w-5 h-5 text-muted-foreground group-hover:text-[#4D6B19]" />
                         </div>
                         <p className="text-sm text-foreground font-medium">
