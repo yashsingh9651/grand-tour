@@ -347,7 +347,7 @@ export const bookSlot = async (req: Request, res: Response) => {
     }
 
     // Check if application already has a slot
-    const existingBooking = await prisma.interviewSlot.findUnique({
+    const existingBooking = await prisma.interviewSlot.findFirst({
         where: { applicationId }
     });
 
@@ -359,13 +359,19 @@ export const bookSlot = async (req: Request, res: Response) => {
         });
     }
 
-    const updatedSlot = await prisma.interviewSlot.update({
-      where: { id: slotId },
+    const updateResult = await prisma.interviewSlot.updateMany({
+      where: { id: slotId, isBooked: false },
       data: {
         isBooked: true,
         applicationId,
       },
     });
+
+    if (updateResult.count === 0) {
+      return res.status(400).json({ error: 'Slot is no longer available or was already booked' });
+    }
+
+    const updatedSlot = (await prisma.interviewSlot.findUnique({ where: { id: slotId } }))!;
 
     let generatedMeetLink = updatedSlot.meetLink;
 
@@ -526,7 +532,7 @@ export const updateInterviewStatus = async (req: Request, res: Response) => {
             data: { status },
         });
 
-        // On approval, advance the application to the next workflow step
+        // On approval, advance the application to the next workflow step after interview
         if (status === 'COMPLETED' && interview.applicationId) {
             const user = await prisma.user.findFirst({
                 where: { applications: { some: { id: interview.applicationId } } }
@@ -541,24 +547,26 @@ export const updateInterviewStatus = async (req: Request, res: Response) => {
                 where: { id: interview.applicationId },
             });
 
-            // steps is a Json field, not a relation — fetch without include
-            const workflow = await prisma.workflow.findFirst();
+            // Fetch active workflow specifically
+            const workflow = await prisma.workflow.findFirst({
+                where: { isActive: true }
+            });
 
             if (application && workflow) {
-                // Parse steps from Json field and sort by order
                 const rawSteps = Array.isArray(workflow.steps) ? workflow.steps : [];
                 const steps = [...rawSteps].sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0));
 
-                const currentIdx = steps.findIndex((s: any) => s.id === application.currentStepId);
-                const nextStep = currentIdx >= 0 && currentIdx < steps.length - 1
-                    ? steps[currentIdx + 1]
+                const interviewStepIdx = steps.findIndex((s: any) => s.id === 'interview');
+                const nextStep = interviewStepIdx >= 0 && interviewStepIdx < steps.length - 1
+                    ? steps[interviewStepIdx + 1]
                     : null;
 
                 if (nextStep) {
                     await prisma.application.update({
                         where: { id: interview.applicationId },
-                        data: { currentStepId: (nextStep as any).id },
+                        data: { currentStepId: (nextStep as any).id, status: 'ACCEPTED' },
                     });
+
 
                     await prisma.activityLog.create({
                         data: {
@@ -571,12 +579,22 @@ export const updateInterviewStatus = async (req: Request, res: Response) => {
             }
         }
 
-
         if (status === 'REJECTED' && interview.applicationId) {
+            // Free the booked slot so student can rebook, while maintaining interview log
+            await prisma.interviewSlot.updateMany({
+                where: { applicationId: interview.applicationId },
+                data: { isBooked: false, applicationId: null }
+            });
+
+            await prisma.application.update({
+                where: { id: interview.applicationId },
+                data: { status: 'REJECTED' }
+            });
+
             await prisma.activityLog.create({
                 data: {
                     applicationId: interview.applicationId,
-                    description: 'Interview rejected by admin.',
+                    description: 'Interview rejected by admin. Slot freed for rebooking.',
                     type: 'INTERVIEW_REJECTED',
                 },
             });
@@ -588,3 +606,4 @@ export const updateInterviewStatus = async (req: Request, res: Response) => {
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
+

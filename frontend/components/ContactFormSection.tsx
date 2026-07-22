@@ -28,11 +28,34 @@ export default function ContactFormSection() {
     message: ""
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Action to send message
-    console.log("Form submitted: ", form);
+    try {
+      setSubmitting(true);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/contact/submit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form)
+      });
+      const data = await res.json();
+      if (data.success) {
+        const { toast } = await import('sonner');
+        toast.success(data.message || 'Message sent successfully!');
+        setForm({ name: '', email: '', phone: '', city: '', college: '', program: '', message: '' });
+      } else {
+        const { toast } = await import('sonner');
+        toast.error(data.message || 'Failed to send message');
+      }
+    } catch (err) {
+      const { toast } = await import('sonner');
+      toast.error('Error sending message. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
+
 
   return (
     <section className="w-full bg-white dark:bg-zinc-950 py-20 sm:py-28 px-4 sm:px-8 md:px-12 relative overflow-hidden">

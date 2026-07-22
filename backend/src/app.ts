@@ -27,6 +27,7 @@ import travelRoutes from './routes/travel.routes';
 import documentTemplateRoutes from './routes/documentTemplate.routes';
 import studentCategoryRoutes from './routes/studentCategory.routes';
 import blogRoutes from './routes/blog.routes';
+import contactRoutes from './routes/contact.routes';
 
 
 
@@ -71,6 +72,8 @@ app.use('/api/travel', travelRoutes);
 app.use('/api/document-templates', documentTemplateRoutes);
 app.use('/api/student-categories', studentCategoryRoutes);
 app.use('/api/blogs', blogRoutes);
+app.use('/api/contact', contactRoutes);
+
 
 
 

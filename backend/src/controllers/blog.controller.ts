@@ -47,8 +47,11 @@ export const getAllBlogs = async (req: Request, res: Response) => {
 
 export const getBlogById = async (req: Request, res: Response) => {
   const { id } = req.params;
+  const user = (req as any).user;
+  const isStaff = user && ['ADMIN', 'SUPER_ADMIN', 'HR', 'TEAM_MEMBER', 'TEAM', 'MARKETING'].includes(user.role);
+
   const blog = await blogService.getById(id);
-  if (!blog) {
+  if (!blog || (!blog.published && !isStaff)) {
     res.status(404).json({ success: false, error: 'Blog post not found' });
     return;
   }
@@ -57,13 +60,17 @@ export const getBlogById = async (req: Request, res: Response) => {
 
 export const getBlogBySlug = async (req: Request, res: Response) => {
   const { slug } = req.params;
+  const user = (req as any).user;
+  const isStaff = user && ['ADMIN', 'SUPER_ADMIN', 'HR', 'TEAM_MEMBER', 'TEAM', 'MARKETING'].includes(user.role);
+
   const blog = await blogService.getBySlug(slug);
-  if (!blog) {
+  if (!blog || (!blog.published && !isStaff)) {
     res.status(404).json({ success: false, error: 'Blog post not found' });
     return;
   }
   res.status(200).json({ success: true, data: blog });
 };
+
 
 export const createBlog = async (req: Request, res: Response) => {
   const { title, slug, summary, content, coverImage, category, readTime, published } = req.body;

@@ -50,11 +50,36 @@ const storage = new CloudinaryStorage({
   },
 });
 
+const allowedMimeTypes = [
+  'image/jpeg',
+  'image/jpg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/msword',
+  'video/mp4',
+  'video/quicktime',
+  'video/x-msvideo'
+];
+
 export const upload = multer({ 
   storage: storage,
   limits: {
     fileSize: 50 * 1024 * 1024, // 50MB limit
+  },
+  fileFilter: (req: any, file: any, cb: any) => {
+    const isAllowedMime = allowedMimeTypes.includes(file.mimetype);
+    const isAllowedExt = Boolean(file.originalname && file.originalname.match(/\.(jpg|jpeg|png|webp|gif|pdf|doc|docx|mp4|mov|avi)$/i));
+
+    if (isAllowedMime || isAllowedExt) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Allowed formats: Images, PDFs, Word Documents, and MP4/MOV videos.'));
+    }
   }
 });
 
 export default cloudinary;
+

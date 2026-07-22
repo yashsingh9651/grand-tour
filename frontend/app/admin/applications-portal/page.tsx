@@ -47,11 +47,14 @@ export default function ApplicationsPortalListPage() {
   const filteredApps = applications.filter((app) => {
     const fullName = `${app.user?.firstName || ''} ${app.user?.lastName || ''}`.toLowerCase()
     const email = (app.user?.email || '').toLowerCase()
-    const matchesSearch = fullName.includes(searchTerm.toLowerCase()) || email.includes(searchTerm.toLowerCase())
+    const passportNumber = (app.passportNumber || app.data?.passportNumber || '').toLowerCase()
+    const query = searchTerm.toLowerCase().trim()
+    const matchesSearch = !query || fullName.includes(query) || email.includes(query) || passportNumber.includes(query)
     const matchesStep = filterStep === 'all' || app.currentStepId === filterStep
     const matchesStatus = filterStatus === 'all' || app.status === filterStatus
     return matchesSearch && matchesStep && matchesStatus
   })
+
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -138,11 +141,12 @@ export default function ApplicationsPortalListPage() {
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <Input 
-              placeholder="Search by student name or email..."
+              placeholder="Search by candidate name, email, or passport number..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 h-11 bg-white border-slate-200 rounded-xl w-full"
             />
+
           </div>
           <div className="flex gap-3 flex-wrap">
             <div className="space-y-1">

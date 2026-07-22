@@ -42,7 +42,32 @@ class DocumentService {
   }
 
   async createDocument(data: any) {
-    const doc = await prisma.document.create({ data });
+    let doc;
+    const existing = await prisma.document.findFirst({
+      where: {
+        applicationId: data.applicationId,
+        type: data.type,
+      }
+    });
+
+    if (existing) {
+      doc = await prisma.document.update({
+        where: { id: existing.id },
+        data: {
+          name: data.name,
+          url: data.url,
+          fileName: data.fileName,
+          size: data.size,
+          status: 'PENDING',
+          remarks: null,
+          reviewedBy: null,
+          reviewedAt: null,
+          updatedAt: new Date(),
+        }
+      });
+    } else {
+      doc = await prisma.document.create({ data });
+    }
 
     // Notify admin about the new document upload
     try {
@@ -76,6 +101,7 @@ class DocumentService {
 
     return doc;
   }
+
 
   async updateDocumentStatus(id: string, status: DocumentStatus, remarks?: string, reviewedBy?: string) {
     const doc = await prisma.document.update({

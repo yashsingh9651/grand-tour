@@ -143,9 +143,15 @@ class AuthService {
   async googleLoginUser(userData: any) {
     const { email, firstName, lastName, profileImage } = userData;
 
+    if (!email || typeof email !== 'string' || !email.includes('@')) {
+      const error: any = new Error('Invalid or missing Google authentication credentials.');
+      error.statusCode = 400;
+      throw error;
+    }
+
     // Check if user already exists
     let user = await prisma.user.findUnique({
-      where: { email }
+      where: { email: email.toLowerCase().trim() }
     });
 
     if (user && user.isActive === false) {
@@ -155,25 +161,25 @@ class AuthService {
     }
 
     if (!user) {
-      // Create user without password (Google already verifies the email)
+      // Create user without password with strict STUDENT role
       user = await prisma.user.create({
         data: {
           firstName: firstName || 'User',
           lastName: lastName || '',
           profileImage: profileImage || null,
-          email,
+          email: email.toLowerCase().trim(),
           role: 'STUDENT',
           isVerified: true,
           isActive: true,
         }
       });
     } else if (profileImage && !user.profileImage) {
-      // Opt: update the user with image if missing
       user = await prisma.user.update({
-        where: { email },
+        where: { id: user.id },
         data: { profileImage }
       });
     }
+
 
     return {
       id: user.id,

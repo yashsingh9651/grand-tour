@@ -254,8 +254,19 @@ export function ProfileBuilderStep({ application, onSubmit, submitting, pageCont
       activeGroup.fields.push(field)
     })
 
+
+    if (groups.length === 0 && pageFields.length > 0) {
+      groups.push({
+        section: 'General',
+        column: 'left',
+        fields: pageFields.filter((f: any) => f.type !== 'section')
+      })
+    }
+
     return groups
   }, [pageFields])
+
+
 
   const leftSections = sections.filter((section) => section.column === 'left')
   const rightSections = sections.filter((section) => section.column === 'right')

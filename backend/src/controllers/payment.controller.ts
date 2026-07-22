@@ -8,13 +8,18 @@ export const submitPayment = async (req: Request, res: Response) => {
   const userId = (req as any).user?.id;
   const { amount, description, utrNumber, screenshotUrl } = req.body;
 
+  if (!utrNumber || typeof utrNumber !== 'string' || utrNumber.trim() === '' || utrNumber.trim().toUpperCase() === 'N/A') {
+    res.status(400).json({ success: false, message: 'Please provide a valid transaction UTR number.' });
+    return;
+  }
+
   const application = await prisma.application.findUnique({
     where: { userId }
   });
 
   if (!application) {
-    res.status(404);
-    throw new Error('Application not found');
+    res.status(404).json({ success: false, message: 'Application not found' });
+    return;
   }
 
   const payment = await paymentService.createPayment({
@@ -22,7 +27,7 @@ export const submitPayment = async (req: Request, res: Response) => {
     applicationId: application.id,
     amount: parseFloat(amount),
     description,
-    utrNumber,
+    utrNumber: utrNumber.trim(),
     screenshotUrl,
   });
 
@@ -62,36 +67,39 @@ export const approvePayment = async (req: Request, res: Response) => {
     (req as any).user?.id
   );
 
-  // If payment is completed, move application to the correct next step
+  // If payment is completed, move application to the correct next step in active workflow
   if (status === 'COMPLETED') {
     const application = await prisma.application.findFirst({
       where: { userId: payment.userId }
     });
     
     if (application) {
-      // Determine next step and update relation IDs based on payment description
+      const workflowService = (await import('../services/workflow.service')).default;
+      const activeWorkflow = await workflowService.getWorkflow();
+      const rawSteps = (activeWorkflow?.steps as any[]) || [];
+      const steps = [...rawSteps].sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0));
+
       const desc = (payment.description || '').toLowerCase();
-      let nextStep = 'hotel'; // default (payment1)
+      let stepKey = 'payment1';
+
+      if (desc.includes('payment2') || desc.includes('2nd installment')) {
+        stepKey = 'payment2';
+      } else if (desc.includes('payment3') || desc.includes('3rd installment')) {
+        stepKey = 'payment3';
+      }
+
+      const currentIdx = steps.findIndex((s: any) => s.id === stepKey);
+      const nextStepObj = currentIdx >= 0 && currentIdx < steps.length - 1 ? steps[currentIdx + 1] : null;
+      let nextStep = nextStepObj ? nextStepObj.id : (stepKey === 'payment1' ? 'hotel' : stepKey === 'payment2' ? 'contract' : 'workpermit');
+
       let updateData: any = { currentStepId: nextStep };
 
-      if (desc.includes('payment2') || desc.includes('2nd installment') || desc.includes('hotel')) {
-        nextStep = 'contract';
-        updateData = {
-          currentStepId: nextStep,
-          payment2Id: payment.id
-        };
-      } else if (desc.includes('payment3') || desc.includes('3rd installment') || desc.includes('contract')) {
-        nextStep = 'workpermit';
-        updateData = {
-          currentStepId: nextStep,
-          payment3Id: payment.id
-        };
+      if (stepKey === 'payment2') {
+        updateData = { currentStepId: nextStep, payment2Id: payment.id };
+      } else if (stepKey === 'payment3') {
+        updateData = { currentStepId: nextStep, payment3Id: payment.id };
       } else {
-        // Retrieve active workflow to resolve customized step titles
-        const activeWorkflow = await prisma.workflow.findFirst({
-          where: { isActive: true }
-        });
-        const visaStep = (activeWorkflow?.steps as any[])?.find((s: any) => s.id === 'visapayments');
+        const visaStep = steps.find((s: any) => s.id === 'visapayments');
         const amounts = visaStep?.amounts || {};
 
         const visaName = (amounts.visaFeeName || 'visa fee').toLowerCase();
@@ -105,7 +113,6 @@ export const approvePayment = async (req: Request, res: Response) => {
           desc.includes('visapayments');
 
         if (isVisaPayment) {
-          // Find all completed payments for this student
           const allCompletedPayments = await prisma.payment.findMany({
             where: { 
               userId: payment.userId,
@@ -127,18 +134,16 @@ export const approvePayment = async (req: Request, res: Response) => {
           });
 
           if (visaFeePaid && sevisFeePaid && miscFeePaid) {
-            nextStep = 'visa';
-            updateData = {
-              currentStepId: nextStep
-            };
+            const visaPaymentsIdx = steps.findIndex((s: any) => s.id === 'visapayments');
+            const stepAfterVisa = visaPaymentsIdx >= 0 && visaPaymentsIdx < steps.length - 1 ? steps[visaPaymentsIdx + 1].id : 'visa';
             
             await prisma.application.update({
               where: { id: application.id },
-              data: updateData
+              data: { currentStepId: stepAfterVisa }
             });
             
             await activityService.log(
-              `Application moved to ${nextStep} step (all visa payments approved)`,
+              `Application moved to ${stepAfterVisa} step (all visa payments approved)`,
               'APPLICATION_MOVE',
               application.id,
               (req as any).user?.id
@@ -150,7 +155,6 @@ export const approvePayment = async (req: Request, res: Response) => {
             data: payment,
           });
         } else {
-          // Default to payment1
           updateData = {
             currentStepId: nextStep,
             payment1Id: payment.id
@@ -171,6 +175,7 @@ export const approvePayment = async (req: Request, res: Response) => {
       );
     }
   }
+
 
   res.status(200).json({
     success: true,

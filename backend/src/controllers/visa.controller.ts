@@ -132,12 +132,15 @@ export const generateVisaSlots = async (req: Request, res: Response) => {
           });
 
           if (!existing) {
-            slotsToCreate.push({
-              startTime: new Date(current),
-              endTime: new Date(slotEnd),
-              capacity: dayAvail.capacity || 1,
-              meetLink: location || null,
-            });
+            const cap = Math.max(1, dayAvail.capacity || 1);
+            for (let i = 0; i < cap; i++) {
+              slotsToCreate.push({
+                startTime: new Date(current),
+                endTime: new Date(slotEnd),
+                capacity: cap,
+                meetLink: location || null,
+              });
+            }
           }
         }
 
@@ -214,15 +217,21 @@ export const bookVisaSlot = async (req: Request, res: Response) => {
   if (!slot || slot.isBooked) return res.status(400).json({ success: false, message: 'Slot unavailable' });
 
   // Release previous booking if any
-  const prev = await prisma.visaSlot.findUnique({ where: { applicationId: application.id } });
+  const prev = await prisma.visaSlot.findFirst({ where: { applicationId: application.id } });
   if (prev) {
     await prisma.visaSlot.update({ where: { id: prev.id }, data: { isBooked: false, applicationId: null } });
   }
 
-  const updated = await prisma.visaSlot.update({
-    where: { id: slotId },
+  const updateResult = await prisma.visaSlot.updateMany({
+    where: { id: slotId, isBooked: false },
     data: { isBooked: true, applicationId: application.id },
   });
+
+  if (updateResult.count === 0) {
+    return res.status(400).json({ success: false, message: 'Slot unavailable or already booked' });
+  }
+
+  const updated = (await prisma.visaSlot.findUnique({ where: { id: slotId } }))!;
 
   const meetLink = updated.meetLink; // We treat this database field as the Location address
 
@@ -264,7 +273,7 @@ export const getMyVisaSlot = async (req: Request, res: Response) => {
   const application = await applicationService.getApplicationByUserId(userId);
   if (!application) return res.status(404).json({ success: false, message: 'Application not found' });
 
-  const slot = await prisma.visaSlot.findUnique({ where: { applicationId: application.id } });
+  const slot = await prisma.visaSlot.findFirst({ where: { applicationId: application.id } });
   res.status(200).json({ success: true, data: slot });
 };
 
@@ -326,15 +335,15 @@ export const rejectVisaSlot = async (req: Request, res: Response) => {
   const studentName = slot.application?.user ? `${slot.application.user.firstName} ${slot.application.user.lastName}` : 'Student';
   const appId = slot.applicationId;
 
-  // Release the slot booking
+  // Release the slot booking without clearing location/meetLink address
   await prisma.visaSlot.update({
     where: { id },
     data: {
       isBooked: false,
-      applicationId: null,
-      meetLink: null // reset meet link so a new one generates for next booking
+      applicationId: null
     }
   });
+
 
   // Log activity
   await activityService.log('Visa slot rejected', 'VISA_REJECTED', appId, adminId);

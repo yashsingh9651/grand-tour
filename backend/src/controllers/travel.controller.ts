@@ -21,6 +21,17 @@ export const publishTravelDocuments = async (req: Request, res: Response) => {
   const { applicationId } = req.body;
   const adminId = (req as any).user?.id;
 
+  const docCount = await prisma.travelDocument.count({
+    where: { applicationId }
+  });
+
+  if (docCount === 0) {
+    return res.status(400).json({ 
+      success: false, 
+      message: 'Cannot publish travel stage. Please upload at least one travel document (e.g. ticket or itinerary) first.' 
+    });
+  }
+
   await prisma.travelDocument.updateMany({
     where: { applicationId },
     data: { isPublished: true },
@@ -38,6 +49,7 @@ export const publishTravelDocuments = async (req: Request, res: Response) => {
   await activityService.log('Travel documents published', 'TRAVEL_PUBLISHED', applicationId, adminId);
   res.status(200).json({ success: true, message: 'Travel documents published' });
 };
+
 
 // Admin: Get all travel documents (for management)
 export const getAllTravelDocuments = async (req: Request, res: Response) => {

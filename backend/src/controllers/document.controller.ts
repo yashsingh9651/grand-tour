@@ -28,12 +28,21 @@ export const createDocument = async (req: Request, res: Response) => {
     }
   }
 
-  const document = await documentService.createDocument(req.body);
+  let docBody = { ...req.body };
+  if (!isStaff) {
+    docBody.status = 'PENDING';
+    docBody.remarks = null;
+    docBody.reviewedBy = null;
+    docBody.reviewedAt = null;
+  }
+
+  const document = await documentService.createDocument(docBody);
   res.status(201).json({
     success: true,
     data: document
   });
 };
+
 
 export const updateStatus = async (req: Request, res: Response) => {
   const { id } = req.params;

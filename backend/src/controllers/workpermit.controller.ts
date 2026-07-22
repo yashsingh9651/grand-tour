@@ -28,14 +28,21 @@ export const uploadWorkPermit = async (req: Request, res: Response) => {
     where: { id: applicationId }
   });
 
-  const nextStepId = (app?.currentStepId === 'payment3') ? 'payment3' : 'visa';
+  const workflowService = (await import('../services/workflow.service')).default;
+  const activeWorkflow = await workflowService.getWorkflow();
+  const rawSteps = (activeWorkflow?.steps as any[]) || [];
+  const steps = [...rawSteps].sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0));
+  const workPermitIdx = steps.findIndex((s: any) => s.id === 'workpermit');
+  const nextStep = workPermitIdx >= 0 && workPermitIdx < steps.length - 1 ? steps[workPermitIdx + 1] : null;
+  const nextStepId = nextStep ? nextStep.id : 'visa';
 
-  // Move application to appropriate step
+  // Move application to appropriate next step in workflow
   const application = await prisma.application.update({
     where: { id: applicationId },
     data: { currentStepId: nextStepId },
     include: { user: true }
   });
+
 
   // Notify student via email
   if (application && application.user) {

@@ -124,25 +124,34 @@ export default function DynamicStepPage({ params }: { params: Promise<{ stepId: 
       })
       console.log('Nested Data Structure:', nestedData)
 
+      const isGoogleRateStep = stepId === 'googlerate'
+
       const updatedPayload = {
         ...currentApp,
-        data: { ...(currentApp?.data || {}), ...nestedData },
-        status: isFinalStep ? 'PENDING' : (currentApp?.status || 'DRAFT'),
-        // Only advance currentStepId if it's NOT the interview step
-        currentStepId: (targetStepIdx > currentDBStepIdx && !isFinalStep) ? nextStepId : currentApp?.currentStepId
+        data: { ...(currentApp?.data || {}), ...nestedData, ...(screenshotUrl ? { googleRatingScreenshot: screenshotUrl } : {}), ...(videoUrl ? { googleRatingVideo: videoUrl } : {}) },
+        status: (isFinalStep || isGoogleRateStep) ? 'PENDING' : (currentApp?.status || 'DRAFT')
       }
       console.log('Sending Payload to API:', updatedPayload)
 
-      const updatedApp = await applicationService.create(updatedPayload)
-      console.log('API Response:', updatedApp)
+      let updatedApp = await applicationService.create(updatedPayload)
+
+      if (targetStepIdx > currentDBStepIdx && !isFinalStep && !isGoogleRateStep) {
+        try {
+          updatedApp = await applicationService.continueStep(nextStepId)
+        } catch (err: any) {
+          console.warn('Student step advancement warning:', err)
+        }
+      }
 
       setApplication(updatedApp)
 
       if (isFinalStep) {
         toast.success('Interview scheduled! Please wait for approval.')
+      } else if (isGoogleRateStep) {
+        toast.success('Google Rating submitted! Admin will review your review before advancing.')
       } else {
         toast.success('Progress saved!')
-        if (nextStepId !== stepId && !isFinalStep) {
+        if (nextStepId !== stepId && !isFinalStep && !isGoogleRateStep) {
           console.log('Navigating to:', `/dashboard/${nextStepId}`)
           router.push(`/dashboard/${nextStepId}`)
         }
@@ -155,6 +164,7 @@ export default function DynamicStepPage({ params }: { params: Promise<{ stepId: 
       console.log('--- Submission End ---')
     }
   }
+
 
   const initialFormData = useMemo(() => {
     if (!application?.data || !currentStepConfig?.fields) return {}

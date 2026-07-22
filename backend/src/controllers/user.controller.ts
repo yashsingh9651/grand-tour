@@ -14,6 +14,16 @@ export const getUsers = async (req: Request, res: Response) => {
 export const updateUserRole = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { role } = req.body;
+
+  const { prisma } = await import('../config/db');
+  const targetUser = await prisma.user.findUnique({ where: { id } });
+  if (targetUser?.role === 'SUPER_ADMIN' && role !== 'SUPER_ADMIN') {
+    const superAdminCount = await prisma.user.count({ where: { role: 'SUPER_ADMIN' } });
+    if (superAdminCount <= 1) {
+      return res.status(400).json({ success: false, message: 'Cannot demote the only Super Admin account.' });
+    }
+  }
+
   const user = await userService.updateUserRole(id, role as Role);
 
   await activityService.log(
@@ -47,6 +57,16 @@ export const createUser = async (req: Request, res: Response) => {
 
 export const deleteUser = async (req: Request, res: Response) => {
   const { id } = req.params;
+
+  const { prisma } = await import('../config/db');
+  const targetUser = await prisma.user.findUnique({ where: { id } });
+  if (targetUser?.role === 'SUPER_ADMIN') {
+    const superAdminCount = await prisma.user.count({ where: { role: 'SUPER_ADMIN' } });
+    if (superAdminCount <= 1) {
+      return res.status(400).json({ success: false, message: 'Cannot delete the only Super Admin account.' });
+    }
+  }
+
   await userService.deleteUser(id);
 
   await activityService.log(
@@ -61,6 +81,7 @@ export const deleteUser = async (req: Request, res: Response) => {
     message: 'User deleted successfully'
   });
 };
+
 
 export const toggleUserStatus = async (req: Request, res: Response) => {
   const { id } = req.params;

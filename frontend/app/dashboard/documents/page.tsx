@@ -89,7 +89,21 @@ export default function DocumentsPage() {
   )
   const canContinue = allRequiredDocsVerified
 
+  const handleSaveDraft = async () => {
+    try {
+      if (application?.id) {
+        await applicationService.update(application.id, {
+          status: 'DRAFT',
+        });
+      }
+      toast.success('Document uploads saved as draft!');
+    } catch (err) {
+      toast.error('Failed to save draft');
+    }
+  };
+
   const handleContinue = async () => {
+
     if (!canContinue) {
       toast.error('All required documents must be verified and approved by the admin before continuing.')
       return
@@ -182,10 +196,12 @@ export default function DocumentsPage() {
           <div className="flex items-center gap-3">
             <Button
               variant="ghost"
+              onClick={handleSaveDraft}
               className="text-muted-foreground font-medium hover:bg-muted rounded-xl"
             >
               Save Draft
             </Button>
+
             <Button
               onClick={handleContinue}
               disabled={submitting || !canContinue}

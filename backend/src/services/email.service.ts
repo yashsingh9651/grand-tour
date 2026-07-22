@@ -44,8 +44,9 @@ class EmailService {
       };
 
       const info = await this.transporter.sendMail(mailOptions);
-      logger.info(`Email sent: ${info.messageId}`);
+      logger.info(`Email sent using template "${templateName}" to ${to}: ${info.messageId}`);
       return info;
+
     } catch (error) {
       logger.error('Error sending email:', error);
       throw error;

@@ -30,12 +30,25 @@ export const updateApplication = async (req: Request, res: Response) => {
     return;
   }
 
-  const application = await applicationService.updateApplication(id, req.body);
+  let updateBody = { ...req.body };
+  if (!isStaff) {
+    // Whitelist student-editable fields & strip protected workflow/approval fields
+    delete updateBody.status;
+    delete updateBody.currentStepId;
+    delete updateBody.payment1Id;
+    delete updateBody.payment2Id;
+    delete updateBody.payment3Id;
+    delete updateBody.userId;
+    delete updateBody.notes;
+  }
+
+  const application = await applicationService.updateApplication(id, updateBody);
   res.status(200).json({
     success: true,
     data: application
   });
 };
+
 
 export const getApplications = async (req: Request, res: Response) => {
   const applications = await applicationService.getAllApplications();
@@ -118,11 +131,60 @@ export const getApplicationById = async (req: Request, res: Response) => {
   const { id } = req.params;
   const application = await applicationService.getApplicationById(id);
   if (!application) {
-    res.status(404).json({ error: 'Application not found' });
-    return;
+    return res.status(404).json({ success: false, message: 'Application not found' });
   }
   res.status(200).json({
     success: true,
     data: application
   });
 };
+
+export const continueStudentStep = async (req: Request, res: Response) => {
+  const userId = (req as any).user?.id;
+  const application = await applicationService.getApplicationByUserId(userId);
+
+  if (!application) {
+    return res.status(404).json({ success: false, message: 'Application not found' });
+  }
+
+  const { targetStepId } = req.body;
+  const workflow = await workflowService.getWorkflow();
+  const rawSteps = (workflow?.steps as any[]) || [];
+  const steps = [...rawSteps].sort((a: any, b: any) => (a.order ?? 0) - (b.order ?? 0));
+
+  const currentIdx = steps.findIndex((s: any) => s.id === application.currentStepId);
+
+  if (currentIdx === -1) {
+    return res.status(400).json({ success: false, message: 'Invalid current application step' });
+  }
+
+  const expectedNextStep = steps[currentIdx + 1];
+
+  if (!expectedNextStep) {
+    return res.status(400).json({ success: false, message: 'Application is already at the final step' });
+  }
+
+  if (targetStepId && targetStepId !== expectedNextStep.id && targetStepId !== application.currentStepId) {
+    return res.status(400).json({ 
+      success: false, 
+      message: `Invalid progression step. Expected ${expectedNextStep.id}, received ${targetStepId}` 
+    });
+  }
+
+  const nextStepId = expectedNextStep.id;
+
+  const updatedApp = await applicationService.updateApplicationCurrentStep(application.id, nextStepId);
+
+  await activityService.log(
+    `Student advanced from ${application.currentStepId} to step: ${nextStepId}`,
+    'STEP_UPDATE',
+    application.id,
+    userId
+  );
+
+  return res.status(200).json({
+    success: true,
+    data: updatedApp,
+  });
+};
+

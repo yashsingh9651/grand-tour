@@ -69,11 +69,16 @@ export const applicationService = {
     const response = await apiClient.patch(`/api/applications/${id}/step`, { currentStepId });
     return response.data.data;
   },
+  continueStep: async (targetStepId?: string) => {
+    const response = await apiClient.post('/api/applications/continue-step', { targetStepId });
+    return response.data.data;
+  },
   delete: async (id: string) => {
     const response = await apiClient.delete(`/api/applications/${id}`);
     return response.data;
   },
 };
+
 
 export const applicationPageContentService = {
   get: async (pageKey = 'application') => {

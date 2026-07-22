@@ -3,7 +3,22 @@ import { ApplicationStatus } from '@prisma/client';
 import emailService from './email.service';
 import notificationService from './notification.service';
 
+const safeUserSelect = {
+  select: {
+    id: true,
+    email: true,
+    firstName: true,
+    lastName: true,
+    profileImage: true,
+    role: true,
+    isActive: true,
+    isVerified: true,
+  }
+};
+
 async function handleStepEmailTrigger(app: any, newStepId: string) {
+
+
   const email = app.user?.email;
   if (!email) return;
   const firstName = app.user?.firstName || 'Student';
@@ -207,11 +222,12 @@ class ApplicationService {
         payment2Id: data.payment2Id || (data.payment2?.id),
       },
       include: {
-        user: true,
+        user: safeUserSelect,
         payment1: true,
         payment2: true,
         payments: true,
       }
+
     });
 
     if (existingApplication && existingApplication.status === 'DRAFT' && application.status !== 'DRAFT') {
@@ -335,7 +351,7 @@ class ApplicationService {
     const application = await prisma.application.findFirst({
       where: { userId },
       include: {
-        user: true,
+        user: safeUserSelect,
         interviews: {
           orderBy: { scheduledAt: 'desc' },
           take: 1
@@ -377,7 +393,7 @@ class ApplicationService {
     const application = await prisma.application.findUnique({
       where: { id },
       include: {
-        user: true,
+        user: safeUserSelect,
         interviews: {
           orderBy: { scheduledAt: 'desc' }
         },
@@ -398,6 +414,7 @@ class ApplicationService {
         }
       }
     });
+
 
     if (application) {
       const categoryObj = await prisma.studentCategory.findUnique({

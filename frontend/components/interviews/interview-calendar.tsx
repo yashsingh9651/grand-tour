@@ -91,15 +91,26 @@ export function InterviewCalendar() {
         toast.error('Please specify start and end times')
         return
     }
+    const [h, m] = (newSlot.startTime || '').split(':').map(Number)
+    const [eh, em] = (newSlot.endTime || '').split(':').map(Number)
+
+    if (isNaN(h) || isNaN(m) || isNaN(eh) || isNaN(em) || h < 0 || h > 23 || m < 0 || m > 59 || eh < 0 || eh > 23 || em < 0 || em > 59) {
+      toast.error('Please enter valid start and end times in HH:MM format')
+      return
+    }
+
     try {
         setAdding(true)
         const start = new Date(newSlot.date)
-        const [h, m] = newSlot.startTime.split(':').map(Number)
         start.setHours(h, m, 0, 0)
 
         const end = new Date(newSlot.date)
-        const [eh, em] = newSlot.endTime.split(':').map(Number)
         end.setHours(eh, em, 0, 0)
+
+        if (end <= start) {
+          toast.error('End time must be after start time')
+          return
+        }
 
         await interviewService.addManualSlot(start.toISOString(), end.toISOString())
         toast.success('Slot added manually')
@@ -108,6 +119,7 @@ export function InterviewCalendar() {
     } catch (error) {
         toast.error('Failed to add slot')
     } finally {
+
         setAdding(false)
     }
   }

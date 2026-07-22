@@ -15,9 +15,20 @@ class AnalyticsService {
       }),
       prisma.application.findMany({
         take: 5,
-        orderBy: { createdAt: 'desc' },
-        include: { user: true },
+        include: {
+          user: {
+            select: {
+              id: true,
+              email: true,
+              firstName: true,
+              lastName: true,
+              profileImage: true,
+              role: true,
+            }
+          }
+        },
       }),
+
     ]);
 
     // Derive counts from the groupBy result

@@ -63,23 +63,37 @@ export default function PartnerPage() {
       toast.error("Please fill in all required fields.");
       return;
     }
-    setIsSubmitting(true);
-    // Simulate API network call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    toast.success("Partnership request submitted successfully! Our team will reach out to you within 48 hours.");
-    setFormData({
-      businessName: "",
-      contactPerson: "",
-      position: "",
-      email: "",
-      phone: "",
-      city: "",
-      country: "France",
-      positions: "",
-      message: ""
-    });
-    setIsSubmitting(false);
+    try {
+      setIsSubmitting(true);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/contact/submit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(data.message || "Partnership request submitted successfully! Our team will reach out to you within 48 hours.");
+        setFormData({
+          businessName: "",
+          contactPerson: "",
+          position: "",
+          email: "",
+          phone: "",
+          city: "",
+          country: "France",
+          positions: "",
+          message: ""
+        });
+      } else {
+        toast.error(data.message || "Failed to submit request.");
+      }
+    } catch (err) {
+      toast.error("Network error. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
 
   return (
     <div className={`relative w-full min-h-screen bg-white dark:bg-zinc-950 overflow-x-hidden font-Gilroy ${kalam.variable}`}>

@@ -91,11 +91,6 @@ export class HotelService {
 
     console.log('Assignment created successfully:', assignment.id);
 
-    // Automatically move to next step after hotel assignment
-    await prisma.application.update({
-      where: { id: data.applicationId },
-      data: { currentStepId: 'contract' }
-    });
 
     // Send assignment email
     try {

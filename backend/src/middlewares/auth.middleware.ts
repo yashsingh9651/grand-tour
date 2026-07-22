@@ -26,6 +26,7 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
           lastName: true,
           role: true,
           isActive: true,
+          isVerified: true,
         }
       });
 
@@ -35,12 +36,13 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
       }
 
       if (user.isActive === false) {
-        res.status(401);
-        throw new Error('Not authorized, account is disabled');
+        res.status(403);
+        throw new Error('Account disabled. Please contact support.');
       }
 
       req.user = user;
       next();
+
     } catch (error) {
       res.status(401);
       throw new Error('Not authorized, token failed');
