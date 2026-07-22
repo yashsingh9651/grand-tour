@@ -91,247 +91,247 @@ export function resolveData(inputData: any = {}): Required<TravelDocumentData> {
   const studentNameVal = findValueByKeyAliases(
     sources,
     ['studentName', 'fullName', 'applicantName', 'candidateName', 'name', 'firstName', 'student_name', 'full_name'],
-    userFullName || 'Student Name'
+    userFullName || ''
   )
 
   const studentAddressVal = findValueByKeyAliases(
     sources,
     ['studentAddress', 'address', 'residentialAddress', 'permanentAddress', 'currentAddress', 'city', 'location'],
-    'Address Line 1, City'
+    ''
   )
 
   const studentPincodeVal = findValueByKeyAliases(
     sources,
     ['studentPincode', 'pincode', 'pinCode', 'zipCode', 'postalCode', 'zip'],
-    '400001'
+    ''
   )
 
   const studentNumberVal = findValueByKeyAliases(
     sources,
     ['studentNumber', 'phone', 'phoneNumber', 'mobile', 'mobileNumber', 'contactNumber', 'whatsapp'],
-    user.phone || '+91 9876543210'
+    user.phone || ''
   )
 
   const studentEmailVal = findValueByKeyAliases(
     sources,
     ['studentEmail', 'email', 'userEmail', 'primaryEmail', 'mail'],
-    user.email || 'student@example.com'
+    user.email || ''
   )
 
   const studentPassportNumberVal = findValueByKeyAliases(
     sources,
     ['studentPassportNumber', 'passportNumber', 'passportNo', 'passportNum', 'passport'],
-    inputData?.passportNumber || 'A1234567'
+    inputData?.passportNumber || ''
   )
 
   const internshipDurationVal = findValueByKeyAliases(
     sources,
     ['internshipDuration', 'duration', 'period', 'months', 'tenure'],
-    '6 Months'
+    ''
   )
 
   const hotelNameVal = findValueByKeyAliases(
     sources,
     ['hotelName', 'hotel', 'companyName', 'hostHotel', 'organization'],
-    hotel.name || 'Grand Hotel Paris'
+    hotel.name || ''
   )
 
   const hotelAddressVal = findValueByKeyAliases(
     sources,
     ['hotelAddress', 'hotelLocation', 'address', 'location', 'city'],
-    hotel.address || hotel.location || 'Paris, France'
+    hotel.address || hotel.location || ''
   )
 
   const yearOfDegreeVal = findValueByKeyAliases(
     sources,
     ['yearOfDegree', 'currentYear', 'year', 'academicYear', 'enrollmentYear', 'enrollmentStatus'],
-    '3rd Year'
+    ''
   )
 
   const degreeNameVal = findValueByKeyAliases(
     sources,
     ['degreeName', 'course', 'degree', 'program', 'specialization'],
-    'B.Sc in Hospitality & Hotel Administration'
+    ''
   )
 
   const collegeNameVal = findValueByKeyAliases(
     sources,
     ['collegeName', 'educationalInstitution', 'institution', 'university', 'institute', 'school'],
-    'IHM Institute'
+    ''
   )
 
   const departmentNameVal = findValueByKeyAliases(
     sources,
     ['departmentName', 'preferredDepartment', 'department', 'sector'],
-    'Food & Beverage / Culinary'
+    ''
   )
 
   const monthlyStipendVal = findValueByKeyAliases(
     sources,
     ['monthlyStipend', 'stipend', 'allowance', 'salary', 'remuneration'],
-    '600 EUR / Month'
+    ''
   )
 
   const internshipDateVal = findValueByKeyAliases(
     sources,
     ['internshipDate', 'preferredStartDate', 'startDate', 'commencementDate'],
-    '01 August 2026'
+    ''
   )
 
   const revisedArrivalDateVal = findValueByKeyAliases(
     sources,
     ['revisedArrivalDate', 'arrivalDate', 'expectedArrival', 'travelDate'],
-    '15 August 2026'
+    ''
   )
 
   const nextDegreeVal = findValueByKeyAliases(
     sources,
     ['nextDegree', 'futureDegree', 'higherEducation', 'nextYear'],
-    'Final Year Degree'
+    ''
   )
 
   const employerNameVal = findValueByKeyAliases(
     sources,
     ['employerName', 'representedBy', 'managerName', 'hotelManager', 'contactPerson'],
-    hotel.representedBy || 'Hotel General Manager'
+    hotel.representedBy || ''
   )
 
   const employerNumberVal = findValueByKeyAliases(
     sources,
     ['employerNumber', 'employerPhone', 'hotelPhone', 'contactPhone'],
-    hotel.phone || '+33 1 42 68 55 00'
+    hotel.phone || ''
   )
 
   const employerEmailVal = findValueByKeyAliases(
     sources,
     ['employerEmail', 'hotelEmail', 'contactEmail'],
-    hotel.email || 'contact@hotel.fr'
+    hotel.email || ''
   )
 
   const collegeDirectorNameVal = findValueByKeyAliases(
     sources,
     ['collegeDirectorName', 'tpoName', 'directorName', 'principalName', 'tpoOfficer'],
-    'Director / Principal'
+    ''
   )
 
   const collegeNumberVal = findValueByKeyAliases(
     sources,
     ['collegeNumber', 'tpoPhone', 'institutionPhone', 'collegePhone'],
-    '+91 22 2445 7200'
+    ''
   )
 
   const collegeEmailVal = findValueByKeyAliases(
     sources,
     ['collegeEmail', 'tpoEmail', 'institutionEmail'],
-    'principal@college.edu'
+    ''
   )
 
   const sponsorNameVal = findValueByKeyAliases(
     sources,
     ['sponsorName', 'fatherName', 'parentName', 'sponsor', 'guardianName'],
-    'Sponsor Name'
+    ''
   )
 
   const sponsorAddressVal = findValueByKeyAliases(
     sources,
     ['sponsorAddress', 'parentAddress', 'guardianAddress', 'address'],
-    studentAddressVal || 'Sponsor Address, City, India'
+    studentAddressVal || ''
   )
 
   const sponsorRelationToStudentVal = findValueByKeyAliases(
     sources,
     ['sponsorRelationToStudent', 'relationToStudent', 'sponsorRelation', 'relationship'],
-    'Father'
+    ''
   )
 
   const studentRelationToSponsorVal = findValueByKeyAliases(
     sources,
     ['studentRelationToSponsor', 'relationToSponsor', 'studentRelation'],
-    'Son'
+    ''
   )
 
   const affiliatedUniversityNameVal = findValueByKeyAliases(
     sources,
     ['affiliatedUniversityName', 'universityName', 'university', 'affiliation'],
-    'NCHMCT'
+    ''
   )
 
   const courseBatchVal = findValueByKeyAliases(
     sources,
     ['courseBatch', 'batch', 'session', 'academicBatch', 'passingYear'],
-    '2024-2027'
+    ''
   )
 
   const employerDesignationVal = findValueByKeyAliases(
     sources,
     ['employerDesignation', 'position', 'employerPosition', 'designation', 'jobTitle'],
-    hotel.position || 'Directeur Général'
+    hotel.position || ''
   )
 
   const hotelSiretNumberVal = findValueByKeyAliases(
     sources,
     ['hotelSiretNumber', 'siretNo', 'siret', 'siren', 'siretNumber'],
-    hotel.siretNo || '123 456 789 00012'
+    hotel.siretNo || ''
   )
 
   const hotelTypeVal = findValueByKeyAliases(
     sources,
     ['hotelType', 'natureOfActivity', 'activityType', 'businessType'],
-    hotel.natureOfActivity || 'Hôtellerie et Restauration'
+    hotel.natureOfActivity || ''
   )
 
   const collegeRepresentativeNameVal = findValueByKeyAliases(
     sources,
     ['collegeRepresentativeName', 'collegeDirectorName', 'tpoName', 'representativeName', 'principalName'],
-    'Directeur de l’établissement'
+    ''
   )
 
   const collegeRepresentativeDesignationVal = findValueByKeyAliases(
     sources,
     ['collegeRepresentativeDesignation', 'representativeDesignation', 'tpoDesignation', 'directorDesignation'],
-    'Chef d’établissement / Directeur'
+    ''
   )
 
   const collegeAddressVal = findValueByKeyAliases(
     sources,
     ['collegeAddress', 'institutionAddress', 'universityAddress', 'schoolAddress'],
-    'Campus Address, India'
+    ''
   )
 
   const studentBirthDateVal = findValueByKeyAliases(
     sources,
     ['studentBirthDate', 'dateOfBirth', 'dob', 'birthDate'],
-    user.dateOfBirth || '01/01/2002'
+    user.dateOfBirth || ''
   )
 
   const studentBirthPlaceVal = findValueByKeyAliases(
     sources,
     ['studentBirthPlace', 'placeOfBirth', 'birthPlace', 'cityOfBirth'],
-    user.city || 'Mumbai, India'
+    user.city || ''
   )
 
   const studentNationalityVal = findValueByKeyAliases(
     sources,
     ['studentNationality', 'nationality', 'citizenship'],
-    'Indienne'
+    ''
   )
 
   const courseDurationVal = findValueByKeyAliases(
     sources,
     ['courseDuration', 'programDuration', 'degreeDuration', 'totalDuration'],
-    '3 Ans'
+    ''
   )
 
   const internshipEndDateVal = findValueByKeyAliases(
     sources,
     ['internshipEndDate', 'endDate', 'completionDate', 'preferredEndDate'],
-    '31 January 2027'
+    ''
   )
 
   const internshipBenefitsVal = findValueByKeyAliases(
     sources,
     ['internshipBenefits', 'benefits', 'perks', 'facilities', 'advantages'],
-    'Hébergement et restauration fournis selon les modalités de l’entreprise d’accueil.'
+    ''
   )
 
   return {
