@@ -23,6 +23,7 @@ import {
   studentCategoryService,
   documentTemplateService
 } from '@/lib/services/api.service'
+import { getStudentFullName } from '@/lib/utils'
 import { toast } from 'sonner'
 import { ADMIN_CONVENTION_TEMPLATES, resolveData, fillDocxFromTemplateUrl } from '@/lib/docx-templates'
 import {
@@ -386,7 +387,7 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
     )
   }
 
-  const studentName = `${application.user?.firstName || ''} ${application.user?.lastName || ''}`.trim()
+  const studentName = getStudentFullName(application)
   const journeySteps = workflow?.steps || []
 
   const handleSaveToContacts = () => {

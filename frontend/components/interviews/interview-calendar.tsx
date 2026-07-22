@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { interviewService } from '@/lib/services/api.service'
 import { toast } from 'sonner'
+import { getStudentFullName } from '@/lib/utils'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -365,7 +366,7 @@ export function InterviewCalendar() {
                               </div>
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm font-black text-slate-900 truncate">
-                                  {slot.application.user.firstName} {slot.application.user.lastName}
+                                  {getStudentFullName(slot.application)}
                                 </p>
                                 <p className="text-[10px] text-slate-500 font-bold uppercase truncate tracking-tight">
                                     {slot.application.user.email}

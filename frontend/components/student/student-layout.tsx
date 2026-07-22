@@ -1,7 +1,7 @@
 'use client'
 
 import { StudentSidebar } from './student-sidebar'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Bell, Moon, Sun, Loader2, Menu } from 'lucide-react'
 import { useSession } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
+import { applicationService } from '@/lib/services/api.service'
 
 interface StudentLayoutProps {
   children: React.ReactNode
@@ -20,12 +21,20 @@ export function StudentLayout({ children, currentStep = 'application', headerCon
   const { data: session, status } = useSession()
   const user = session?.user as any
   const pathname = usePathname()
+  const [appData, setAppData] = useState<any>(null)
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('student-dark-mode') === 'true'
     }
     return false
   })
+
+  useEffect(() => {
+    if (!session?.user?.email) return
+    applicationService.getMy()
+      .then((app) => setAppData(app))
+      .catch(() => {})
+  }, [session?.user?.email])
 
   const toggleDark = () => {
     setDarkMode((prev) => {
@@ -35,8 +44,50 @@ export function StudentLayout({ children, currentStep = 'application', headerCon
     })
   }
 
-  const fullName = user ? `${user.firstName || user.name || ''} ${user.lastName || ''}`.trim() : 'Loading...'
-  const userImage = user?.image || user?.profileImage
+  const getFilledDisplayName = () => {
+    const data = appData?.data || {}
+    const filled =
+      data.studentName ||
+      data.fullName ||
+      data.applicantName ||
+      data.candidateName ||
+      data.name ||
+      data.firstName ||
+      appData?.studentName
+
+    if (filled && typeof filled === 'string' && filled.trim()) {
+      return filled.trim()
+    }
+
+    return user ? `${user.firstName || user.name || ''} ${user.lastName || ''}`.trim() : 'Loading...'
+  }
+
+  const getFilledProfileImage = () => {
+    const data = appData?.data || {}
+    const filledImg =
+      data.profileImage ||
+      data.studentImage ||
+      data.avatar ||
+      data.photo ||
+      data.passportPhoto ||
+      data.image ||
+      data.profilePicture
+
+    if (filledImg && typeof filledImg === 'string' && filledImg.trim()) {
+      return filledImg.trim()
+    }
+
+    const docImg = appData?.documents?.find((d: any) =>
+      ['profile_image', 'passport_photo', 'photo', 'avatar', 'profile'].includes(d.type?.toLowerCase())
+    )?.url
+
+    if (docImg) return docImg
+
+    return user?.profileImage || user?.image || ''
+  }
+
+  const fullName = getFilledDisplayName()
+  const userImage = getFilledProfileImage()
 
   const isJourney = pathname === '/dashboard' || pathname.includes('application')
   const isFinance = pathname.includes('payment')

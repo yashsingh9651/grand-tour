@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { AlertCircle, CheckCircle, Clock, Zap, ArrowRight, FileText, Calendar, HelpCircle, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { getStudentFirstName } from '@/lib/utils'
 
 export default function StudentDashboard() {
   const router = useRouter()
@@ -109,6 +110,8 @@ export default function StudentDashboard() {
     })
   }
 
+  const studentDisplayName = getStudentFirstName(application)
+
   return (
     <StudentLayout currentStep={application.currentStepId}>
       <div className="space-y-6 max-w-6xl">
@@ -116,7 +119,7 @@ export default function StudentDashboard() {
         <Card className="bg-gradient-to-br from-primary/10 via-accent/5 to-transparent border border-border p-4 sm:p-6 md:p-8">
           <div className="flex items-start justify-between gap-3">
             <div className="space-y-1.5">
-              <h1 className="text-xl sm:text-2xl md:text-4xl font-bold text-foreground">Welcome back, {application.user?.firstName}!</h1>
+              <h1 className="text-xl sm:text-2xl md:text-4xl font-bold text-foreground">Welcome back, {studentDisplayName}!</h1>
               <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl">You&apos;re {progressPercent}% through your internship onboarding journey. Keep up the great work!</p>
             </div>
             <Zap className="w-8 h-8 text-primary flex-shrink-0 hidden md:block animate-pulse" />

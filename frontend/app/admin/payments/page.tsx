@@ -29,13 +29,14 @@ import { toast } from 'sonner'
 import { Input } from '@/components/ui/input'
 import { Sidebar } from '@/components/dashboard/sidebar'
 import { usePaymentReceipt } from '@/components/PaymentReceiptPDF'
+import { getStudentFullName } from '@/lib/utils'
 
 // ─── Per-row receipt downloader ───────────────────────────────────────────────
 function ReceiptDownloadButton({ payment }: { payment: any }) {
   const installmentNum = (payment.description || '').toLowerCase().includes('2nd') ? 2
     : (payment.description || '').toLowerCase().includes('3rd') ? 3 : 1
   const { handlePrint } = usePaymentReceipt({
-    studentName: `${payment.user?.firstName || ''} ${payment.user?.lastName || ''}`.trim(),
+    studentName: getStudentFullName(payment.application || payment),
     amount: payment.amount || 0,
     paymentDate: payment.createdAt,
     paymentId: payment.id,
@@ -191,7 +192,7 @@ export default function AdminPaymentsPage() {
                       <TableRow key={p.id} className="hover:bg-slate-50/50 transition-colors border-slate-50">
                         <TableCell>
                           <div className="flex flex-col">
-                            <span className="font-bold text-slate-900">{p.user?.firstName} {p.user?.lastName}</span>
+                            <span className="font-bold text-slate-900">{getStudentFullName(p.application || p)}</span>
                             <span className="text-xs text-slate-500 font-medium">{p.user?.email}</span>
                           </div>
                         </TableCell>

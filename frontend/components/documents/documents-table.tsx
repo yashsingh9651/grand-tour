@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Search, Eye, Check, X, AlertCircle, Loader2, FileText, Download, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { getStudentFullName } from '@/lib/utils'
 
 export function DocumentsTable() {
   const [documents, setDocuments] = useState<any[]>([])
@@ -131,9 +132,7 @@ export function DocumentsTable() {
           </Card>
         ) : (
           filteredDocuments.map((doc) => {
-            const candidateName = doc.application?.user 
-              ? `${doc.application.user.firstName} ${doc.application.user.lastName}`
-              : 'Unknown Candidate'
+            const candidateName = getStudentFullName(doc.application)
 
             return (
               <Card key={doc.id} className="p-5 hover:shadow-xl hover:border-primary/20 transition-all duration-300 group border-border/40 overflow-hidden relative">

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Candidate, CandidateStatus, PaymentStatus } from '@/lib/candidate-data'
 import { applicationService, workflowService, studentCategoryService } from '@/lib/services/api.service'
 import { toast } from 'sonner'
+import { getStudentFullName } from '@/lib/utils'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -56,7 +57,7 @@ export function CandidatesTable({ initialStatus = 'all', title }: CandidatesTabl
 
         return {
           id: app.id,
-          name: `${app.user.firstName} ${app.user.lastName}`,
+          name: getStudentFullName(app),
           email: app.user.email,
           phone: app.phone || 'N/A',
           program: app.program || 'Internship Program',
