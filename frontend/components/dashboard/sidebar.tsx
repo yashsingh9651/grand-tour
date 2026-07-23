@@ -149,15 +149,17 @@ export function Sidebar({ isMobile = false }: { isMobile?: boolean }) {
       try {
         if (!userRole) return
         const allPermissions = await permissionService.getAll()
-        const myPermission = allPermissions.find((p: any) => p.role === userRole)
-        if (myPermission) {
+        const myPermission = (allPermissions || []).find((p: any) => p.role === userRole)
+        if (myPermission && Array.isArray(myPermission.features) && myPermission.features.length > 0) {
           setAllowedFeatures(myPermission.features)
-        } else if (userRole === "SUPER_ADMIN") {
+        } else {
           const fallbackFeatures = ALL_MENU_ITEMS.flatMap((item) => (item.feature ? [item.feature] : []))
           setAllowedFeatures([...fallbackFeatures, "settings"])
         }
       } catch (error) {
         console.error("Failed to fetch permissions", error)
+        const fallbackFeatures = ALL_MENU_ITEMS.flatMap((item) => (item.feature ? [item.feature] : []))
+        setAllowedFeatures([...fallbackFeatures, "settings"])
       } finally {
         setLoading(false)
       }

@@ -78,6 +78,37 @@ export default function FAQPage() {
     )
   }
 
+  const STEP_ORDERS: Record<string, number> = {
+    application: 1,
+    documents: 2,
+    interview: 3,
+    payment1: 4,
+    hotel: 5,
+    payment2: 6,
+    contract: 7,
+    workpermit: 8,
+    payment3: 9,
+    visapayments: 10,
+    visa: 11,
+    travel: 12,
+  }
+
+  const currentStepOrder = STEP_ORDERS[application?.currentStepId || 'application'] ?? 1
+  const isFaqUnlocked = currentStepOrder >= STEP_ORDERS['hotel']
+
+  if (!isFaqUnlocked) {
+    return (
+      <StudentLayout currentStep={application?.currentStepId}>
+        <div className="max-w-3xl rounded-3xl border border-dashed border-border bg-secondary/20 p-8 text-foreground mx-auto mt-10 text-center space-y-4">
+          <h2 className="text-2xl font-bold">FAQ Section — Locked</h2>
+          <p className="text-sm text-muted-foreground max-w-md mx-auto">
+            This FAQ section will automatically unlock after you complete your 1st Installment Payment.
+          </p>
+        </div>
+      </StudentLayout>
+    )
+  }
+
   return (
     <StudentLayout currentStep={application?.currentStepId}>
       <div className="max-w-3xl space-y-6 text-foreground">

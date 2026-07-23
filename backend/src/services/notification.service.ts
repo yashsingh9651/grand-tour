@@ -74,6 +74,46 @@ class NotificationService {
       data: { isRead: true }
     });
   }
+
+  async reconcileNotificationsForStep(userId: string, currentStepId: string) {
+    const STEP_ORDER: Record<string, number> = {
+      application: 1,
+      documents: 2,
+      interview: 3,
+      payment1: 4,
+      hotel: 5,
+      payment2: 6,
+      contract: 7,
+      workpermit: 8,
+      payment3: 9,
+      visapayments: 10,
+      visa: 11,
+      travel: 12,
+    };
+
+    const currentOrder = STEP_ORDER[currentStepId] || 1;
+
+    try {
+      const unread = await prisma.notification.findMany({
+        where: { userId, isRead: false },
+      });
+
+      for (const notif of unread) {
+        const stepKey = (notif.metadata as any)?.stepKey;
+        if (stepKey && STEP_ORDER[stepKey]) {
+          const notifOrder = STEP_ORDER[stepKey];
+          if (notifOrder > currentOrder) {
+            await prisma.notification.update({
+              where: { id: notif.id },
+              data: { isRead: true },
+            });
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Failed to reconcile notifications for step:', err);
+    }
+  }
 }
 
 export default new NotificationService();

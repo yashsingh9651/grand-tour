@@ -301,11 +301,38 @@ class ApplicationService {
     return application;
 
   }  async updateApplicationCurrentStep(id: string, currentStepId: string) {
+    const existing = await prisma.application.findUnique({
+      where: { id },
+      select: { status: true, userId: true }
+    });
+
+    let newStatus: ApplicationStatus | undefined = existing?.status;
+    if (currentStepId === 'application') {
+      newStatus = 'DRAFT';
+    } else if (currentStepId === 'documents') {
+      if (existing?.status === 'DRAFT') {
+        newStatus = 'PENDING';
+      }
+    } else if (['interview', 'payment1', 'hotel', 'payment2', 'contract', 'workpermit', 'payment3', 'visapayments', 'visa', 'travel'].includes(currentStepId)) {
+      if (existing?.status === 'DRAFT') {
+        newStatus = 'REVIEWING';
+      }
+    }
+
     const app = await prisma.application.update({
       where: { id },
-      data: { currentStepId },
+      data: {
+        currentStepId,
+        ...(newStatus && newStatus !== existing?.status ? { status: newStatus as ApplicationStatus } : {})
+      },
       include: { user: true },
     });
+
+    // Reconcile unread notifications for past/future steps
+    if (app.userId) {
+      notificationService.reconcileNotificationsForStep(app.userId, currentStepId).catch(console.error);
+    }
+
     // Trigger step-specific email
     handleStepEmailTrigger(app, currentStepId).catch(console.error);
 

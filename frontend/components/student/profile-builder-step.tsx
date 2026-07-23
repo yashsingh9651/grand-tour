@@ -170,20 +170,44 @@ const extractPersistedValue = (field: any, application: any, sessionUser?: any) 
     return resolveUserValue(field, application, sessionUser)
   }
 
-  const persistedData = application?.data || {}
-  if (persistedData[field.fieldKey] !== undefined && persistedData[field.fieldKey] !== null) {
-    return persistedData[field.fieldKey]
+  let persistedData: any = application?.data || {}
+  if (typeof persistedData === 'string') {
+    try {
+      persistedData = JSON.parse(persistedData)
+    } catch {
+      persistedData = {}
+    }
   }
 
-  if (field.fieldKey === 'email') {
-    return persistedData[field.fieldKey] || application?.user?.email || sessionUser?.email || ''
+  if (persistedData && typeof persistedData === 'object' && 'data' in persistedData && typeof (persistedData as any).data === 'object') {
+    persistedData = { ...persistedData, ...(persistedData as any).data }
+  }
+
+  const possibleKeys = [
+    field.fieldKey,
+    field.id,
+    field.name,
+    field.label,
+    field.fieldKey?.toLowerCase(),
+    field.id?.toLowerCase()
+  ].filter(Boolean)
+
+  for (const key of possibleKeys) {
+    if (persistedData && persistedData[key] !== undefined && persistedData[key] !== null) {
+      return persistedData[key]
+    }
+  }
+
+  if (field.fieldKey === 'email' || field.id === 'primary-email') {
+    return persistedData?.email || application?.user?.email || sessionUser?.email || ''
   }
 
   if (field.fieldKey === 'fullName') {
     return resolveUserValue(field, application, sessionUser)
   }
 
-  return application?.[field.fieldKey]
+  const key = field.fieldKey || field.id
+  return application?.[key]
 }
 
 export function ProfileBuilderStep({ application, onSubmit, submitting, pageContent }: any) {

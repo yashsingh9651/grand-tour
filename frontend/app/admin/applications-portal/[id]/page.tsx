@@ -229,29 +229,61 @@ export default function AdminApplicationDetailPage({ params }: { params: Promise
       return user?.name || 'N/A'
     }
 
-    const persistedData = application.data || {}
-    if (persistedData[field.fieldKey] !== undefined && persistedData[field.fieldKey] !== null && persistedData[field.fieldKey] !== '') {
-      const val = persistedData[field.fieldKey]
-      if (typeof val === 'boolean') {
-        return val ? 'Yes' : 'No'
+    // Safely parse application.data if stored as JSON string or nested object
+    let persistedData: any = application.data || {}
+    if (typeof persistedData === 'string') {
+      try {
+        persistedData = JSON.parse(persistedData)
+      } catch {
+        persistedData = {}
       }
+    }
+
+    if (persistedData && typeof persistedData === 'object' && 'data' in persistedData && typeof (persistedData as any).data === 'object') {
+      persistedData = { ...persistedData, ...(persistedData as any).data }
+    }
+
+    const possibleKeys = [
+      field.fieldKey,
+      field.id,
+      field.name,
+      field.label,
+      field.fieldKey?.toLowerCase(),
+      field.id?.toLowerCase()
+    ].filter(Boolean)
+
+    for (const key of possibleKeys) {
+      if (persistedData && persistedData[key] !== undefined && persistedData[key] !== null && persistedData[key] !== '') {
+        const val = persistedData[key]
+        if (typeof val === 'boolean') return val ? 'Yes' : 'No'
+        if (Array.isArray(val)) return val.join(', ')
+        if (typeof val === 'object') return JSON.stringify(val)
+        return val
+      }
+    }
+
+    // Direct application fields Fallbacks
+    const fieldKey = field.fieldKey || field.id
+    if (fieldKey && application[fieldKey] !== undefined && application[fieldKey] !== null && application[fieldKey] !== '') {
+      const val = application[fieldKey]
+      if (typeof val === 'boolean') return val ? 'Yes' : 'No'
+      if (Array.isArray(val)) return val.join(', ')
       return val
     }
 
-    // Fallbacks
-    if (field.fieldKey === 'passportNumber' && application.passportNumber) {
+    if ((field.fieldKey === 'passportNumber' || field.id === 'passport-number') && application.passportNumber) {
       return application.passportNumber
     }
-    if (field.fieldKey === 'educationalInstitution' && application.educationalInstitution) {
+    if ((field.fieldKey === 'educationalInstitution' || field.id === 'educational-institution') && application.educationalInstitution) {
       return application.educationalInstitution
     }
-    if (field.fieldKey === 'enrollmentStatus' && application.enrollmentStatus) {
+    if ((field.fieldKey === 'enrollmentStatus' || field.id === 'enrollment-status') && application.enrollmentStatus) {
       return application.enrollmentStatus
     }
-    if (field.fieldKey === 'preferredDepartment' && (application.preferredDepartment || application.department)) {
+    if ((field.fieldKey === 'preferredDepartment' || field.id === 'preferred-department') && (application.preferredDepartment || application.department)) {
       return application.preferredDepartment || application.department
     }
-    if (field.fieldKey === 'statementOfPurpose' && application.statementOfPurpose) {
+    if ((field.fieldKey === 'statementOfPurpose' || field.id === 'statement-of-purpose') && application.statementOfPurpose) {
       return application.statementOfPurpose
     }
 

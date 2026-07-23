@@ -291,12 +291,17 @@ export const analyticsService = {
 
 export const permissionService = {
   getAll: async () => {
-    const response = await apiClient.get('/api/permissions');
-    return response.data.data;
+    try {
+      const response = await apiClient.get('/api/permissions');
+      return response.data?.data || [];
+    } catch (error) {
+      console.warn('Failed to fetch permissions (using fallback defaults):', error);
+      return [];
+    }
   },
   update: async (role: string, features: string[]) => {
     const response = await apiClient.put(`/api/permissions/${role}`, { features });
-    return response.data.data;
+    return response.data?.data;
   }
 };
 
