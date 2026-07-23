@@ -189,283 +189,286 @@ export function ContractStep({ application, currentStepConfig, onSubmit, submitt
               <li>• All signatures and the college stamp are clearly visible.</li>
             </ul>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Once completed, please upload a properly scanned copy of the fully signed Convention de Stage. Kindly avoid uploading photos; only clear scanned PDF copies will be accepted.
+              Once completed, please upload a clear scanned PDF or image copy of the fully signed Convention de Stage.
             </p>
 
-          {/* Template URL info — shown if admin has set one */}
-          {unsignedContractDoc?.url ? (
-            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3 flex items-center gap-3 text-left">
-              <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Your Internship contract is ready to be signed!</p>
-                <p className="text-xs text-emerald-750 dark:text-emerald-350 truncate mt-0.5">{unsignedContractDoc.fileName || 'Your custom contract'}</p>
-              </div>
-              <a
-                href={unsignedContractDoc.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 flex-shrink-0"
-                title="Open in new tab"
-              >
-                <ExternalLink className="w-4 h-4" />
-              </a>
-            </div>
-          ) : config.templateUrl ? (
-            <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl px-4 py-3 flex items-center gap-3 text-left">
-              <FileText className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Contract Template Ready</p>
-                <p className="text-xs text-amber-750 dark:text-amber-350 truncate mt-0.5">{config.contractTitle || 'Convention'}</p>
-              </div>
-              <a
-                href={config.templateUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-amber-600 dark:text-amber-400 hover:text-amber-800 flex-shrink-0"
-                title="Open in new tab"
-              >
-                <ExternalLink className="w-4 h-4" />
-              </a>
-            </div>
-          ) : (
-            <div className="bg-muted border border-border rounded-xl px-4 py-3 text-left">
-              <p className="text-xs text-muted-foreground font-medium">⏳ Waiting for admin to upload the contract template. Check back soon.</p>
-            </div>
-          )}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 pt-4">
-            {/* Step 1: Download */}
-            <Card className="p-4 sm:p-6 border border-border border-dashed hover:border-primary/50 transition-colors bg-muted/20 space-y-4">
-              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-                <Download className="w-6 h-6 text-primary" />
-              </div>
-              <h3 className="font-bold text-foreground">1. Download Contract</h3>
-              <p className="text-xs sm:text-sm text-muted-foreground">Get your contract document, print and sign every page.</p>
-              <Button
-                onClick={handleDownload}
-                disabled={isGenerating || (!config.templateUrl && !unsignedContractDoc?.url)}
-                className="w-full gap-2 rounded-xl bg-primary text-[#1A1A1A] font-bold hover:bg-primary/90 text-xs sm:text-sm"
-              >
-                {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4 text-[#1A1A1A]" />}
-                {unsignedContractDoc?.url 
-                  ? 'Download Custom Contract' 
-                  : config.templateUrl 
-                  ? 'Download Contract' 
-                  : 'Not Available Yet'}
-              </Button>
-            </Card>
-
-            {/* Step 2: Upload Signed */}
-            <Card className="p-4 sm:p-6 border border-border border-dashed hover:border-amber-500/50 transition-colors bg-muted/20 space-y-4">
-
-              <div className="w-12 h-12 bg-amber-500/10 rounded-full flex items-center justify-center mx-auto">
-                <Upload className="w-6 h-6 text-amber-600 dark:text-amber-400" />
-              </div>
-              <h3 className="font-bold text-foreground">2. Upload Signed Copy</h3>
-              <p className="text-sm text-muted-foreground">Upload the scanned, signed pages as a single file.</p>
-
-              {signedContractUrl ? (
-                <div className="space-y-2">
-                  <div className={`flex items-center gap-2 p-2 rounded-xl border ${
-                    signedContractDoc?.status === 'APPROVED'
-                      ? 'bg-green-500/10 border-green-500/20'
-                      : signedContractDoc?.status === 'REJECTED'
-                      ? 'bg-rose-500/10 border-rose-500/20'
-                      : 'bg-green-500/10 border-green-500/20'
-                  }`}>
-                    {signedContractDoc?.status === 'APPROVED' ? (
-                      <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                    ) : signedContractDoc?.status === 'REJECTED' ? (
-                      <span className="text-rose-500 font-bold flex-shrink-0">✕</span>
-                    ) : (
-                      <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
-                    )}
-                    <span className={`text-xs font-bold truncate flex-1 ${
-                      signedContractDoc?.status === 'REJECTED'
-                        ? 'text-rose-700 dark:text-rose-400'
-                        : 'text-green-700 dark:text-green-400'
-                    }`}>
-                      {signedContractDoc?.status === 'APPROVED'
-                        ? 'Contract Approved ✓'
-                        : signedContractDoc?.status === 'REJECTED'
-                        ? 'Contract Rejected'
-                        : 'Signed Contract Uploaded'}
-                    </span>
-                    {signedContractDoc?.status !== 'APPROVED' && (
-                      <Button variant="ghost" size="sm" className="h-7 text-xs font-bold hover:bg-green-500/15" onClick={() => setIsUploadOpen(true)}>
-                        Re-upload
-                      </Button>
-                    )}
-                  </div>
-                  {signedContractDoc?.status === 'REJECTED' && signedContractDoc?.remarks && (
-                    <div className="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-800 rounded-xl p-3">
-                      <p className="text-[10px] font-bold text-rose-600 uppercase mb-1">Rejection Reason from Admin</p>
-                      <p className="text-xs text-rose-700 dark:text-rose-300">{signedContractDoc.remarks}</p>
-                    </div>
-                  )}
+            {/* Template URL info — shown if admin has set one */}
+            {unsignedContractDoc?.url ? (
+              <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3 flex items-center gap-3 text-left">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Your Internship contract is ready to be signed!</p>
+                  <p className="text-xs text-emerald-750 dark:text-emerald-350 truncate mt-0.5">{unsignedContractDoc.fileName || 'Your custom contract'}</p>
                 </div>
-              ) : (
-                <Button
-                  onClick={() => setIsUploadOpen(true)}
-                  variant="outline"
-                  className="w-full gap-2 rounded-xl border-amber-500/30 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10"
+                <a
+                  href={unsignedContractDoc.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 flex-shrink-0"
+                  title="Open in new tab"
                 >
-                  <Upload className="w-4 h-4" />
-                  Upload Signed Document
-                </Button>
-              )}
-            </Card>
-          </div>
-        </div>
-      </Card>
-
-      {/* Additional Documents from Admin */}
-      {hasExtraDocs && (
-        <Card className="p-8 border border-border bg-card rounded-[2rem] space-y-6">
-          <div className="space-y-2">
-            <h3 className="text-xl font-bold flex items-center gap-2 text-foreground">
-              <span className="w-1.5 h-6 bg-primary rounded-full inline-block" />
-              Additional Documents from Administration
-            </h3>
-            <p className="text-sm text-muted-foreground font-medium">
-              Download, sign and re-upload each of the documents below that were provided by the admin.
-            </p>
-          </div>
-          <div className="grid md:grid-cols-2 gap-4">
-            {extraDocs.map((doc, idx) => {
-              if (!doc) return null;
-              const slotNum = idx + 1;
-              const signedExtraType = `SIGNED_CONTRACT_EXTRA_${slotNum}`
-              const signedExtraDoc = application?.documents?.find((d: any) => d.type === signedExtraType)
-              const customName = application?.data?.contractExtraLabels?.[`CONTRACT_EXTRA_${slotNum}`] || doc.fileName || `Document ${slotNum}`;
-              return (
-                <Card key={doc.id} className="p-5 border border-border bg-muted/10 rounded-2xl flex flex-col justify-between gap-4 hover:shadow-md transition-shadow text-foreground">
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 bg-primary/10 rounded-xl shrink-0">
-                      <FileText className="w-5 h-5 text-primary" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-sm font-bold text-foreground truncate" title={customName}>
-                        {customName}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {doc.size ? `${doc.size.toFixed(2)} MB` : 'Admin document'}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-2">
-                    {/* Download admin's document */}
-                    <a
-                      href={doc.url?.includes('cloudinary.com') ? doc.url.replace('/upload/', '/upload/fl_attachment/') : doc.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      download
-                      className="w-full"
-                    >
-                      <Button variant="outline" size="sm" className="w-full gap-2 rounded-xl h-9 border-border hover:bg-muted text-foreground">
-                        <Download className="w-4 h-4" /> Download
-                      </Button>
-                    </a>
-
-                    {/* Student re-upload the signed version */}
-                    {signedExtraDoc ? (
-                      <div className="space-y-2">
-                        {/* Status badge */}
-                        <div className={`flex items-center gap-2 p-2 rounded-xl border ${
-                          signedExtraDoc.status === 'APPROVED'
-                            ? 'bg-green-500/10 border-green-500/20'
-                            : signedExtraDoc.status === 'REJECTED'
-                            ? 'bg-rose-500/10 border-rose-500/20'
-                            : 'bg-amber-500/10 border-amber-500/20'
-                        }`}>
-                          {signedExtraDoc.status === 'APPROVED' ? (
-                            <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
-                          ) : signedExtraDoc.status === 'REJECTED' ? (
-                            <span className="text-rose-500 text-xs flex-shrink-0">✕</span>
-                          ) : (
-                            <span className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0" />
-                          )}
-                          <span className={`text-[10px] font-bold flex-1 truncate ${
-                            signedExtraDoc.status === 'APPROVED'
-                              ? 'text-green-700 dark:text-green-400'
-                              : signedExtraDoc.status === 'REJECTED'
-                              ? 'text-rose-700 dark:text-rose-400'
-                              : 'text-amber-700 dark:text-amber-400'
-                          }`}>
-                            {signedExtraDoc.status === 'APPROVED' ? 'Approved' : signedExtraDoc.status === 'REJECTED' ? 'Rejected' : 'Under Review'}
-                          </span>
-                          {signedExtraDoc.status !== 'APPROVED' && (
-                            <Button variant="ghost" size="sm" className="h-6 text-[10px] font-bold px-2" onClick={() => setExtraUploadOpen(slotNum)}>
-                              Re-upload
-                            </Button>
-                          )}
-                        </div>
-                        {/* Rejection reason */}
-                        {signedExtraDoc.status === 'REJECTED' && signedExtraDoc.remarks && (
-                          <div className="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-800 rounded-xl p-2.5">
-                            <p className="text-[10px] font-bold text-rose-600 uppercase mb-0.5">Rejection Reason</p>
-                            <p className="text-xs text-rose-700 dark:text-rose-300">{signedExtraDoc.remarks}</p>
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setExtraUploadOpen(slotNum)}
-                        className="w-full gap-2 rounded-xl h-9 border-amber-500/30 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10"
-                      >
-                        <Upload className="w-4 h-4" /> Upload Signed
-                      </Button>
-                    )}
-                  </div>
-                </Card>
-              );
-            })}
-          </div>
-        </Card>
-      )}
-
-      {/* Additional admin-configured fields */}
-      {hasAdditionalFields ? (
-        <div className="space-y-4 pt-4">
-          <h3 className="text-xl font-bold flex items-center gap-2">
-            <span className="w-1.5 h-6 bg-primary rounded-full inline-block" />
-            Additional Requirements
-          </h3>
-          <DynamicForm
-            fields={currentStepConfig.fields}
-            onSubmit={handleFinalSubmit}
-            initialData={application?.data?.[currentStepConfig?.name] || {}}
-            submitting={submitting}
-            buttonText="Submit Contract & Documents"
-            applicationId={application.id}
-          />
-        </div>
-      ) : (
-        <div className="pt-6">
-          <Button
-            onClick={() => handleFinalSubmit({})}
-            disabled={submitting || !signedContractUrl}
-            className="w-full h-16 text-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] transition-all rounded-2xl bg-gradient-to-r from-primary to-accent text-[#1A1A1A] font-black disabled:opacity-50 disabled:scale-100"
-          >
-            {submitting ? (
-              <Loader2 className="w-6 h-6 animate-spin text-[#1A1A1A]" />
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
+            ) : config.templateUrl ? (
+              <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl px-4 py-3 flex items-center gap-3 text-left">
+                <FileText className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Contract Template Ready</p>
+                  <p className="text-xs text-amber-750 dark:text-amber-350 truncate mt-0.5">{config.contractTitle || 'Convention'}</p>
+                </div>
+                <a
+                  href={config.templateUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-amber-600 dark:text-amber-400 hover:text-amber-800 flex-shrink-0"
+                  title="Open in new tab"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
             ) : (
-              <div className="flex items-center gap-3">
-                <CheckCircle2 className="w-6 h-6 text-[#1A1A1A]" />
-                Submit & Continue
+              <div className="bg-muted border border-border rounded-xl px-4 py-3 text-left">
+                <p className="text-xs text-muted-foreground font-medium">⏳ Waiting for admin to upload the contract template. Check back soon.</p>
               </div>
             )}
-          </Button>
-          {!signedContractUrl && (
-            <p className="text-center text-xs text-muted-foreground mt-3">
-              Upload your signed contract above to enable this button.
-            </p>
-          )}
-        </div>
-      )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 pt-4 items-stretch">
+              {/* Step 1: Download */}
+              <Card className="p-5 sm:p-6 border border-border border-dashed hover:border-primary/50 transition-colors bg-muted/20 flex flex-col justify-between h-full space-y-4">
+                <div className="space-y-3">
+                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+                    <Download className="w-6 h-6 text-primary" />
+                  </div>
+                  <h3 className="font-bold text-foreground">1. Download Contract</h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-snug">Get your contract document, print and sign every page.</p>
+                </div>
+                <Button
+                  onClick={handleDownload}
+                  disabled={isGenerating || (!config.templateUrl && !unsignedContractDoc?.url)}
+                  className="w-full h-11 px-4 gap-2 rounded-xl bg-primary text-[#1A1A1A] font-bold hover:bg-primary/90 text-xs sm:text-sm shrink-0"
+                >
+                  {isGenerating ? <Loader2 className="w-4 h-4 animate-spin shrink-0" /> : <Download className="w-4 h-4 text-[#1A1A1A] shrink-0" />}
+                  <span className="truncate">
+                    {unsignedContractDoc?.url
+                      ? 'Download Contract'
+                      : config.templateUrl
+                        ? 'Download Contract'
+                        : 'Not Available Yet'}
+                  </span>
+                </Button>
+              </Card>
+
+              {/* Step 2: Upload Signed */}
+              <Card className="p-5 sm:p-6 border border-border border-dashed hover:border-amber-500/50 transition-colors bg-muted/20 flex flex-col justify-between h-full space-y-4">
+                <div className="space-y-3">
+                  <div className="w-12 h-12 bg-amber-500/10 rounded-full flex items-center justify-center mx-auto">
+                    <Upload className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <h3 className="font-bold text-foreground">2. Upload Signed Copy</h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-snug">Upload the scanned, signed pages as a single file.</p>
+                </div>
+
+                {signedContractUrl ? (
+                  <div className="space-y-3 w-full shrink-0">
+                    <div className={`flex items-center justify-between gap-2 p-3 rounded-xl border ${signedContractDoc?.status === 'APPROVED'
+                        ? 'bg-green-500/10 border-green-500/20'
+                        : signedContractDoc?.status === 'REJECTED'
+                          ? 'bg-rose-500/10 border-rose-500/20'
+                          : 'bg-green-500/10 border-green-500/20'
+                      }`}>
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        {signedContractDoc?.status === 'APPROVED' ? (
+                          <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+                        ) : signedContractDoc?.status === 'REJECTED' ? (
+                          <span className="text-rose-500 font-bold flex-shrink-0 text-sm">✕</span>
+                        ) : (
+                          <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+                        )}
+                        <span className={`text-xs font-bold truncate ${signedContractDoc?.status === 'REJECTED'
+                            ? 'text-rose-700 dark:text-rose-400'
+                            : 'text-green-700 dark:text-green-400'
+                          }`}>
+                          {signedContractDoc?.status === 'APPROVED'
+                            ? 'Contract Approved ✓'
+                            : signedContractDoc?.status === 'REJECTED'
+                              ? 'Contract Rejected'
+                              : 'Signed Copy Uploaded'}
+                        </span>
+                      </div>
+                      {signedContractDoc?.status !== 'APPROVED' && (
+                        <Button variant="outline" size="sm" className="h-8 px-3 text-xs font-bold shrink-0 border-rose-300 text-rose-700 hover:bg-rose-100 dark:border-rose-800 dark:text-rose-300" onClick={() => setIsUploadOpen(true)}>
+                          Re-upload
+                        </Button>
+                      )}
+                    </div>
+                    {signedContractDoc?.status === 'REJECTED' && signedContractDoc?.remarks && (
+                      <div className="bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800/50 rounded-xl p-3 text-left">
+                        <p className="text-[10px] font-extrabold text-rose-600 dark:text-rose-400 uppercase tracking-wider mb-0.5">Rejection Reason from Admin</p>
+                        <p className="text-xs text-rose-700 dark:text-rose-300 font-medium">{signedContractDoc.remarks}</p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <Button
+                    onClick={() => setIsUploadOpen(true)}
+                    variant="outline"
+                    className="w-full h-11 px-4 gap-2 rounded-xl border-amber-500/30 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 text-xs sm:text-sm font-bold shrink-0"
+                  >
+                    <Upload className="w-4 h-4 shrink-0" />
+                    <span className="truncate">Upload Signed Document</span>
+                  </Button>
+                )}
+              </Card>
+            </div>
+          </div>
+        </Card>
+
+        {/* Additional Documents from Admin */}
+        {hasExtraDocs && (
+          <Card className="p-8 border border-border bg-card rounded-[2rem] space-y-6">
+            <div className="space-y-2">
+              <h3 className="text-xl font-bold flex items-center gap-2 text-foreground">
+                <span className="w-1.5 h-6 bg-primary rounded-full inline-block" />
+                Additional Documents from Administration
+              </h3>
+              <p className="text-sm text-muted-foreground font-medium">
+                Download the documents and get it printed on the college’s letter with college’s signature and stamp and upload it back
+              </p>
+            </div>
+            <div className="grid md:grid-cols-2 gap-4">
+              {extraDocs.map((doc, idx) => {
+                if (!doc) return null;
+                const slotNum = idx + 1;
+                const signedExtraType = `SIGNED_CONTRACT_EXTRA_${slotNum}`
+                const signedExtraDoc = application?.documents?.find((d: any) => d.type === signedExtraType)
+                const customName = application?.data?.contractExtraLabels?.[`CONTRACT_EXTRA_${slotNum}`] || doc.fileName || `Document ${slotNum}`;
+                return (
+                  <Card key={doc.id} className="p-5 border border-border bg-muted/10 rounded-2xl flex flex-col justify-between gap-4 hover:shadow-md transition-shadow text-foreground">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 bg-primary/10 rounded-xl shrink-0">
+                        <FileText className="w-5 h-5 text-primary" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-bold text-foreground truncate" title={customName}>
+                          {customName}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {doc.size ? `${doc.size.toFixed(2)} MB` : 'Admin document'}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                      {/* Download admin's document */}
+                      <a
+                        href={doc.url?.includes('cloudinary.com') ? doc.url.replace('/upload/', '/upload/fl_attachment/') : doc.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        download
+                        className="w-full"
+                      >
+                        <Button variant="outline" size="sm" className="w-full gap-2 rounded-xl h-9 border-border hover:bg-muted text-foreground">
+                          <Download className="w-4 h-4" /> Download
+                        </Button>
+                      </a>
+
+                      {/* Student re-upload the signed version */}
+                      {signedExtraDoc ? (
+                        <div className="space-y-2">
+                          {/* Status badge */}
+                          <div className={`flex items-center gap-2 p-2 rounded-xl border ${signedExtraDoc.status === 'APPROVED'
+                              ? 'bg-green-500/10 border-green-500/20'
+                              : signedExtraDoc.status === 'REJECTED'
+                                ? 'bg-rose-500/10 border-rose-500/20'
+                                : 'bg-amber-500/10 border-amber-500/20'
+                            }`}>
+                            {signedExtraDoc.status === 'APPROVED' ? (
+                              <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
+                            ) : signedExtraDoc.status === 'REJECTED' ? (
+                              <span className="text-rose-500 text-xs flex-shrink-0">✕</span>
+                            ) : (
+                              <span className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0" />
+                            )}
+                            <span className={`text-[10px] font-bold flex-1 truncate ${signedExtraDoc.status === 'APPROVED'
+                                ? 'text-green-700 dark:text-green-400'
+                                : signedExtraDoc.status === 'REJECTED'
+                                  ? 'text-rose-700 dark:text-rose-400'
+                                  : 'text-amber-700 dark:text-amber-400'
+                              }`}>
+                              {signedExtraDoc.status === 'APPROVED' ? 'Approved' : signedExtraDoc.status === 'REJECTED' ? 'Rejected' : 'Under Review'}
+                            </span>
+                            {signedExtraDoc.status !== 'APPROVED' && (
+                              <Button variant="ghost" size="sm" className="h-6 text-[10px] font-bold px-2" onClick={() => setExtraUploadOpen(slotNum)}>
+                                Re-upload
+                              </Button>
+                            )}
+                          </div>
+                          {/* Rejection reason */}
+                          {signedExtraDoc.status === 'REJECTED' && signedExtraDoc.remarks && (
+                            <div className="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-800 rounded-xl p-2.5">
+                              <p className="text-[10px] font-bold text-rose-600 uppercase mb-0.5">Rejection Reason</p>
+                              <p className="text-xs text-rose-700 dark:text-rose-300">{signedExtraDoc.remarks}</p>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setExtraUploadOpen(slotNum)}
+                          className="w-full gap-2 rounded-xl h-9 border-amber-500/30 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10"
+                        >
+                          <Upload className="w-4 h-4" /> Upload Signed
+                        </Button>
+                      )}
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          </Card>
+        )}
+
+        {/* Additional admin-configured fields */}
+        {hasAdditionalFields ? (
+          <div className="space-y-4 pt-4">
+            <h3 className="text-xl font-bold flex items-center gap-2">
+              <span className="w-1.5 h-6 bg-primary rounded-full inline-block" />
+              Additional Requirements
+            </h3>
+            <DynamicForm
+              fields={currentStepConfig.fields}
+              onSubmit={handleFinalSubmit}
+              initialData={application?.data?.[currentStepConfig?.name] || {}}
+              submitting={submitting}
+              buttonText="Submit Contract & Documents"
+              applicationId={application.id}
+            />
+          </div>
+        ) : (
+          <div className="pt-6">
+            <Button
+              onClick={() => handleFinalSubmit({})}
+              disabled={submitting || !signedContractUrl}
+              className="w-full h-16 text-xl font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] transition-all rounded-2xl bg-gradient-to-r from-primary to-accent text-[#1A1A1A] font-black disabled:opacity-50 disabled:scale-100"
+            >
+              {submitting ? (
+                <Loader2 className="w-6 h-6 animate-spin text-[#1A1A1A]" />
+              ) : (
+                <div className="flex items-center gap-3">
+                  <CheckCircle2 className="w-6 h-6 text-[#1A1A1A]" />
+                  Submit & Continue
+                </div>
+              )}
+            </Button>
+            {!signedContractUrl && (
+              <p className="text-center text-xs text-muted-foreground mt-3">
+                Upload your signed contract above to enable this button.
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Guidelines Box */}

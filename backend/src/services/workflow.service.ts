@@ -9,6 +9,29 @@ class WorkflowService {
     if (!workflow) {
       // Create a default workflow if none exists
       workflow = await this.initializeDefaultWorkflow();
+    } else if (Array.isArray(workflow.steps)) {
+      // Ensure workpermit (order 8) comes before payment3 (order 9)
+      let steps = workflow.steps as any[];
+      let updated = false;
+      steps = steps.map((s: any) => {
+        if (s.id === 'workpermit' && s.order !== 8) {
+          updated = true;
+          return { ...s, order: 8 };
+        }
+        if (s.id === 'payment3' && s.order !== 9) {
+          updated = true;
+          return { ...s, order: 9 };
+        }
+        return s;
+      });
+
+      if (updated) {
+        steps.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+        workflow = await prisma.workflow.update({
+          where: { id: workflow.id },
+          data: { steps }
+        });
+      }
     }
 
     return workflow;
@@ -85,8 +108,8 @@ class WorkflowService {
           { id: 'hotel', name: 'Property Confirmation', description: 'View your accommodation details', order: 5, fields: [] },
           { id: 'payment2', name: 'Second Installment', description: 'Complete your second installment', order: 6, fields: [], isPaymentStep: true, amount: 100000, gstPercentage: 18, discountPercentage: 0, paymentConfig: { accountName: 'International Education Corp', accountNumber: process.env.BANK_ACCOUNT_NUMBER || 'ACCOUNT_NUMBER_PLACEHOLDER', ifsc: process.env.BANK_IFSC_CODE || 'IFSC_CODE_PLACEHOLDER', bankName: 'ICICI Bank', qrCodeUrl: '' } },
           { id: 'contract', name: 'Convention', description: 'Sign your Convention de Stage', order: 7, fields: [], isContractStep: true },
-          { id: 'payment3', name: 'Third Installment', description: 'Complete your third installment', order: 8, fields: [], isPaymentStep: true, amount: 50000, gstPercentage: 18, discountPercentage: 0, paymentConfig: { accountName: 'International Education Corp', accountNumber: process.env.BANK_ACCOUNT_NUMBER || 'ACCOUNT_NUMBER_PLACEHOLDER', ifsc: process.env.BANK_IFSC_CODE || 'IFSC_CODE_PLACEHOLDER', bankName: 'ICICI Bank', qrCodeUrl: '' } },
-          { id: 'workpermit', name: 'Work Permit / DREET', description: 'Work Permit / DREET Documents processing', order: 9, fields: [] },
+          { id: 'workpermit', name: 'Work Permit / DREET', description: 'Work Permit / DREET Documents processing', order: 8, fields: [] },
+          { id: 'payment3', name: 'Third Installment', description: 'Complete your third installment', order: 9, fields: [], isPaymentStep: true, amount: 50000, gstPercentage: 18, discountPercentage: 0, paymentConfig: { accountName: 'International Education Corp', accountNumber: process.env.BANK_ACCOUNT_NUMBER || 'ACCOUNT_NUMBER_PLACEHOLDER', ifsc: process.env.BANK_IFSC_CODE || 'IFSC_CODE_PLACEHOLDER', bankName: 'ICICI Bank', qrCodeUrl: '' } },
           { id: 'visapayments', name: 'VFS & Visa Fees', description: 'Pay VFS Appointment fees, Insurance Fees, and Dummy Ticket Fees', order: 10, fields: [], isVisaPaymentsStep: true, amounts: { visaFee: 15000, visaFeeName: 'VFS Appointment Fees', sevisFee: 25000, sevisFeeName: 'Insurance Fees', miscFee: 5000, miscFeeName: 'Dummy Ticket Fees' } },
 
           { id: 'visa', name: 'Visa Stage', description: 'Visa Appointment booking process', order: 11, fields: [] },

@@ -57,10 +57,15 @@ export default function UploadPopup({
   }, [isOpen]);
 
   const handleFileSelect = (selectedFile: File) => {
-    const validTypes = ["image/jpeg", "image/png", "application/pdf", "video/mp4", "video/quicktime", "video/x-msvideo"];
+    const isImage = selectedFile.type.startsWith("image/") || /\.(jpg|jpeg|png|webp|gif|heic|heif)$/i.test(selectedFile.name);
+    const isVideo = selectedFile.type.startsWith("video/") || /\.(mp4|mov|avi|mkv|webm)$/i.test(selectedFile.name);
+    const isPdfOrDoc = selectedFile.type === "application/pdf" ||
+      selectedFile.type.includes("document") ||
+      selectedFile.type.includes("wordprocessingml") ||
+      /\.(pdf|doc|docx)$/i.test(selectedFile.name);
 
-    if (!validTypes.includes(selectedFile.type)) {
-      setError("Invalid file type. Please upload an image, video, or PDF.");
+    if (!isImage && !isVideo && !isPdfOrDoc) {
+      setError("Invalid file type. Please upload an image, PDF, document, or video.");
       return;
     }
 
@@ -73,7 +78,7 @@ export default function UploadPopup({
     setError(null);
 
     // Create preview for images
-    if (selectedFile.type.startsWith("image/")) {
+    if (isImage) {
       const reader = new FileReader();
       reader.onload = (e) => setPreview(e.target?.result as string);
       reader.readAsDataURL(selectedFile);
@@ -209,7 +214,7 @@ export default function UploadPopup({
                         ref={fileInputRef}
                         className="hidden"
                         onChange={(e) => e.target.files?.[0] && handleFileSelect(e.target.files[0])}
-                        accept="image/*,video/*,application/pdf"
+                        accept="image/*,video/*,application/pdf,.pdf,.jpg,.jpeg,.png,.webp,.doc,.docx"
                       />
 
                       {preview ? (
@@ -232,7 +237,7 @@ export default function UploadPopup({
                           {file ? file.name : "Click to select or drag and drop"}
                         </p>
                         <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mt-2">
-                          PNG, JPG, MP4 or PDF (Max. 50MB)
+                          PNG, JPG, PDF or Document (Max. 50MB)
                         </p>
                       </div>
                     </div>

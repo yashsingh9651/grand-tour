@@ -145,7 +145,7 @@ export default function Payment1Page() {
       const Docxtemplater = (await import('docxtemplater')).default
 
       const zip = new PizZip(arrayBuffer)
-       const doc = new Docxtemplater(zip, {
+      const doc = new Docxtemplater(zip, {
         paragraphLoop: true,
         linebreaks: true,
         delimiters: { start: '{{', end: '}}' },
@@ -174,7 +174,7 @@ export default function Payment1Page() {
       const instAddress = eduInfo['College Address'] || application.data?.educationalInstitutionAddress || application.data?.collegeAddress || 'Pune, India'
       const principal = application.tpoName || eduInfo['TPO Name'] || application.data?.principalName || 'Dr. Principal'
       const university = application.universityName || eduInfo['University'] || ''
-      
+
       // Month and Year string formatting (e.g. "September 2026")
       const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
       const currentDate = new Date();
@@ -233,7 +233,7 @@ export default function Payment1Page() {
       a.click()
       document.body.removeChild(a)
       window.URL.revokeObjectURL(url)
-      
+
       toast.success('Document filled and downloaded successfully!')
     } catch (error: any) {
       toast.error(error.message || 'Failed to generate document', {
@@ -532,78 +532,78 @@ export default function Payment1Page() {
 
             <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-foreground relative overflow-hidden">
               {!acceptedTerms && (
-              <div className="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 bg-card/65 backdrop-blur-[4px] transition-all duration-300">
-                <div className="bg-background/95 border border-border/80 p-6 rounded-[2rem] text-center space-y-4 max-w-xs shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-                  <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto shadow-inner">
-                    <Lock className="w-5 h-5 text-primary animate-pulse" />
+                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 bg-card/65 backdrop-blur-[4px] transition-all duration-300">
+                  <div className="bg-background/95 border border-border/80 p-6 rounded-[2rem] text-center space-y-4 max-w-xs shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+                    <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto shadow-inner">
+                      <Lock className="w-5 h-5 text-primary animate-pulse" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <h3 className="font-extrabold text-sm uppercase tracking-widest text-foreground">Financial Disclosure & Terms</h3>
+                      <p className="text-[11px] text-muted-foreground leading-relaxed">
+                        Please execute formal acknowledgment of the tuition payment policies, refund schedules, and internship program timeline conditions to authorize access and proceed with payment processing.
+                      </p>
+                    </div>
+                    <Button
+                      onClick={handleAcceptTerms}
+                      className="w-full bg-[#E1000F] hover:bg-[#E1000F]/90 text-white py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider shadow-lg shadow-red-500/10 active:scale-95 transition-all"
+                    >
+                      Acknowledge & Unlock
+                    </Button>
                   </div>
-                  <div className="space-y-1.5">
-                    <h3 className="font-extrabold text-sm uppercase tracking-widest text-foreground">Financial Disclosure & Terms</h3>
-                    <p className="text-[11px] text-muted-foreground leading-relaxed">
-                      Please execute formal acknowledgment of the tuition payment policies, refund schedules, and internship program timeline conditions to authorize access and proceed with payment processing.
-                    </p>
+                </div>
+              )}
+
+              <div className={`flex flex-col items-center text-center space-y-6 transition-all duration-300 ${!acceptedTerms ? 'filter blur-md pointer-events-none select-none' : ''}`}>
+                <div className="space-y-1">
+                  <h3 className="text-lg font-bold">Scan & Pay</h3>
+                  <p className="text-sm text-muted-foreground">Scan this QR code using any UPI app</p>
+                </div>
+
+                <div className="p-4 bg-white-force rounded-3xl border border-slate-200">
+                  <img
+                    src={qrCodeUrl}
+                    alt="Payment QR Code"
+                    className="w-48 h-48"
+                  />
+                </div>
+
+                <div className="w-full space-y-4">
+                  <div className="space-y-2 text-left">
+                    <label className="text-xs font-bold text-foreground ml-1">Payment Screenshot</label>
+                    {screenshotUrl ? (
+                      <div className="flex items-center gap-3 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                        <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                        <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400 truncate flex-1">Receipt uploaded</span>
+                        <Button variant="ghost" size="sm" className="h-8 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-500/10" onClick={() => setIsUploadOpen(true)}>
+                          Change
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsUploadOpen(true)}
+                        className="w-full h-12 rounded-xl border-dashed border-2 border-border text-muted-foreground hover:border-primary hover:text-primary transition-all gap-2"
+                      >
+                        <UploadCloud className="w-4 h-4" />
+                        Upload Receipt
+                      </Button>
+                    )}
                   </div>
+
                   <Button
-                    onClick={handleAcceptTerms}
-                    className="w-full bg-[#E1000F] hover:bg-[#E1000F]/90 text-white py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider shadow-lg shadow-red-500/10 active:scale-95 transition-all"
+                    onClick={handlePaymentSubmit}
+                    disabled={submittingPayment || !screenshotUrl}
+                    className="w-full h-14 rounded-2xl font-black uppercase tracking-widest bg-primary text-[#1A1A1A] font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all mt-4"
                   >
-                    Acknowledge & Unlock
+                    {submittingPayment ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Submit Receipt'}
                   </Button>
                 </div>
               </div>
-            )}
-
-            <div className={`flex flex-col items-center text-center space-y-6 transition-all duration-300 ${!acceptedTerms ? 'filter blur-md pointer-events-none select-none' : ''}`}>
-              <div className="space-y-1">
-                <h3 className="text-lg font-bold">Scan & Pay</h3>
-                <p className="text-sm text-muted-foreground">Scan this QR code using any UPI app</p>
-              </div>
-
-              <div className="p-4 bg-white-force rounded-3xl border border-slate-200">
-                <img
-                  src={qrCodeUrl}
-                  alt="Payment QR Code"
-                  className="w-48 h-48"
-                />
-              </div>
-
-              <div className="w-full space-y-4">
-                <div className="space-y-2 text-left">
-                  <label className="text-xs font-bold text-foreground ml-1">Payment Screenshot</label>
-                  {screenshotUrl ? (
-                    <div className="flex items-center gap-3 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-                      <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                      <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400 truncate flex-1">Receipt uploaded</span>
-                      <Button variant="ghost" size="sm" className="h-8 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-500/10" onClick={() => setIsUploadOpen(true)}>
-                        Change
-                      </Button>
-                    </div>
-                  ) : (
-                    <Button
-                      variant="outline"
-                      onClick={() => setIsUploadOpen(true)}
-                      className="w-full h-12 rounded-xl border-dashed border-2 border-border text-muted-foreground hover:border-primary hover:text-primary transition-all gap-2"
-                    >
-                      <UploadCloud className="w-4 h-4" />
-                      Upload Receipt
-                    </Button>
-                  )}
-                </div>
-
-                <Button
-                  onClick={handlePaymentSubmit}
-                  disabled={submittingPayment || !screenshotUrl}
-                  className="w-full h-14 rounded-2xl font-black uppercase tracking-widest bg-primary text-[#1A1A1A] font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all mt-4"
-                >
-                  {submittingPayment ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Confirm Payment'}
-                </Button>
-              </div>
-            </div>
-          </Card>
-        </div>
-      )}
-      {/* Third Column: Instructions & Attachments */}
-      <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-foreground">
+            </Card>
+          </div>
+        )}
+        {/* Third Column: Instructions & Attachments */}
+        <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-foreground">
           <div className="space-y-6">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center">

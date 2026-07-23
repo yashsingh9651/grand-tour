@@ -209,7 +209,7 @@ export default function VisaPaymentsPage() {
 
   // Parse candidate payments to find status for each slot
   const candidatePayments = application?.payments || []
-  
+
   const getPaymentStatus = (descMatch: string, type: 'visa' | 'sevis' | 'misc') => {
     const matches = candidatePayments.filter((p: any) => {
       const desc = (p.description || '').toLowerCase()
@@ -233,9 +233,9 @@ export default function VisaPaymentsPage() {
   const sevisPayment = getPaymentStatus(amountsConfig.sevisFeeName || 'sevis fee', 'sevis')
   const miscPayment = getPaymentStatus(amountsConfig.miscFeeName || 'misc fee', 'misc')
 
-  const allPaymentsApproved = 
-    visaPayment?.status === 'COMPLETED' && 
-    sevisPayment?.status === 'COMPLETED' && 
+  const allPaymentsApproved =
+    visaPayment?.status === 'COMPLETED' &&
+    sevisPayment?.status === 'COMPLETED' &&
     miscPayment?.status === 'COMPLETED'
 
   // Bank Info from workflow/paymentConfig or fallback
@@ -384,7 +384,7 @@ export default function VisaPaymentsPage() {
           disabled={submittingVal || !screenshotVal}
           className="w-full h-11 bg-primary text-[#1A1A1A] font-bold hover:opacity-90 rounded-xl text-xs font-bold uppercase tracking-wider mt-4"
         >
-          {submittingVal ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Confirm Payment'}
+          {submittingVal ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Submit Receipt'}
         </Button>
       </Card>
     )
@@ -403,10 +403,10 @@ export default function VisaPaymentsPage() {
         <div>
           <p className="text-[10px] font-black tracking-[0.2em] text-muted-foreground uppercase mb-2">MANAGEMENT</p>
           <h1 className="text-4xl font-extrabold tracking-tight text-foreground leading-none mb-3">
-            Visa & Processing Payments
+            {visapaymentsStepConfig?.name || 'VFS & Visa Fees'}
           </h1>
           <p className="text-sm text-muted-foreground font-medium max-w-lg">
-            Please complete the remaining visa administration fees. Once verified, you will proceed to book your visa slot.
+            {visapaymentsStepConfig?.description || 'Please complete the remaining visa administration fees. Once verified, you will proceed to book your visa slot.'}
           </p>
         </div>
 
@@ -432,7 +432,7 @@ export default function VisaPaymentsPage() {
         {/* Left Side: 3 Payment cards */}
         <div className="lg:col-span-3 grid md:grid-cols-3 gap-6">
           {renderPaymentCard(
-            amountsConfig.visaFeeName || 'Visa Processing Fee',
+            amountsConfig.visaFeeName || 'VFS Appointment Fees',
             Number(amountsConfig.visaFee || 15000),
             visaPayment,
             utrVisa,
@@ -443,7 +443,7 @@ export default function VisaPaymentsPage() {
             'visaFee'
           )}
           {renderPaymentCard(
-            amountsConfig.sevisFeeName || 'SEVIS & Insurance Fee',
+            amountsConfig.sevisFeeName || 'Insurance Fees',
             Number(amountsConfig.sevisFee || 25000),
             sevisPayment,
             utrSevis,
@@ -454,7 +454,7 @@ export default function VisaPaymentsPage() {
             'sevisFee'
           )}
           {renderPaymentCard(
-            amountsConfig.miscFeeName || 'Miscellaneous Fee',
+            amountsConfig.miscFeeName || 'Dummy Ticket Fees',
             Number(amountsConfig.miscFee || 5000),
             miscPayment,
             utrMisc,

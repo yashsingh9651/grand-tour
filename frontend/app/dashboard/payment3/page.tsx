@@ -64,7 +64,7 @@ export default function Payment3Page() {
       // Store latest completed payment (payment3) for receipt
       const completed = (appData?.payments || []).find((p: any) =>
         ((p.description || '').toLowerCase().includes('payment3') ||
-        (p.description || '').toLowerCase().includes('3rd'))
+          (p.description || '').toLowerCase().includes('3rd'))
         && p.status === 'COMPLETED'
       )
       if (completed) setReceiptPayment(completed)
@@ -190,7 +190,10 @@ export default function Payment3Page() {
     toast.success(`${label} copied`)
   }
 
-  const isWorkPermitIssued = application?.workPermit?.status === 'ISSUED'
+  const isWorkPermitIssued = application?.workPermit?.status === 'ISSUED' || !!application?.workPermit?.documentUrl
+  const workPermit = application?.workPermit
+  const isPaymentApproved = latestPayment?.status === 'COMPLETED' || application?.payment3?.status === 'COMPLETED'
+  const isPaymentPending = latestPayment?.status === 'PENDING'
 
   return (
     <StudentLayout
@@ -208,7 +211,7 @@ export default function Payment3Page() {
           3rd Installment Payment
         </h1>
         <p className="text-sm text-muted-foreground font-medium max-w-lg">
-          Please complete your final tuition payment installment before work permit processing begins.
+          Your work permit has been uploaded by the administration. Pay the 3rd installment and get your receipt approved by admin to download your Work Permit.
         </p>
       </div>
 
@@ -218,9 +221,9 @@ export default function Payment3Page() {
             <Clock className="w-8 h-8 text-purple-600 animate-pulse" />
           </div>
           <div className="space-y-2">
-            <h2 className="text-2xl font-black text-foreground">Awaiting Work Permit</h2>
+            <h2 className="text-2xl font-black text-foreground">Awaiting Admin Work Permit Upload</h2>
             <p className="text-sm text-muted-foreground font-medium max-w-md mx-auto">
-              Please wait for the administration to issue and upload your work permit. Once the work permit is uploaded, the payment details and submission options will unlock here.
+              Please wait for the administration to upload your work permit. Once uploaded, the 3rd installment payment options will unlock here.
             </p>
           </div>
         </Card>
@@ -260,237 +263,280 @@ export default function Payment3Page() {
                   </span>
                 </div>
                 <h3 className="text-lg font-extrabold text-foreground tracking-tight mt-1">
-                  Félicitations! Your Work Permit is Ready
+                  Félicitations! Work Permit Uploaded by Admin
                 </h3>
                 <p className="text-xs text-muted-foreground leading-relaxed font-medium">
-                  Your official French work permit (Autorisation de travail) has been approved and issued by the French Ministry of Labour.
+                  {isPaymentApproved
+                    ? 'Your 3rd payment has been approved! Your official French work permit is ready for download below.'
+                    : isPaymentPending
+                      ? 'Payment under admin review. Work permit download will unlock upon admin approval.'
+                      : 'Submit your 3rd installment payment receipt below to unlock your Work Permit download upon admin approval.'}
                 </p>
               </div>
             </div>
           </Card>
+
+          {/* Work Permit Download Box - Unlocked ONLY when payment is approved by admin */}
+          {isPaymentApproved && workPermit && (workPermit.documentUrl || workPermit.documentUrl2) && (
+            <Card className="p-6 border border-emerald-500/30 bg-emerald-500/5 rounded-[2.5rem] shadow-sm space-y-4 animate-in fade-in duration-300">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center">
+                  <FileDown className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-foreground text-base">Download Your Official Work Permit</h3>
+                  <p className="text-xs text-muted-foreground">Your 3rd installment payment has been approved by admin. Keep your work permit safe.</p>
+                </div>
+              </div>
+              <div className="grid md:grid-cols-2 gap-4">
+                {workPermit.documentUrl && (
+                  <a
+                    href={workPermit.documentUrl?.includes('cloudinary.com') ? workPermit.documentUrl.replace('/upload/', '/upload/fl_attachment/') : workPermit.documentUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button className="w-full h-11 gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-md">
+                      <FileDown className="w-4 h-4" /> Download Work Permit (Document 1)
+                    </Button>
+                  </a>
+                )}
+                {workPermit.documentUrl2 && (
+                  <a
+                    href={workPermit.documentUrl2?.includes('cloudinary.com') ? workPermit.documentUrl2.replace('/upload/', '/upload/fl_attachment/') : workPermit.documentUrl2}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button className="w-full h-11 gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow-md">
+                      <FileDown className="w-4 h-4" /> Download Work Permit (Document 2)
+                    </Button>
+                  </a>
+                )}
+              </div>
+            </Card>
+          )}
 
           <div className="grid md:grid-cols-2 gap-6 items-stretch mb-8">
             {/* Left Column: Payment details */}
             <Card className="p-6 border border-border bg-card rounded-[2.5rem] shadow-sm text-foreground flex flex-col justify-between h-full space-y-4">
               <div className="space-y-4">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center">
-                  <IndianRupee className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <h2 className="text-base font-black">3rd Installment Fee</h2>
-
-                  <p className="text-2xl font-black text-primary">{currencySymbol}{installmentAmount.toLocaleString()}</p>
-                </div>
-              </div>
-
-            <div className="space-y-4">
-              <div className="space-y-2 text-sm bg-muted p-4 rounded-xl border border-border">
-                {discountPercentage > 0 && (
-                  <div className="flex justify-between items-center text-emerald-600 dark:text-emerald-400 font-medium">
-                    <span>Discount ({discountPercentage}%)</span>
-                    <span>-{currencySymbol}{discountAmount.toLocaleString()}</span>
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center">
+                    <IndianRupee className="w-6 h-6 text-primary" />
                   </div>
-                )}
-                {gstPercentage > 0 && (
-                  <div className="flex justify-between items-center text-foreground font-medium">
-                    <span>GST ({gstPercentage}%)</span>
-                    <span>+{currencySymbol}{gstAmount.toLocaleString()}</span>
-                  </div>
-                )}
-                <div className="pt-2 border-t border-border flex justify-between items-center font-semibold text-sm text-foreground">
-                  <span>Total Course Fee</span>
-                  <span>{currencySymbol}{categoryTotalFee.toLocaleString()}</span>
-                </div>
-                <div className="pt-2 border-t border-border flex justify-between items-center font-black text-lg text-primary">
-                  <span>Installment Due</span>
-                  <span>{currencySymbol}{installmentAmount.toLocaleString()}</span>
-                </div>
-              </div>
+                  <div>
+                    <h2 className="text-base font-black">3rd Installment Fee</h2>
 
-              <div className="p-4 bg-muted border border-border rounded-2xl space-y-3">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground font-medium">Account Name</span>
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-bold">{paymentConfig.accountName}</span>
-                    <Button variant="ghost" size="icon" className="h-6 w-6 text-foreground" onClick={() => copyToClipboard(paymentConfig.accountName, 'Account name')}>
-                      <Copy className="w-3 h-3" />
-                    </Button>
+                    <p className="text-2xl font-black text-primary">{currencySymbol}{installmentAmount.toLocaleString()}</p>
                   </div>
                 </div>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground font-medium">Bank Name</span>
-                  <span className="font-bold">{paymentConfig.bankName}</span>
-                </div>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground font-medium">Account Number</span>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono font-bold text-primary">{paymentConfig.accountNumber}</span>
-                    <Button variant="ghost" size="icon" className="h-6 w-6 text-foreground" onClick={() => copyToClipboard(paymentConfig.accountNumber.replace(/\s/g, ''), 'Account number')}>
-                      <Copy className="w-3 h-3" />
-                    </Button>
+
+                <div className="space-y-4">
+                  <div className="space-y-2 text-sm bg-muted p-4 rounded-xl border border-border">
+                    {discountPercentage > 0 && (
+                      <div className="flex justify-between items-center text-emerald-600 dark:text-emerald-400 font-medium">
+                        <span>Discount ({discountPercentage}%)</span>
+                        <span>-{currencySymbol}{discountAmount.toLocaleString()}</span>
+                      </div>
+                    )}
+                    {gstPercentage > 0 && (
+                      <div className="flex justify-between items-center text-foreground font-medium">
+                        <span>GST ({gstPercentage}%)</span>
+                        <span>+{currencySymbol}{gstAmount.toLocaleString()}</span>
+                      </div>
+                    )}
+                    <div className="pt-2 border-t border-border flex justify-between items-center font-semibold text-sm text-foreground">
+                      <span>Total Course Fee</span>
+                      <span>{currencySymbol}{categoryTotalFee.toLocaleString()}</span>
+                    </div>
+                    <div className="pt-2 border-t border-border flex justify-between items-center font-black text-lg text-primary">
+                      <span>Installment Due</span>
+                      <span>{currencySymbol}{installmentAmount.toLocaleString()}</span>
+                    </div>
                   </div>
-                </div>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-muted-foreground font-medium">SWIFT / IFSC</span>
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono font-bold text-primary">{paymentConfig.ifsc}</span>
-                    <Button variant="ghost" size="icon" className="h-6 w-6 text-foreground" onClick={() => copyToClipboard(paymentConfig.ifsc, 'SWIFT code')}>
-                      <Copy className="w-3 h-3" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
 
-              <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex gap-3">
-                <Info className="w-5 h-5 text-amber-600 flex-shrink-0" />
-                <p className="text-xs text-amber-600 dark:text-amber-400 font-medium leading-relaxed">
-                  Please ensure you transfer the exact amount. Mention your Student ID reference in the transaction notes for faster verification.
-                </p>
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        {/* Right Column: QR and Submission states */}
-        {latestPayment?.status === 'COMPLETED' ? (
-          <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-center space-y-6 text-foreground">
-            <PaymentPlaneAnimation status="COMPLETED" />
-            <div className="space-y-2">
-              <h2 className="text-2xl font-black text-green-600 dark:text-green-400">Payment Verified</h2>
-              <p className="text-sm text-muted-foreground font-medium max-w-sm mx-auto">
-                Your 3rd installment payment has been successfully verified. You can now proceed to the work permit stage.
-              </p>
-            </div>
-            <div className="p-4 bg-muted border border-border rounded-2xl text-left space-y-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Amount Paid:</span>
-                <span className="font-bold text-green-600 dark:text-green-400">{currencySymbol}{latestPayment.amount?.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between items-center pt-2 border-t border-border">
-                <span className="text-muted-foreground">Receipt Attachment:</span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setViewingProofUrl(latestPayment.screenshotUrl)
-                    setViewingReceiptName(`Receipt`)
-                  }}
-                  className="gap-1.5 h-8 text-foreground border-border hover:bg-muted"
-                >
-                  <Eye className="w-3.5 h-3.5" /> View Receipt
-                </Button>
-              </div>
-            </div>
-            {/* Download PDF Receipt */}
-            <Button
-              onClick={() => receiptHook.handlePrint()}
-              className="w-full h-11 rounded-2xl font-bold text-sm gap-2 bg-green-600 hover:bg-green-700 text-white shadow-md shadow-green-500/20"
-            >
-              <FileDown className="w-4 h-4" />
-              Download Payment Receipt PDF
-            </Button>
-          </Card>
-        ) : latestPayment?.status === 'PENDING' ? (
-          <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-center space-y-6 text-foreground">
-            <PaymentPlaneAnimation status="PENDING" />
-            <div className="space-y-2">
-              <h2 className="text-2xl font-black text-purple-700">Payment Under Review</h2>
-              <p className="text-sm text-muted-foreground font-medium max-w-sm mx-auto">
-                We are currently reviewing your payment submission. Your status will be updated within 24 business hours.
-              </p>
-            </div>
-            <div className="p-4 bg-muted border border-border rounded-2xl text-left space-y-3 text-sm">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Amount Submitted:</span>
-                <span className="font-bold text-purple-800">{currencySymbol}{latestPayment.amount?.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between items-center pt-2 border-t border-purple-100">
-                <span className="text-muted-foreground">Receipt Attachment:</span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setViewingProofUrl(latestPayment.screenshotUrl)
-                    setViewingReceiptName(`Receipt`)
-                  }}
-                  className="gap-1.5 h-8 text-purple-700 hover:text-purple-800 hover:bg-purple-50"
-                >
-                  <Eye className="w-3.5 h-3.5" /> View Receipt
-                </Button>
-              </div>
-            </div>
-          </Card>
-        ) : (
-          <div className="space-y-6 w-full">
-            {latestPayment?.status === 'FAILED' && (
-              <Card className="p-8 border border-rose-500/20 bg-card rounded-[2.5rem] shadow-sm text-center space-y-6 text-foreground animate-in fade-in slide-in-from-top duration-300">
-                <PaymentPlaneAnimation status="FAILED" />
-                <div className="space-y-2">
-                  <h2 className="text-2xl font-black text-rose-600 dark:text-rose-400">Payment Rejected</h2>
-                  <p className="text-sm text-muted-foreground font-medium max-w-sm mx-auto">
-                    Your 3rd installment payment submission was rejected. Please review the note and resubmit.
-                  </p>
-                  {latestPayment.notes && (
-                    <p className="text-xs text-rose-500 font-bold bg-rose-500/10 p-3 rounded-xl border border-rose-500/20 max-w-xs mx-auto">
-                      Reason: {latestPayment.notes}
-                    </p>
-                  )}
-                </div>
-              </Card>
-            )}
-
-            <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-foreground">
-              <div className="flex flex-col items-center text-center space-y-6">
-                <div className="space-y-1">
-                  <h3 className="text-lg font-bold">Scan & Pay</h3>
-                  <p className="text-sm text-muted-foreground">Scan this QR code using any UPI app</p>
-                </div>
-
-                <div className="p-4 bg-white-force rounded-3xl border border-slate-200">
-                  <img
-                    src={qrCodeUrl}
-                    alt="Payment QR Code"
-                    className="w-48 h-48"
-                  />
-                </div>
-
-                <div className="w-full space-y-4">
-                  <div className="space-y-2 text-left">
-                    <label className="text-xs font-bold text-foreground ml-1">Payment Screenshot</label>
-                    {screenshotUrl ? (
-                      <div className="flex items-center gap-3 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-                        <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                        <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400 truncate flex-1">Receipt uploaded</span>
-                        <Button variant="ghost" size="sm" className="h-8 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-500/10" onClick={() => setIsUploadOpen(true)}>
-                          Change
+                  <div className="p-4 bg-muted border border-border rounded-2xl space-y-3">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-muted-foreground font-medium">Account Name</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-bold">{paymentConfig.accountName}</span>
+                        <Button variant="ghost" size="icon" className="h-6 w-6 text-foreground" onClick={() => copyToClipboard(paymentConfig.accountName, 'Account name')}>
+                          <Copy className="w-3 h-3" />
                         </Button>
                       </div>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        onClick={() => setIsUploadOpen(true)}
-                        className="w-full h-12 rounded-xl border-dashed border-2 border-border text-muted-foreground hover:border-primary hover:text-primary transition-all gap-2"
-                      >
-                        <UploadCloud className="w-4 h-4" />
-                        Upload Receipt
-                      </Button>
-                    )}
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-muted-foreground font-medium">Bank Name</span>
+                      <span className="font-bold">{paymentConfig.bankName}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-muted-foreground font-medium">Account Number</span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-bold text-primary">{paymentConfig.accountNumber}</span>
+                        <Button variant="ghost" size="icon" className="h-6 w-6 text-foreground" onClick={() => copyToClipboard(paymentConfig.accountNumber.replace(/\s/g, ''), 'Account number')}>
+                          <Copy className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-muted-foreground font-medium">SWIFT / IFSC</span>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-bold text-primary">{paymentConfig.ifsc}</span>
+                        <Button variant="ghost" size="icon" className="h-6 w-6 text-foreground" onClick={() => copyToClipboard(paymentConfig.ifsc, 'SWIFT code')}>
+                          <Copy className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
                   </div>
 
-                  <Button
-                    onClick={handlePaymentSubmit}
-                    disabled={submittingPayment || !screenshotUrl}
-                    className="w-full h-14 rounded-2xl font-black uppercase tracking-widest bg-primary text-[#1A1A1A] font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all mt-4"
-                  >
-                    {submittingPayment ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Confirm Payment'}
-                  </Button>
+                  <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl flex gap-3">
+                    <Info className="w-5 h-5 text-amber-600 flex-shrink-0" />
+                    <p className="text-xs text-amber-600 dark:text-amber-400 font-medium leading-relaxed">
+                      Please ensure you transfer the exact amount. Mention your Student ID reference in the transaction notes for faster verification.
+                    </p>
+                  </div>
                 </div>
               </div>
             </Card>
+
+            {/* Right Column: QR and Submission states */}
+            {latestPayment?.status === 'COMPLETED' ? (
+              <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-center space-y-6 text-foreground">
+                <PaymentPlaneAnimation status="COMPLETED" />
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-black text-green-600 dark:text-green-400">Payment Verified</h2>
+                  <p className="text-sm text-muted-foreground font-medium max-w-sm mx-auto">
+                    Your 3rd installment payment has been successfully verified. You can now proceed to the work permit stage.
+                  </p>
+                </div>
+                <div className="p-4 bg-muted border border-border rounded-2xl text-left space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Amount Paid:</span>
+                    <span className="font-bold text-green-600 dark:text-green-400">{currencySymbol}{latestPayment.amount?.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center pt-2 border-t border-border">
+                    <span className="text-muted-foreground">Receipt Attachment:</span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setViewingProofUrl(latestPayment.screenshotUrl)
+                        setViewingReceiptName(`Receipt`)
+                      }}
+                      className="gap-1.5 h-8 text-foreground border-border hover:bg-muted"
+                    >
+                      <Eye className="w-3.5 h-3.5" /> View Receipt
+                    </Button>
+                  </div>
+                </div>
+                {/* Download PDF Receipt */}
+                <Button
+                  onClick={() => receiptHook.handlePrint()}
+                  className="w-full h-11 rounded-2xl font-bold text-sm gap-2 bg-green-600 hover:bg-green-700 text-white shadow-md shadow-green-500/20"
+                >
+                  <FileDown className="w-4 h-4" />
+                  Download Payment Receipt PDF
+                </Button>
+              </Card>
+            ) : latestPayment?.status === 'PENDING' ? (
+              <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-center space-y-6 text-foreground">
+                <PaymentPlaneAnimation status="PENDING" />
+                <div className="space-y-2">
+                  <h2 className="text-2xl font-black text-purple-700">Payment Under Review</h2>
+                  <p className="text-sm text-muted-foreground font-medium max-w-sm mx-auto">
+                    We are currently reviewing your payment submission. Your status will be updated within 24 business hours.
+                  </p>
+                </div>
+                <div className="p-4 bg-muted border border-border rounded-2xl text-left space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Amount Submitted:</span>
+                    <span className="font-bold text-purple-800">{currencySymbol}{latestPayment.amount?.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center pt-2 border-t border-purple-100">
+                    <span className="text-muted-foreground">Receipt Attachment:</span>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setViewingProofUrl(latestPayment.screenshotUrl)
+                        setViewingReceiptName(`Receipt`)
+                      }}
+                      className="gap-1.5 h-8 text-purple-700 hover:text-purple-800 hover:bg-purple-50"
+                    >
+                      <Eye className="w-3.5 h-3.5" /> View Receipt
+                    </Button>
+                  </div>
+                </div>
+              </Card>
+            ) : (
+              <div className="space-y-6 w-full">
+                {latestPayment?.status === 'FAILED' && (
+                  <Card className="p-8 border border-rose-500/20 bg-card rounded-[2.5rem] shadow-sm text-center space-y-6 text-foreground animate-in fade-in slide-in-from-top duration-300">
+                    <PaymentPlaneAnimation status="FAILED" />
+                    <div className="space-y-2">
+                      <h2 className="text-2xl font-black text-rose-600 dark:text-rose-400">Payment Rejected</h2>
+                      <p className="text-sm text-muted-foreground font-medium max-w-sm mx-auto">
+                        Your 3rd installment payment submission was rejected. Please review the note and resubmit.
+                      </p>
+                      {latestPayment.notes && (
+                        <p className="text-xs text-rose-500 font-bold bg-rose-500/10 p-3 rounded-xl border border-rose-500/20 max-w-xs mx-auto">
+                          Reason: {latestPayment.notes}
+                        </p>
+                      )}
+                    </div>
+                  </Card>
+                )}
+
+                <Card className="p-8 border border-border bg-card rounded-[2.5rem] shadow-sm text-foreground">
+                  <div className="flex flex-col items-center text-center space-y-6">
+                    <div className="space-y-1">
+                      <h3 className="text-lg font-bold">Scan & Pay</h3>
+                      <p className="text-sm text-muted-foreground">Scan this QR code using any UPI app</p>
+                    </div>
+
+                    <div className="p-4 bg-white-force rounded-3xl border border-slate-200">
+                      <img
+                        src={qrCodeUrl}
+                        alt="Payment QR Code"
+                        className="w-48 h-48"
+                      />
+                    </div>
+
+                    <div className="w-full space-y-4">
+                      <div className="space-y-2 text-left">
+                        <label className="text-xs font-bold text-foreground ml-1">Payment Screenshot</label>
+                        {screenshotUrl ? (
+                          <div className="flex items-center gap-3 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                            <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                            <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400 truncate flex-1">Receipt uploaded</span>
+                            <Button variant="ghost" size="sm" className="h-8 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-500/10" onClick={() => setIsUploadOpen(true)}>
+                              Change
+                            </Button>
+                          </div>
+                        ) : (
+                          <Button
+                            variant="outline"
+                            onClick={() => setIsUploadOpen(true)}
+                            className="w-full h-12 rounded-xl border-dashed border-2 border-border text-muted-foreground hover:border-primary hover:text-primary transition-all gap-2"
+                          >
+                            <UploadCloud className="w-4 h-4" />
+                            Upload Receipt
+                          </Button>
+                        )}
+                      </div>
+
+                      <Button
+                        onClick={handlePaymentSubmit}
+                        disabled={submittingPayment || !screenshotUrl}
+                        className="w-full h-14 rounded-2xl font-black uppercase tracking-widest bg-primary text-[#1A1A1A] font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all mt-4"
+                      >
+                        {submittingPayment ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Submit Receipt'}
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            )}
           </div>
-        )}
-        </div>
         </div>
       )}
 

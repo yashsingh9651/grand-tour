@@ -70,6 +70,17 @@ export interface WorkflowStep {
     templateUrl?: string
     contractTitle?: string
   }
+
+  // Visa payments configuration
+  isVisaPaymentsStep?: boolean
+  amounts?: {
+    visaFee?: number
+    visaFeeName?: string
+    sevisFee?: number
+    sevisFeeName?: string
+    miscFee?: number
+    miscFeeName?: string
+  }
 }
 
 export interface Workflow {

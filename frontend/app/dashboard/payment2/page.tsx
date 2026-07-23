@@ -209,11 +209,11 @@ export default function Payment2Page() {
           <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
           <span>You have accepted the hotel host. A confirmation email has been sent.</span>
         </div>
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={handleResendHotelEmail} 
-          disabled={resendingEmail} 
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleResendHotelEmail}
+          disabled={resendingEmail}
           className="bg-background hover:bg-muted text-foreground border-emerald-500/30 font-semibold self-start sm:self-center shrink-0"
         >
           {resendingEmail ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : null}
@@ -447,7 +447,7 @@ export default function Payment2Page() {
                     disabled={submittingPayment || !screenshotUrl}
                     className="w-full h-14 rounded-2xl font-black uppercase tracking-widest bg-primary text-[#1A1A1A] font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all mt-4"
                   >
-                    {submittingPayment ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Confirm Payment'}
+                    {submittingPayment ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Submit Receipt'}
                   </Button>
                 </div>
               </div>

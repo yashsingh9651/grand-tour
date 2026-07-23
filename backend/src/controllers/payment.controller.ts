@@ -89,7 +89,7 @@ export const approvePayment = async (req: Request, res: Response) => {
 
       const currentIdx = steps.findIndex((s: any) => s.id === stepKey);
       const nextStepObj = currentIdx >= 0 && currentIdx < steps.length - 1 ? steps[currentIdx + 1] : null;
-      let nextStep = nextStepObj ? nextStepObj.id : (stepKey === 'payment1' ? 'hotel' : stepKey === 'payment2' ? 'contract' : 'workpermit');
+      let nextStep = nextStepObj ? nextStepObj.id : (stepKey === 'payment1' ? 'hotel' : stepKey === 'payment2' ? 'contract' : 'visapayments');
 
       let updateData: any = { currentStepId: nextStep };
 

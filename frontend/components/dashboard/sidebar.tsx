@@ -336,16 +336,6 @@ export function Sidebar({ isMobile = false }: { isMobile?: boolean }) {
 
       {/* Bottom section */}
       <div className="px-3 pb-6 space-y-3">
-        {/* New Entry CTA */}
-        <Link
-          href="/admin/candidates"
-          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full text-[11px] font-bold tracking-wider uppercase transition-all duration-200 hover:opacity-90 hover:scale-[1.02] active:scale-[0.98]"
-          style={{ backgroundColor: "#CCFF00", color: "#111" }}
-        >
-          <Plus className="w-3.5 h-3.5" />
-          New Entry
-        </Link>
-
         {/* Settings & Support */}
         <div className="space-y-0.5">
           {showSettings && (

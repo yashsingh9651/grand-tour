@@ -182,7 +182,17 @@ export function StepEditor({ step, onSave, onCancel }: StepEditorProps) {
   const [contractConfig, setContractConfig] = useState<any>(step.contractConfig || {
     templateUrl: '',
     contractTitle: 'Convention'
+  })
 
+  // Visa Payments multi-fee configuration state
+  const [isVisaPaymentsStep, setIsVisaPaymentsStep] = useState(step.isVisaPaymentsStep || step.id === 'visapayments')
+  const [amounts, setAmounts] = useState<any>(step.amounts || {
+    visaFee: 15000,
+    visaFeeName: 'VFS Appointment Fees',
+    sevisFee: 25000,
+    sevisFeeName: 'Insurance Fees',
+    miscFee: 5000,
+    miscFeeName: 'Dummy Ticket Fees'
   })
 
   const handleQrUploadComplete = (doc: any) => {
@@ -332,7 +342,9 @@ export function StepEditor({ step, onSave, onCancel }: StepEditorProps) {
       discountPercentage,
       paymentConfig,
       isContractStep,
-      contractConfig
+      contractConfig,
+      isVisaPaymentsStep,
+      amounts
     }
 
     if (isApplicationStep) {
@@ -493,7 +505,7 @@ export function StepEditor({ step, onSave, onCancel }: StepEditorProps) {
                   checked={isContractStep} 
                   onChange={(e) => {
                     setIsContractStep(e.target.checked)
-                    if (e.target.checked) { setIsInterviewStep(false); setIsPaymentStep(false); }
+                    if (e.target.checked) { setIsInterviewStep(false); setIsPaymentStep(false); setIsVisaPaymentsStep(false); }
                   }}
                   className="sr-only peer"
                 />
@@ -501,10 +513,114 @@ export function StepEditor({ step, onSave, onCancel }: StepEditorProps) {
               </label>
             </div>
           </div>
+
+          <div className="p-4 bg-indigo-50 rounded-xl border border-indigo-100 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <CreditCard className="w-6 h-6 text-indigo-600" />
+              <div>
+                <p className="font-bold text-indigo-900">Is this a Visa & Multi-Fee Payment Step?</p>
+                <p className="text-xs text-indigo-700">Enables dynamic multi-fee payment collection (e.g. VFS, Insurance, Dummy Ticket Fees).</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  checked={isVisaPaymentsStep} 
+                  onChange={(e) => {
+                    setIsVisaPaymentsStep(e.target.checked)
+                    if (e.target.checked) { setIsInterviewStep(false); setIsPaymentStep(false); setIsContractStep(false); }
+                  }}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 bg-indigo-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-500/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-indigo-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+              </label>
+            </div>
+          </div>
         </div>
       </Card>
 
-      {isPaymentStep ? (
+      {isVisaPaymentsStep ? (
+        <Card className="p-8 border-2 border-indigo-500/20 shadow-sm space-y-6">
+          <h3 className="text-xl font-bold text-indigo-900 flex items-center gap-2">
+            <CreditCard className="w-5 h-5 text-indigo-600" />
+            Visa & Multi-Fee Payment Configuration
+          </h3>
+          <p className="text-xs text-muted-foreground font-medium">
+            Customize the names and amounts for each fee item displayed on the student&apos;s Visa Payments screen.
+          </p>
+          <div className="grid md:grid-cols-3 gap-6">
+            {/* Fee 1 */}
+            <div className="p-4 border rounded-2xl bg-indigo-50/50 space-y-3">
+              <h4 className="font-bold text-xs uppercase tracking-wider text-indigo-900">Fee Item 1</h4>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-muted-foreground">Title Name</label>
+                <Input
+                  value={amounts?.visaFeeName || ''}
+                  onChange={(e) => setAmounts({ ...amounts, visaFeeName: e.target.value })}
+                  placeholder="e.g. VFS Appointment Fees"
+                  className="bg-white"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-muted-foreground">Amount (₹)</label>
+                <Input
+                  type="number"
+                  value={amounts?.visaFee || 0}
+                  onChange={(e) => setAmounts({ ...amounts, visaFee: Number(e.target.value) })}
+                  className="bg-white"
+                />
+              </div>
+            </div>
+
+            {/* Fee 2 */}
+            <div className="p-4 border rounded-2xl bg-indigo-50/50 space-y-3">
+              <h4 className="font-bold text-xs uppercase tracking-wider text-indigo-900">Fee Item 2</h4>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-muted-foreground">Title Name</label>
+                <Input
+                  value={amounts?.sevisFeeName || ''}
+                  onChange={(e) => setAmounts({ ...amounts, sevisFeeName: e.target.value })}
+                  placeholder="e.g. Insurance Fees"
+                  className="bg-white"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-muted-foreground">Amount (₹)</label>
+                <Input
+                  type="number"
+                  value={amounts?.sevisFee || 0}
+                  onChange={(e) => setAmounts({ ...amounts, sevisFee: Number(e.target.value) })}
+                  className="bg-white"
+                />
+              </div>
+            </div>
+
+            {/* Fee 3 */}
+            <div className="p-4 border rounded-2xl bg-indigo-50/50 space-y-3">
+              <h4 className="font-bold text-xs uppercase tracking-wider text-indigo-900">Fee Item 3</h4>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-muted-foreground">Title Name</label>
+                <Input
+                  value={amounts?.miscFeeName || ''}
+                  onChange={(e) => setAmounts({ ...amounts, miscFeeName: e.target.value })}
+                  placeholder="e.g. Dummy Ticket Fees"
+                  className="bg-white"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-muted-foreground">Amount (₹)</label>
+                <Input
+                  type="number"
+                  value={amounts?.miscFee || 0}
+                  onChange={(e) => setAmounts({ ...amounts, miscFee: Number(e.target.value) })}
+                  className="bg-white"
+                />
+              </div>
+            </div>
+          </div>
+        </Card>
+      ) : isPaymentStep ? (
         <Card className="p-8 border-2 border-emerald-500/20 shadow-sm space-y-6">
           <h3 className="text-xl font-bold text-emerald-900 flex items-center gap-2">
             <CreditCard className="w-5 h-5 text-emerald-600" />

@@ -97,7 +97,7 @@ export default function AdminContractsPage() {
       
       // If approved, move student to the next step automatically
       if (status === 'APPROVED') {
-        let nextStepId = 'payment3' // default fallback
+        let nextStepId = 'workpermit' // default fallback after contract
         if (workflow?.steps) {
           const idx = workflow.steps.findIndex((s: any) => s.id === 'contract' || s.isContractStep)
           if (idx !== -1 && idx < workflow.steps.length - 1) {
