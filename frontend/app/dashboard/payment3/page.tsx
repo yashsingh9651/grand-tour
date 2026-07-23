@@ -11,7 +11,7 @@ import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import {
   Loader2, Check, Lock, UploadCloud, Eye, X, Copy,
-  Landmark, Clock, IndianRupee, CheckCircle2, Info, FileDown
+  Landmark, Clock, IndianRupee, CheckCircle2, Info, FileDown, FileText
 } from 'lucide-react'
 import { usePaymentReceipt } from '@/components/PaymentReceiptPDF'
 import PaymentPlaneAnimation from '@/components/PaymentPlaneAnimation'
@@ -229,52 +229,87 @@ export default function Payment3Page() {
         </Card>
       ) : (
         <div className="space-y-6">
-          {/* France Work Permit Ready Card (Horizontal Row) */}
-          <Card className="relative overflow-hidden border border-border bg-gradient-to-r from-blue-500/10 via-background to-red-500/10 rounded-[2.5rem] shadow-sm p-6">
-            {/* Tricolore Top Bar */}
-            <div className="absolute top-0 left-0 right-0 h-[6px] flex">
-              <div className="flex-1 bg-[#002395]" />
-              <div className="flex-1 bg-white" />
-              <div className="flex-1 bg-[#ED2939]" />
-            </div>
+          {/* Top Info Cards 2-Column Row */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Card 1: France Work Permit Ready Card */}
+            <Card className="relative overflow-hidden border border-border bg-gradient-to-r from-blue-500/10 via-background to-red-500/10 rounded-[2.5rem] shadow-sm p-6 flex flex-col justify-between space-y-4">
+              {/* Tricolore Top Bar */}
+              <div className="absolute top-0 left-0 right-0 h-[6px] flex">
+                <div className="flex-1 bg-[#002395]" />
+                <div className="flex-1 bg-white" />
+                <div className="flex-1 bg-[#ED2939]" />
+              </div>
 
-            <div className="flex flex-col md:flex-row items-center gap-6">
-              <div className="w-16 h-16 rounded-2xl bg-card border border-border flex flex-col items-center justify-center shadow-sm relative overflow-hidden shrink-0">
-                {/* Micro France Flag Backdrop inside Icon */}
-                <div className="absolute inset-0 flex opacity-10">
-                  <div className="flex-1 bg-[#002395]" />
-                  <div className="flex-1 bg-white" />
-                  <div className="flex-1 bg-[#ED2939]" />
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-card border border-border flex flex-col items-center justify-center shadow-sm relative overflow-hidden shrink-0">
+                  {/* Micro France Flag Backdrop inside Icon */}
+                  <div className="absolute inset-0 flex opacity-10">
+                    <div className="flex-1 bg-[#002395]" />
+                    <div className="flex-1 bg-white" />
+                    <div className="flex-1 bg-[#ED2939]" />
+                  </div>
+                  <div className="w-9 h-6 rounded-sm overflow-hidden flex border border-slate-200/60 shadow-sm relative z-10">
+                    <div className="w-1/3 bg-[#002395]" />
+                    <div className="w-1/3 bg-white" />
+                    <div className="w-1/3 bg-[#ED2939]" />
+                    <div className="absolute inset-0 bg-gradient-to-tr from-black/5 via-transparent to-white/15 pointer-events-none" />
+                  </div>
                 </div>
-                <div className="w-10 h-7 rounded-sm overflow-hidden flex border border-slate-200/60 shadow-sm relative z-10">
-                  <div className="w-1/3 bg-[#002395]" />
-                  <div className="w-1/3 bg-white" />
-                  <div className="w-1/3 bg-[#ED2939]" />
-                  <div className="absolute inset-0 bg-gradient-to-tr from-black/5 via-transparent to-white/15 pointer-events-none" />
+                <div className="space-y-1 text-center sm:text-left flex-1">
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1.5">
+                    <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-blue-600/10 text-blue-600 border border-blue-200/20">
+                      Visa Ready Status
+                    </span>
+                    <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-red-600/10 text-red-600 border border-red-200/20">
+                      France
+                    </span>
+                  </div>
+                  <h3 className="text-base font-extrabold text-foreground tracking-tight mt-1">
+                    Félicitations! Work Permit Uploaded
+                  </h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed font-medium">
+                    {isPaymentApproved
+                      ? 'Your 3rd payment has been approved! Your official French work permit is ready for download below.'
+                      : isPaymentPending
+                        ? 'Payment under admin review. Work permit download will unlock upon admin approval.'
+                        : 'Submit your 3rd installment payment receipt below to unlock your Work Permit download upon admin approval.'}
+                  </p>
                 </div>
               </div>
-              <div className="space-y-1 text-center md:text-left flex-1">
-                <div className="flex flex-wrap items-center justify-center md:justify-start gap-1.5">
-                  <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-blue-600/10 text-blue-600 border border-blue-200/20">
-                    Visa Ready Status
-                  </span>
-                  <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-red-600/10 text-red-600 border border-red-200/20">
-                    France
-                  </span>
+            </Card>
+
+            {/* Card 2: Meanwhile Arrange Your Visa Documents */}
+            <Card className="relative overflow-hidden border border-border bg-gradient-to-br from-amber-500/10 via-background to-orange-500/10 rounded-[2.5rem] shadow-sm p-6 flex flex-col justify-between space-y-4">
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
+                  <FileText className="w-7 h-7 text-amber-600 dark:text-amber-400" />
                 </div>
-                <h3 className="text-lg font-extrabold text-foreground tracking-tight mt-1">
-                  Félicitations! Work Permit Uploaded by Admin
-                </h3>
-                <p className="text-xs text-muted-foreground leading-relaxed font-medium">
-                  {isPaymentApproved
-                    ? 'Your 3rd payment has been approved! Your official French work permit is ready for download below.'
-                    : isPaymentPending
-                      ? 'Payment under admin review. Work permit download will unlock upon admin approval.'
-                      : 'Submit your 3rd installment payment receipt below to unlock your Work Permit download upon admin approval.'}
-                </p>
+                <div className="space-y-1 text-center sm:text-left flex-1">
+                  <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-amber-600/10 text-amber-600 border border-amber-200/20">
+                    Document Preparation
+                  </span>
+                  <h3 className="text-base font-extrabold text-foreground tracking-tight mt-1">
+                    Meanwhile, Arrange Your Visa Documents
+                  </h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed font-medium">
+                    Download and prepare all essential visa documents required for your embassy appointment.
+                  </p>
+                </div>
               </div>
-            </div>
-          </Card>
+
+              <a
+                href="/visaDocuments.pdf"
+                download="visaDocuments.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full"
+              >
+                <Button className="w-full h-11 gap-2 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-xs shadow-md">
+                  <FileDown className="w-4 h-4" /> Download Visa Documents (PDF)
+                </Button>
+              </a>
+            </Card>
+          </div>
 
           {/* Work Permit Download Box - Unlocked ONLY when payment is approved by admin */}
           {isPaymentApproved && workPermit && (workPermit.documentUrl || workPermit.documentUrl2) && (
